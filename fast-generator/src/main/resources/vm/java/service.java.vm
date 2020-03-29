@@ -1,0 +1,60 @@
+package ${packageName}.service;
+
+import com.baomidou.mybatisplus.service.IService;
+import ${packageName}.entity.${ClassName}Entity;
+import com.lixinos.common.core.utils.PageUtils;
+import java.util.List;
+import java.util.Map;
+
+/**
+ *
+ * @ClassName: ${functionName}
+ * @Package: ${packageName}
+ * @Description: ${functionName}Service接口
+ * @author: ${author}
+ * @time ${datetime}
+ 
+ * /----------------------------/
+ * /---><---/
+ * /----------------------------/
+ */
+public interface ${ClassName}Service extends IService<${ClassName}Entity> {
+
+    /**
+     * @Description: 查询表list分页
+     * @param: 页面参数
+     * @auther: ${author} 自动生成
+     * @date: 2020/1/7 10:31
+     */
+    PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * @Description: 批量删除
+     * @auther: ${author} 自动生成
+     * @date: ${datetime}
+     */
+    int deleteBatch(${pkColumn.javaType}[] ids);
+
+    /**
+     * 单个删除${functionName}
+     *
+     * @param ${pkColumn.javaField} ${functionName}ID
+     * @return 结果
+     */
+    int delete${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField});
+
+    /**
+     * 修改${functionName}
+     *
+     * @param ${ClassName}Entity ${functionName}
+     * @return 结果
+     */
+    int update${ClassName}(${ClassName}Entity ${className});
+
+
+    boolean insert${ClassName}(${ClassName}Entity ${className});
+
+
+    ${ClassName}Entity select${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField});
+
+}

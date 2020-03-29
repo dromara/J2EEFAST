@@ -1,0 +1,78 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="字典树">
+	<@cssLibs.ztree_css/>
+	<style>
+		body{height:auto;font-family: "Microsoft YaHei";}
+		button{font-family: "SimSun","Helvetica Neue",Helvetica,Arial;}
+	</style>
+</@header>
+<body class="hold-transition box box-main">
+	<input id="columnId" type="hidden" value=""/>
+	<input id="treeId"   type="hidden" value=""/>
+	<input id="path" type="hidden" value=""/>
+
+	<div class="wrapper">
+	<!--
+	<div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
+		<label id="btnShow" title="显示搜索" style="display:none;">︾</label>
+		<label id="btnHide" title="隐藏搜索">︽</label>
+	</div>
+	<div class="treeSearchInput" id="search">
+		<label for="keyword">关键字：</label><input type="text" class="empty" id="keyword" maxlength="50">
+		<button class="btn" id="btn" onclick="$.tree.searchNode()"> 搜索 </button>
+	</div>
+    <div class="treeExpandCollapse">
+        <a href="#" onclick="$.tree.expand()">展开</a> /
+        <a href="#" onclick="$.tree.collapse()">折叠</a>
+    </div>
+    -->
+	<div id="tree" class="ztree treeselect"></div>
+	</div>
+	<@footer>
+	<@jsLibs.ztree_js/>
+	<script>
+
+		$(function() {
+			var url = baseURL + "tool/gen/dirTreeData";
+			var options = {
+		        url: url,
+		        onClick : zOnClick,
+				OnExpand:zOnExpand  //展开
+		    };
+			$.tree.init(options);
+		});
+		
+		function zOnClick(event, treeId, treeNode) {
+			$("#path").val(treeNode.title);
+		}
+
+
+		function zOnExpand(event, treeId, treeNode) {
+			var node = $._tree.getNodeByTId(treeNode.tId);
+			var s =node.children;
+			if(opt.common.isEmpty(s)){
+				var config = {
+					url: baseURL + "tool/gen/getTreeData",
+					type: "POST",
+					dataType: "JSON",
+					data: {"pid":treeNode.id,"path":""+treeNode.title},
+					beforeSend: function () {
+						$(window).block({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' +
+									'<@ctx.i18n text = "数据正在认证,请稍后..."/>' + '</div>' });
+					},
+					success: function(result) {
+						$._tree.addNodes(node, result);
+						$(window).unblock();
+					},
+					error:function(){
+						$(window).unblock();
+						return;
+					}
+				};
+				$.ajax(config);
+			}
+		}
+	</script>
+</@footer>
+</@pageTheme>

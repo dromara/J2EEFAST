@@ -1,0 +1,19 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="输入框">
+        <style>
+            body{height:auto;font-family: "Microsoft YaHei";}
+            button{font-family: "SimSun","Helvetica Neue",Helvetica,Arial;}
+        </style>
+    </@header>
+    <body class="hold-transition box box-main">
+    <input id="columnId" type="hidden" value="${columnId?default("")}"/>
+    <div class="wrapper">
+        <textarea id="inputEdit"  rows="10" name="inputEdit" class="form-control">${text?default("")}</textarea>
+    </div>
+    <@footer>
+        <script>
+
+        </script>
+    </@footer>
+</@pageTheme>

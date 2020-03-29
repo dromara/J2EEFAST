@@ -1,0 +1,36 @@
+# -------------------------------------------------------------
+# ----- 系统后台相关配置,修改立即生效-----
+# -------------------------------------------------------------
+# 报表路径名称
+reportPathName=report
+#表头时间
+#报表文件名称
+reportFileName={}{}.xlsx
+# 日报表标题
+rReportTile={} {} 日报表
+# 月报表标题
+yReportTile={} {} 月报表
+# 月报表标题
+nReportTile={} {} 年报表 
+footRow=##########################合计:笔数:{} 金额: {}
+yReport=月报表
+rReport=日报表
+nReport=年报表
+
+#在线预览OpenOffice服务器端口
+OpenOfficePost=8100
+#在线预览IP
+#OpenOfficeIP=192.168.20.110
+OpenOfficeIP=127.0.0.1
+#转换成PDF
+tempPdf=tempPdf
+
+#导出数据报表路径名称
+exportTeportPathName=exportpio
+# 报表标题
+exportTile={} {} 数据
+
+#系统导出数据临时存放目录--key文件
+exportTempPathName=exportTemp
+
+#页面统计数据展示

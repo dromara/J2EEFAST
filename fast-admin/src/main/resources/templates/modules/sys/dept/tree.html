@@ -1,0 +1,70 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="地区树">
+	<@cssLibs.ztree_css/>
+	<style>
+		body{height:auto;font-family: "Microsoft YaHei";}
+		button{font-family: "SimSun","Helvetica Neue",Helvetica,Arial;}
+	</style>
+</@header>
+	<body class="hold-transition box box-main">
+	<input id="treeId"   name="treeId"    type="hidden" value=""/>
+	<input id="treeName" name="treeName"  type="hidden" value=""/>
+		<div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
+		<label id="btnShow" title="显示搜索" style="display:none;">︾</label>
+		<label id="btnHide" title="隐藏搜索">︽</label>
+	</div>
+	<div class="treeSearchInput" id="search">
+		<label for="keyword">关键字：</label><input type="text" class="empty" id="keyword" maxlength="50">
+		<button class="btn" id="btn" onclick="$.tree.searchNode()"> 搜索 </button>
+	</div>
+	<div class="treeExpandCollapse">
+		<a href="#" onclick="$.tree.expand()">展开</a> /
+		<a href="#" onclick="$.tree.collapse()">折叠</a>
+	</div>
+	<div id="tree" class="ztree treeselect"></div>
+	<@footer>
+	<@jsLibs.ztree_js/>
+	<script>
+		function zOnClick(event, treeId, treeNode) {
+			$._tree.checkNode(treeNode, !treeNode.checked, null, true);
+		}
+		function onCheck(event, treeId, treeNode) {
+			var _p = $._tree.getCheckedNodes();
+			var ids = "";
+			var names = "";
+			for(var i=0; i<_p.length; i++ ){
+				ids += _p[i].deptId + ",";
+				names += _p[i].name + ",";
+			}
+			$("#treeId").val(ids.substr(0,ids.length-1));
+			$("#treeName").val(names.substr(0,names.length-1));
+		}
+		function onLoadSuccess(obj) {
+			$("#treeId").val(obj.list);
+			var url = baseURL +  "sys/dept/select/"+obj.compId;
+			var options = {
+				url: url,
+				_list:obj.list,
+				expandLevel: 2,
+				data: {
+					simpleData: {
+						enable: true,
+						idKey: "deptId",
+						pIdKey: "parentId",
+						rootPId: -1
+					}
+				},
+				check: {
+					enable:true,
+					nocheckInherit:true,
+					chkboxType:{ "Y" : "s", "N" : "ps" }
+				},
+				onClick : zOnClick,
+				onCheck: onCheck
+			};
+			$.tree.init(options);
+		}
+	</script>
+</@footer>
+</@pageTheme>

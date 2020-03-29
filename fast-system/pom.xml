@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.fast</groupId>
+    <artifactId>fast</artifactId>
+    <version>3.2.0</version>
+  </parent>
+  <artifactId>fast-system</artifactId>
+  <name>fast 系统框架</name>
+  <description>
+	    fast 系统框架
+  </description>
+  <dependencies>
+
+	  <dependency>
+		  <groupId>com.fast</groupId>
+		  <artifactId>fast-generator</artifactId>
+	  </dependency>
+
+	<!-- 阿里云云盘 -->
+	<dependency>
+		<groupId>com.aliyun.oss</groupId>
+		<artifactId>aliyun-sdk-oss</artifactId>
+	</dependency>
+	
+	<dependency>
+			<groupId>com.qcloud</groupId>
+			<artifactId>cos_api</artifactId>
+    </dependency>
+    
+    <dependency>
+			<groupId>com.qiniu</groupId>
+			<artifactId>qiniu-java-sdk</artifactId>
+	</dependency>
+    
+    <!-- 获取系统信息-->
+	<dependency>
+		<groupId>com.github.oshi</groupId>
+		<artifactId>oshi-core</artifactId>
+	</dependency>
+	
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+
+  </dependencies>
+  <build>
+		<plugins>
+			<!-- 打jar包的插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<!-- 不打包资源文件（配置文件和依赖包分开） -->
+					<excludes>
+						<exclude>templates/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+		</plugins>
+  </build>
+</project>

@@ -1,0 +1,127 @@
+package ${packageName}.service.impl;
+
+import java.util.List;
+import java.util.Map;
+#foreach ($column in $columns)
+#if($column.javaField == 'createTime' || $column.javaField == 'updateTime')
+#break
+#end
+#end
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.lixinos.common.core.utils.PageUtils;
+import com.lixinos.common.core.utils.StrUtil;
+import com.lixinos.framework.utils.Query;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+#if($dbTypeTb)
+import com.lixinos.framework.annotation.DataSource;
+import com.lixinos.framework.datasources.DataSourceNames;
+#end
+import ${packageName}.dao.${ClassName}Dao;
+import ${packageName}.entity.${ClassName}Entity;
+import ${packageName}.service.${ClassName}Service;
+
+/**
+ *
+ * @ClassName: ${functionName}
+ * @Package: ${packageName}
+ * @Description: ${functionName}ServiceImpl业务层处理
+ * @author: ${author} 自动生成
+ * @time ${datetime}
+ 
+ * /----------------------------/
+ * /---><---/
+ * /----------------------------/
+ */
+@Service("${className}Service")
+public class ${ClassName}ServiceImpl extends ServiceImpl<${ClassName}Dao, ${ClassName}Entity> implements ${ClassName}Service {
+
+    @Override
+#if($dbTypeTb)
+    @DataSource(name = DataSourceNames.SECOND)
+#end
+    public PageUtils queryPage(Map<String, Object> params) {
+        EntityWrapper r = new EntityWrapper<${ClassName}Entity>();
+
+#foreach($column in $columns)
+#set($queryType=$column.queryType)## 查询方式（EQ等于、NE不等于、GT大于、LT小于、LIKE模糊、BETWEEN范围）
+#set($javaField=$column.javaField)## JAVA字段名
+#set($javaType=$column.javaType) ## JAVA类型
+#set($columnName=$column.columnName) ## 列名称
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#if($column.query)
+##if($javaType == 'String' )
+        String $javaField = (String) params.get("$javaField");
+##else
+#if($column.queryType == "EQ")
+        r.eq(StrUtil.isNotNull($javaField), "$columnName", $javaField);
+#elseif($column.queryType == "NE")
+        r.ne(StrUtil.isNotNull($javaField), "$columnName"e, $javaField);
+#elseif($column.queryType == "GT")
+        r.gt(StrUtil.isNotNull($javaField),"$columnName", $javaField);
+#elseif($column.queryType == "LT")
+        r.lt(StrUtil.isNotNull($javaField), "$columnName", $javaField);
+#elseif($column.queryType == "LIKE")
+        r.like(StrUtil.isNotNull($javaField), "$columnName", $javaField);
+##                    #elseif($column.queryType == "BETWEEN")
+##                        r.between(StrUtil.isNotNull($javaField), $columnName, $javaField))
+#end
+
+#end
+#end
+
+        Page<${ClassName}Entity> page = this.selectPage(new Query<${ClassName}Entity>(params).getPage(), r);
+        return new PageUtils(page);
+    }
+
+    @Override
+#if($dbTypeTb)
+    @DataSource(name = DataSourceNames.SECOND)
+#end
+    public int update${ClassName}(${ClassName}Entity ${className}) {
+        return this.baseMapper.update${ClassName}(${className});
+    }
+
+    @Override
+#if($dbTypeTb)
+    @DataSource(name = DataSourceNames.SECOND)
+#end
+    public int delete${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField}){
+        return this.baseMapper.delete${ClassName}ById(${pkColumn.javaField});
+    }
+
+    /**
+    * 删除${functionName}对象
+    *
+    * @param ids 需要删除的数据ID
+    * @return 结果
+    */
+    @Override
+#if($dbTypeTb)
+    @DataSource(name = DataSourceNames.SECOND)
+#end
+    public int deleteBatch(${pkColumn.javaType}[] ids){
+        return this.baseMapper.deleteBatch(ids);
+    }
+
+
+    @Override
+#if($dbTypeTb)
+    @DataSource(name = DataSourceNames.SECOND)
+#end
+    public boolean insert${ClassName}(${ClassName}Entity ${className}){
+        return this.insert(${className});
+    }
+
+    @Override
+#if($dbTypeTb)
+    @DataSource(name = DataSourceNames.SECOND)
+#end
+    public ${ClassName}Entity select${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField})
+    {
+        return this.selectOne(new EntityWrapper<${ClassName}Entity>().eq("${pkColumn.columnName}",${pkColumn.javaField}));
+    }
+
+}

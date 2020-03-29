@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">  
+    <id>package</id>  
+    <formats>  
+        <format>tar.gz</format>
+    </formats>
+    <!-- 改为false不会出现两层相同的目录 -->
+    <includeBaseDirectory>false</includeBaseDirectory>  
+    <fileSets>  
+        <fileSet>
+            <directory>bin</directory>
+            <outputDirectory>${file.separator}</outputDirectory>  
+        </fileSet>  
+        <fileSet>  
+            <directory>src/main/resources</directory>  
+            <outputDirectory>${file.separator}</outputDirectory>
+            <!--
+            <excludes>
+                <exclude>config/**</exclude>
+                <exclude>static/**</exclude>
+                <exclude>mapper/**</exclude>
+                <exclude>templates/**</exclude>
+                <exclude>run/**</exclude>
+                <exclude>i18n/**</exclude>
+            </excludes>
+            -->
+        </fileSet>
+        <!-- 添加子应用  静态配置文件-->
+        <fileSet>
+            <directory>../fast-system/src/main/resources</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../fast-web/src/main/resources</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../fast-generator/src/main/resources</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../fast-framework/src/main/resources</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+        </fileSet>
+        <!-- ######################################################################-->
+        <fileSet>  
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <includes>  
+                <include>*.jar</include>  
+            </includes>  
+        </fileSet>  
+    </fileSets>  
+    <dependencySets>  
+        <dependencySet>  
+            <outputDirectory>lib</outputDirectory>  
+            <scope>runtime</scope>  
+            <!--<unpack>false</unpack> -->
+            <excludes>  
+                <!--<exclude>${project.name}-${project.version}</exclude> -->
+                <exclude>${groupId}:${artifactId}</exclude>
+            </excludes>  
+        </dependencySet>  
+    </dependencySets>  
+</assembly>

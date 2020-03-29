@@ -1,0 +1,425 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="主页"/>
+<body class="gray-bg animated fadeInRight" style="height: auto">
+    <div class="row  border-bottom white-bg dashboard-header">
+        <div class="col-sm-8">
+            <h2>FastOS管理框架</h2>
+            <p>
+                FastOS 是一个 Java EE 企业级快速开发平台，基于经典技术组合（Spring Boot、Spring MVC、Apache Shiro、MyBatis、freemarker、Bootstrap、AdminLTE）采用经典开发模式，让初学者能够更快的入门并投入到团队开发中去。
+                在线代码生成功能，包括核心模块如：组织机构、角色用户、菜单及按钮授权、数据权限、系统参数、内容管理、license认证等。采用松耦合设计；界面无刷新，一键换肤；众多账号安全设置，密码策略；在线定时任务配置；支持集群，支持SAAS；支持多数据源；支持读写分离、分库分表.
+            </p>
+            <p>
+                <b>当前版本：</b><span class="label label-warning">v${config.getVersion()}</span>
+            </p>
+        </div>
+        <div class="col-sm-4">
+            <h4>技术选型：</h4>
+            <ol>
+                <li>核心框架：Spring Boot 2.2.5.RELEASE </li>
+                <li>安全框架：Apache Shiro</li>
+                <li>模板引擎：Freemarker</li>
+                <li>前端：AdminLTE 2.3.8, Bootstrap 3.3.7, Bootstrap-Table 1.11.0, JQuery 3.3.1</li>
+                <li>持久层框架：MyBatis-Plus 3.3.1</li>
+                <li>定时任务: Quartz</li>
+                <li>数据库连接池：Druid 1.10.1</li>
+                <li>工具类：Hutool 4.5.8</li>
+                <li>更多……</li> 
+            </ol>
+        </div>
+
+    </div>
+    <div class="gray-bg mt20">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>更新日志</h5>
+                    </div>
+                    <div class="ibox-content no-padding">
+                        <div class="panel-body">
+                            <div class="panel-group" id="version">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h5 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.3</a><code class="pull-right">2020.03.28</code>
+                                        </h5>
+                                    </div>
+                                    <div id="v41" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>1. fastjson升级1.2.67 阻止漏洞</li>
+                                                <li>2. 修复tab菜单关闭当前BUG</li>
+                                                <li>3. 修复浏览器版本底,提示页面404问题</li>
+                                                <li>4. 新增yml字段加密写法</li>
+                                                <li>5. 新增yml文件敏感信息加密处理</li>
+                                                <li>6. 新增信息加密测试类</li>
+                                                <li>7. 感谢@<u>wangyu</u> 提出问题，修改公司,地区 顶级节点报错问题</li>
+                                                <li>8. 修复树表格 展开/折叠 BUG</li>
+                                                <li>9. 升级Swagger到2.9.2 新增swagger-bootstrap-ui 优化接口展示</li>
+                                                <li>10. 新增公告发布功能.信息延迟推送，可设置时效性。</li>
+                                                <li>11. 修复修改头像点击多次弹出多个对话框情况</li>
+                                                <li>12. 修改定时任务可以选择cron执行表达式，方便添加任务</li>
+                                                <li>13. 统一处理前端传入日期格式转换</li>
+                                                <li>14. 修复若干细节</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h5 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.2</a><code class="pull-right">2020.03.20</code>
+                                        </h5>
+                                    </div>
+                                    <div id="v41" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>1. 新增产品许可功能</li>
+                                                <li>2. 系统启动验证证书是否合法</li>
+                                                <li>3. 修改用户、权限页面滑动按钮获取表ID数据丢失导致页面异常情况</li>
+                                                <li>4. 配置文件新增项目参品名称、license证书、公钥存放位置字段</li>
+                                                <li>5. 新增测试数据SQL</li>
+                                                <li>6. fastJS.js 新增页面模板引擎,优化部分代码</li>
+                                                <li>7. 删除多余类与无用的引用</li>
+                                                <li>8. 针对Apache Shiro Padding Oracle导致远程代码执行漏洞,Apache Shiro 1.4.1 升级 1.4.2 安全版本</li>
+                                                <li>9. 感谢@<u>凌晨雨薇</u>提出的问题, 修复登陆页面免登录记住我BUG,但是作者建议此功能正式项目不用此功能.有远程执行风险</li>
+                                                <li>10. 测试模式定时任务不执行问题</li>
+                                                <li>11. 修复删除操作日志报错问题</li>
+                                                <li>12. 其他细节优化</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#version" href="#v00">v2.0.1</a><code class="pull-right">2020.03.01</code>
+                                        </h4>
+                                    </div>
+                                    <div id="v00" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>FAST云OS系统正式发布</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5 style="color: red">关于系统 <i class="fa fa-info-circle"></i></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <p>
+                            <i class="fa fa-snapchat-ghost"></i>：
+                            FASTOS (快速开发开源系统)名字由来:包含作者对于软件开发的美好幻想，希望软件开发变的快速而简单，每个人都能分享自己的技术从而达到快速又强大的软件系统,让我们有更多的时间去陪伴家人!<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你可能在本系统中看到众多优秀开源项目的影子，因为她本身集成了众多优秀的开源项目精华功能，在这种环境中成长的，但是她目前还有很多缺点，
+                            希望大神们嘴下留情。如果你也喜欢开源、喜欢本项目,作者欢迎您的加入,FASTOS会因为您的加入而变的更加完善与丰富!
+                        </p>
+                        <p class="mt10"><i class="fa fa-send-o"></i> ：如果本项目对你有帮助<ins><a href="https://gitee.com/zhouhuanOGP/J2EEFAST" target="_blank">请点击Star收藏</a></ins>(<a href="javascript:show()">点击查看</a>),本项目会长期维护,若你在使用中有<u>任何问题或建议</u>欢迎在<del><a href="https://gitee.com/zhouhuanOGP/J2EEFAST/issues" target="_blank">码云issue提交问题</a></del>作者会第一时间处理，让我们一起完善FASTOS
+                        </p>
+                        <p class="mt5"><i class="fa fa-book"></i> 关于文档：<s>因目前项目初期,暂还没时间整理,后期会整理.</s>
+                        </p>
+                        <p class="mt5"><i class="fa fa-cloud-upload"></i> 关于更新：项目每周都会有更新,演示网站会在周五~周日,不定期暂停访问,带来不便尽情谅解!
+                        </p>
+                        <p class="mt5"><i class="fa fa-qq"></i> QQ群：<s>因目前项目初期暂不提供，所有问题请在码云issue提问,后期会开放官方群,请随时关注!</s>
+                        </p>
+                        <p class="mt5"><i class="fa fa-envelope-open-o"></i> <strong>免责声明：</strong>
+                        <li style="color: red"><strong>1. 本项目代码全部开源，无需任何费用。如果有人向你贩卖本系统都是骗子!</strong></li>
+                            <li>2. 不得将 FASTOS 于危害国家安全、荣誉和利益的行为，不能以任何形式用于非法为目的的行为,否则后果自负</li>
+                            <li>3. FASTOS 前身主要用于银行项目,本身很注重安全因素,可以从项目登陆可以看出.但是您也需了解使用本软件的风险，是软件皆有漏洞，任何人都无法保证100%没有漏洞，所以由软件漏洞造成的损失不予赔偿，也不承担任何因使用本软件而产生相关法律责任。请软件上线使用前进行足够的安全检测，以避免此问题发生。</li>
+                            <li>4. 新版本会增加项目启动证书认证,可以使用你的机器码在本系统中生成证书后启动。若你是大神则略过!</li>
+                        </p>
+                        <p class="mt20">
+                            <a class="btn btn-success btn-outline" href="https://gitee.com/zhouhuanOGP/J2EEFAST" target="_blank">
+                                <i class="fa fa-cloud"> </i> 访问码云
+                            </a>
+                            <a class="btn btn-danger btn-bitbucket" href="https://gitee.com/zhouhuanOGP/J2EEFAST/repository/archive/master.zip" target="_blank">
+                                <i class="fa fa-cloud-download"></i> 下载项目
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">月</span>
+                    <h5>收入</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">40 886,200</h1>
+                    <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                    </div>
+                    <small>总收入</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">全年</span>
+                    <h5>订单</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">275,800</h1>
+                    <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
+                    </div>
+                    <small>新订单</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-primary pull-right">今天</span>
+                    <h5>访客</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">106,120</h1>
+                    <div class="stat-percent font-bold text-navy">44% <i class="fa fa-level-up"></i>
+                    </div>
+                    <small>新访客</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-danger pull-right">最近一个月</span>
+                    <h5>活跃用户</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">80,600</h1>
+                    <div class="stat-percent font-bold text-danger">38% <i class="fa fa-level-down"></i>
+                    </div>
+                    <small>12月</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>用户项目列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <table class="table table-hover no-margins">
+                        <thead>
+                        <tr>
+                            <th>状态</th>
+                            <th>日期</th>
+                            <th>用户</th>
+                            <th>值</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 11:20</td>
+                            <td>青衣5858</td>
+                            <td class="text-navy"> <i class="fa fa-level-up"></i> 24%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-warning">已取消</span>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 10:40</td>
+                            <td>徐子崴</td>
+                            <td class="text-navy"> <i class="fa fa-level-up"></i> 66%</td>
+                        </tr>
+                        <tr>
+                            <td><small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 01:30</td>
+                            <td>姜岚昕</td>
+                            <td class="text-navy"> <i class="fa fa-level-up"></i> 54%</td>
+                        </tr>
+                        <tr>
+                            <td><small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 02:20</td>
+                            <td>武汉大兵哥</td>
+                            <td class="text-navy"> <i class="fa fa-level-up"></i> 12%</td>
+                        </tr>
+                        <tr>
+                            <td><small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 09:40</td>
+                            <td>荆莹儿</td>
+                            <td class="text-navy"> <i class="fa fa-level-up"></i> 22%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="label label-primary">已完成</span>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 04:10</td>
+                            <td>栾某某</td>
+                            <td class="text-navy"> <i class="fa fa-level-up"></i> 66%</td>
+                        </tr>
+                        <tr>
+                            <td><small>进行中...</small>
+                            </td>
+                            <td><i class="fa fa-clock-o"></i> 12:08</td>
+                            <td>范范范二妮</td>
+                            <td class="text-navy"> <i class="fa fa-level-up"></i> 23%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<@footer>
+<script type="text/javascript" src="${ctxStatic}/statics/plugins/flot/jquery.flot.js?V=${config.getDvVersion()}"></script>
+<@jsLibs.sparkline_js/>
+<script type="text/javascript">
+
+    function show() {
+        var html = '<img src="${ctxStatic}/statics/img/collect.png" width="100%" height="100%" alt="点击收藏">';
+        opt.layer.open({
+            title: false,
+            type: 1,
+            closeBtn:false,
+            shadeClose:true,
+            area: ['700px', 'auto'],
+            content: html
+        });
+    }
+
+    $(document).ready(function () {
+        var data2 = [
+            [gd(2012, 1, 1), 7], [gd(2012, 1, 2), 6], [gd(2012, 1, 3), 4], [gd(2012, 1, 4), 8],
+            [gd(2012, 1, 5), 9], [gd(2012, 1, 6), 7], [gd(2012, 1, 7), 5], [gd(2012, 1, 8), 4],
+            [gd(2012, 1, 9), 7], [gd(2012, 1, 10), 8], [gd(2012, 1, 11), 9], [gd(2012, 1, 12), 6],
+            [gd(2012, 1, 13), 4], [gd(2012, 1, 14), 5], [gd(2012, 1, 15), 11], [gd(2012, 1, 16), 8],
+            [gd(2012, 1, 17), 8], [gd(2012, 1, 18), 11], [gd(2012, 1, 19), 11], [gd(2012, 1, 20), 6],
+            [gd(2012, 1, 21), 6], [gd(2012, 1, 22), 8], [gd(2012, 1, 23), 11], [gd(2012, 1, 24), 13],
+            [gd(2012, 1, 25), 7], [gd(2012, 1, 26), 9], [gd(2012, 1, 27), 9], [gd(2012, 1, 28), 8],
+            [gd(2012, 1, 29), 5], [gd(2012, 1, 30), 8], [gd(2012, 1, 31), 25]
+        ];
+
+        var data3 = [
+            [gd(2012, 1, 1), 800], [gd(2012, 1, 2), 500], [gd(2012, 1, 3), 600], [gd(2012, 1, 4), 700],
+            [gd(2012, 1, 5), 500], [gd(2012, 1, 6), 456], [gd(2012, 1, 7), 800], [gd(2012, 1, 8), 589],
+            [gd(2012, 1, 9), 467], [gd(2012, 1, 10), 876], [gd(2012, 1, 11), 689], [gd(2012, 1, 12), 700],
+            [gd(2012, 1, 13), 500], [gd(2012, 1, 14), 600], [gd(2012, 1, 15), 700], [gd(2012, 1, 16), 786],
+            [gd(2012, 1, 17), 345], [gd(2012, 1, 18), 888], [gd(2012, 1, 19), 888], [gd(2012, 1, 20), 888],
+            [gd(2012, 1, 21), 987], [gd(2012, 1, 22), 444], [gd(2012, 1, 23), 999], [gd(2012, 1, 24), 567],
+            [gd(2012, 1, 25), 786], [gd(2012, 1, 26), 666], [gd(2012, 1, 27), 888], [gd(2012, 1, 28), 900],
+            [gd(2012, 1, 29), 178], [gd(2012, 1, 30), 555], [gd(2012, 1, 31), 993]
+        ];
+
+
+        var dataset = [
+            {
+                label: "订单数",
+                data: data3,
+                color: "#1ab394",
+                bars: {
+                    show: true,
+                    align: "center",
+                    barWidth: 24 * 60 * 60 * 600,
+                    lineWidth: 0
+                }
+
+            }, {
+                label: "付款数",
+                data: data2,
+                yaxis: 2,
+                color: "#464f88",
+                lines: {
+                    lineWidth: 1,
+                    show: true,
+                    fill: true,
+                    fillColor: {
+                        colors: [{
+                            opacity: 0.2
+                        }, {
+                            opacity: 0.2
+                        }]
+                    }
+                },
+                splines: {
+                    show: false,
+                    tension: 0.6,
+                    lineWidth: 1,
+                    fill: 0.1
+                },
+            }
+        ];
+
+
+        var options = {
+            xaxis: {
+                mode: "time",
+                tickSize: [3, "day"],
+                tickLength: 0,
+                axisLabel: "Date",
+                axisLabelUseCanvas: true,
+                axisLabelFontSizePixels: 12,
+                axisLabelFontFamily: 'Arial',
+                axisLabelPadding: 10,
+                color: "#838383"
+            },
+            yaxes: [{
+                position: "left",
+                max: 1070,
+                color: "#838383",
+                axisLabelUseCanvas: true,
+                axisLabelFontSizePixels: 12,
+                axisLabelFontFamily: 'Arial',
+                axisLabelPadding: 3
+            }, {
+                position: "right",
+                clolor: "#838383",
+                axisLabelUseCanvas: true,
+                axisLabelFontSizePixels: 12,
+                axisLabelFontFamily: ' Arial',
+                axisLabelPadding: 67
+            }
+            ],
+            legend: {
+                noColumns: 1,
+                labelBoxBorderColor: "#000000",
+                position: "nw"
+            },
+            grid: {
+                hoverable: false,
+                borderWidth: 0,
+                color: '#838383'
+            }
+        };
+
+        function gd(year, month, day) {
+            return new Date(year, month - 1, day).getTime();
+        }
+
+        var previousPoint = null,
+            previousLabel = null;
+        //$.plot($("#flot-dashboard-chart"), dataset, options);
+    });
+</script>
+</@footer>
+</body>
+</@pageTheme>

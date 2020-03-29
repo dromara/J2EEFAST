@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fast.framework.sys.dao.SysUserDao">
+
+	<sql id="select2User">
+        select u.user_id,
+        u.username, u.name,u.password,u.salt,u.email,u.mobile,u.status,u.card_id,u.create_time, c.post_code, c.post_name
+		from sys_user u
+		left join `sys_user_post` r ON u.`user_id` = r.`user_id`
+		left join sys_post c on r.post_code = c.post_code
+    </sql>
+
+	<sql id="selectUserAll">
+        select u.user_id,
+        u.username, u.name,u.password,u.salt,u.email,u.mobile,u.status,u.card_id as cardId,u.create_time as createTime,u.avatar as avatar,
+        u.dept_id as deptId,u.comp_id as compId,ab.login_time,ab.login_location,
+		c.name as compName,u.pwd_security_level
+		from sys_user u 
+		left join sys_comp c on u.comp_id = c.comp_id
+		left join (SELECT D.login_time,D.login_location,D.username FROM(SELECT A.* FROM ( SELECT H.* FROM `sys_login_infor` AS H WHERE H.`status` = '00000' ORDER BY H.login_time DESC ) AS A GROUP BY A.username DESC ,A.login_time DESC ORDER BY A.username ASC) AS D GROUP BY D.username)
+		as ab on u.username = ab.username
+    </sql>
+    
+    <sql id="selectUserVo">
+        select u.user_id,
+        u.username, u.name,u.password,u.salt,u.email,u.mobile,u.status,u.card_id,u.create_time,
+        u.dept_id,u.comp_id,ifnull(c.name,"总公司")  as comp_name
+		from sys_user u 
+		left join sys_comp c on u.comp_id = c.comp_id
+    </sql>
+
+	<sql id="selectRoleToUserVo">
+        select u.user_id as userId,
+        u.username, u.name,u.password,u.salt,u.email,u.mobile,u.status,u.card_id,u.create_time,
+        u.dept_id,u.comp_id,ifnull(c.name,"总公司") as comp_name
+		from sys_user u
+		left join `sys_user_role` r ON u.`user_id` = r.`user_id`
+		left join sys_comp c on u.comp_id = c.comp_id
+    </sql>
+
+	<!-- 子项目查询用户-->
+	<select id="select2All" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		<include refid="select2User"/>
+		where 1 = 1
+		<if test = "username !=null and username!=''">
+			AND u.username like concat('%', #{username}, '%')
+		</if>
+		<if test = "status !=null and status!=''">
+			AND u.status = #{status}
+		</if>
+
+		<if test="mobile != null and mobile != ''">
+			AND u.mobile like concat('%', #{mobile}, '%')
+		</if>
+		<if test="email != null and email != ''">
+			AND u.email like concat('%', #{email}, '%')
+		</if>
+		<if test = "postCode !=null and postCode!=''">
+			AND c.post_code = #{postCode}
+		</if>
+
+		<if test = "sql_file !=null and sql_file!=''">
+			and ${sql_file}
+		</if>
+	</select>
+
+
+	<select id="selectByUserId"  resultType="com.fast.framework.sys.entity.SysUserEntity">
+		<include refid="selectUserVo"/>
+		where u.user_id = #{userId}
+	</select>
+
+	<!-- 查询用户的所有权限 -->
+	<select id="queryAllPerms" resultType="String">
+		select m.perms from sys_user_role ur 
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id 
+			LEFT JOIN sys_menu m on rm.menu_id = m.menu_id 
+		where ur.user_id = #{userId} and m.hide = 0
+	</select>
+	
+	<select id="selectAll" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		<include refid="selectUserVo"/>
+		where 1 = 1
+		<if test = "username !=null and username!=''">
+			AND u.username like concat('%', #{username}, '%')
+		</if>
+		<if test = "status !=null and status!=''">
+			AND u.status = #{status}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND u.mobile like concat('%', #{mobile}, '%')
+		</if>
+		<if test="email != null and email != ''">
+			AND u.email like concat('%', #{email}, '%')
+		</if>
+		<if test="compId != null and compId != ''">
+			AND u.comp_id  = #{compId}
+		</if>
+
+		<if test = "sql_file !=null and sql_file!=''">
+			and ${sql_file}
+		</if>
+	</select>
+
+	<select id="selectUnallocatedList" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		select distinct u.user_id, u.dept_id, u.username, u.name, u.email, u.avatar, u.mobile, u.status,u.create_time as createTime,ifnull(c.name,"总公司") as comp_name
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		left join sys_user_role ur on u.user_id = ur.user_id
+		left join sys_role r on r.role_id = ur.role_id
+		left join sys_comp c on u.comp_id = c.comp_id
+		where (r.role_id != #{roleId} or r.role_id IS NULL)
+		and u.user_id not in (select u.user_id from sys_user u inner join sys_user_role ur on u.user_id = ur.user_id and ur.role_id = #{roleId})
+		<if test="username != null and username != ''">
+			AND u.username like concat('%', #{username}, '%')
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND u.mobile like concat('%', #{mobile}, '%')
+		</if>
+		<if test="email != null and email != ''">
+			AND u.email like concat('%', #{email}, '%')
+		</if>
+		<if test="compId != null and compId != ''">
+			AND u.comp_id  = #{compId}
+		</if>
+		<!-- 数据范围过滤 -->
+		<if test = "sql_file !=null and sql_file!=''">
+			and ${sql_file}
+		</if>
+	</select>
+
+
+	<select id="selectToRoleToUser" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		<include refid="selectRoleToUserVo"/>
+		where r.role_id = #{roleId}
+		<if test = "username !=null and username!=''">
+			AND u.username like concat('%', #{username}, '%')
+		</if>
+		<if test = "status !=null and status!=''">
+			AND u.status = #{status}
+		</if>
+		<if test = "mobile !=null and mobile!=''">
+			AND u.mobile like concat('%', #{mobile}, '%')
+		</if>
+		<if test = "email !=null and email!=''">
+			AND u.email like concat('%', #{email}, '%')
+		</if>
+		<if test="compId != null and compId != ''">
+			AND u.comp_id  = #{compId}
+		</if>
+		<if test = "sql_file !=null and sql_file!=''">
+			and ${sql_file}
+		</if>
+	</select>
+	
+	
+	<select id="queryByUserName" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		<include refid="selectUserAll"/>
+		where u.username = #{username}
+	</select>
+	
+	<select id="queryByEmail" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		<include refid="selectUserAll"/> 
+		where u.email = #{email}
+	</select>
+	
+	<select id="queryByMobile" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		<include refid="selectUserAll"/> 
+		where u.mobile = #{mobile}
+	</select>
+	
+	
+	
+	<!-- 查询用户的所有菜单ID --> 
+	<select id="queryAllMenuId" resultType="long">
+		select distinct rm.menu_id from sys_user_role ur 
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id 
+		where ur.user_id = #{userId}
+	</select>
+
+	<!-- 通过公司查询公司下面的所有清机人员<if test="compId !=null and compId!=-1"> -->
+	<select id="queryAllClear" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		select ur.user_id, ur.username,ur.name, ur.card_id from `sys_user` 
+		ur left join `sys_user_role` r on ur.`user_id` = r.`user_id` 
+		where r.`role_id` = 5
+		<if test="_parameter!=null">
+			and ur.comp_id = #{_parameter}
+		</if>
+	</select>
+	
+		<!-- 通过公司查询公司下面的所有司机人员 -->
+	<select id="queryAllDriver" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		select ur.user_id, ur.username,ur.name, ur.card_id from `sys_user` 
+		ur left join `sys_user_role` r on ur.`user_id` = r.`user_id` 
+		where r.`role_id` = 6  
+		<if test="_parameter!=null">
+			and ur.comp_id = #{_parameter}
+		</if>
+	</select>
+	
+	
+	<!-- 通过公司查询公司下面的所有管理人员 -->
+	<select id="queryAllMaga" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		select ur.user_id, ur.username,ur.name, ur.card_id from `sys_user` 
+		ur left join `sys_user_role` r on ur.`user_id` = r.`user_id` 
+		where r.`role_id` = 4  
+		<if test="_parameter!=null">
+			and ur.comp_id = #{_parameter}
+		</if>
+	</select>
+
+	<select id="checkUserNameUnique" parameterType="String" resultType="int">
+		select count(1) from sys_user where username=#{username}
+	</select>
+
+	<select id="checkMobileUnique" parameterType="String" resultType="com.fast.framework.sys.entity.SysUserEntity">
+		select user_id, mobile from sys_user where mobile=#{mobile}
+	</select>
+
+	<!-- 更新用户 -->
+	<update id="updateUser" parameterType="com.fast.framework.sys.entity.SysUserEntity">
+		update sys_user
+		<set>
+			<if test="name != null and name != ''">name = #{name,jdbcType=VARCHAR},</if>
+			<if test="email != null and email != ''">email = #{email,jdbcType=VARCHAR},</if>
+			<if test="mobile != null and mobile != ''">mobile = #{mobile,jdbcType=VARCHAR},</if>
+			<if test="status != null and status != ''">status = #{status,jdbcType=INTEGER},</if>
+			<if test="compId != null">comp_id = #{compId,jdbcType=INTEGER},</if>
+			<if test="deptId != null">dept_id = #{deptId,jdbcType=INTEGER},</if>
+			<if test="cardId != null and cardId != ''">card_id = #{cardId,jdbcType=VARCHAR},</if>
+			<if test="avatar != null and avatar != ''">avatar = #{avatar,jdbcType=VARCHAR},</if>
+			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy,jdbcType=VARCHAR},</if>
+			<if test="remark != null and remark != ''">remark = #{remark,jdbcType=VARCHAR},</if>
+			update_time = sysdate()
+		</set>
+		where user_id = #{userId}
+	</update>
+
+	<!-- 修改密码-->
+	<update id="updatePassWord" parameterType="com.fast.framework.sys.entity.SysUserEntity">
+		update sys_user
+		<set>
+			<if test="password != null and password != ''">password = #{password},</if>
+			<if test="salt != null and salt != ''">salt = #{salt},</if>
+			<if test="pwdSecurityLevel != null and pwdSecurityLevel != ''">pwd_security_level = #{pwdSecurityLevel},</if>
+			pwd_update_date = sysdate()
+		</set>
+		where user_id = #{userId}
+	</update>
+
+	<!-- 修改头像-->
+	<update id="updateAvatar" parameterType="com.fast.framework.sys.entity.SysUserEntity">
+		update sys_user
+		<set>
+			<if test="avatar != null and avatar != ''">avatar = #{avatar,jdbcType=VARCHAR},</if>
+			update_time = sysdate()
+		</set>
+		where user_id = #{userId}
+	</update>
+
+</mapper>

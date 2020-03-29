@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fast.framework.sys.mapper.SysUserMapper">
+
+    <resultMap type="sysUserEntity" id="sysUserResult">
+        <result property="userId"    column="user_id"    />
+        <result property="username"    column="username"    />
+        <result property="name"    column="name"    />
+        <result property="password"    column="password"    />
+        <result property="salt"    column="salt"    />
+        <result property="email"    column="email"    />
+        <result property="mobile"    column="mobile"    />
+        <result property="status"    column="status"    />
+        <result property="pwdSecurityLevel"    column="pwd_security_level"    />
+        <result property="pwdUpdateDate"    column="pwd_update_date"    />
+        <result property="compId"    column="comp_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="cardId"    column="card_id"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectsysUserVo">
+        select user_id, username, name, password, salt, email, mobile, status, pwd_security_level, pwd_update_date, comp_id, dept_id,
+        create_time, card_id, avatar, update_time, update_by, create_by, remark from sys_user
+    </sql>
+
+    <!-- 更新用户 -->
+    <update id="updateUser" parameterType="sysUserEntity">
+        update sys_user
+        <set>
+            <if test="name != null and name != ''">name = #{name,jdbcType=VARCHAR},</if>
+            <if test="email != null and email != ''">email = #{email,jdbcType=VARCHAR},</if>
+            <if test="mobile != null and mobile != ''">mobile = #{mobile,jdbcType=VARCHAR},</if>
+            <if test="status != null and status != ''">status = #{status,jdbcType=INTEGER},</if>
+            <if test="compId != null">comp_id = #{compId,jdbcType=INTEGER},</if>
+            <if test="deptId != null">dept_id = #{deptId,jdbcType=INTEGER},</if>
+            <if test="cardId != null and cardId != ''">card_id = #{cardId,jdbcType=VARCHAR},</if>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar,jdbcType=VARCHAR},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy,jdbcType=VARCHAR},</if>
+            <if test="remark != null and remark != ''">remark = #{remark,jdbcType=VARCHAR},</if>
+            update_time = sysdate()
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <!-- 修改密码-->
+    <update id="updatePassWord">
+        update sys_user
+        <set>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="salt != null and salt != ''">salt = #{salt},</if>
+            <if test="pwdSecurityLevel != null and pwdSecurityLevel != ''">pwd_security_level = #{pwdSecurityLevel},</if>
+            pwd_update_date = sysdate()
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <!-- 修改头像-->
+    <update id="updateAvatar">
+        update sys_user
+        <set>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar,jdbcType=VARCHAR},</if>
+            update_time = sysdate()
+        </set>
+        where user_id = #{userId}
+    </update>
+
+</mapper>

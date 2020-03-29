@@ -1,0 +1,140 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="定时任务日志列表"/>
+<@search fromId="jobLog-form">
+					<div class="select-list">
+						<ul>
+							<li>
+								任务名称：<input type="text" name="jobName"/>
+							</li>
+							<li>
+								任务分组：<select name="jobGroup" class="form-control">
+									<option value="">所有</option>
+									<#list dict.getType('sys_job_group')>
+										<#items as d>
+											<#if d.status =='0' >
+												<option value="${d.dictValue}" text="${d.dictLabel}">${d.dictLabel}</option>
+											</#if>
+										</#items>
+									</#list>
+								</select>
+							</li>
+							<li>
+								执行状态：<select name="status" class="form-control">
+									<option value="">所有</option>
+									<#list dict.getType('sys_common_status')>
+										<#items as d>
+											<#if d.status =='0' >
+												<option value="${d.dictValue}" text="${d.dictLabel}">${d.dictLabel}</option>
+											</#if>
+										</#items>
+									</#list>
+								</select>
+							</li>
+							<li class="select-time">
+								<label>执行时间： </label>
+								<input type="text" class="time-input" id="startTime" placeholder="开始时间" name="beginTime"/>
+								<span>-</span>
+								<input type="text" class="time-input" id="endTime" placeholder="结束时间" name="endTime"/>
+							</li>
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+</@search>
+<@table tableId="bootstrap-table">
+	<@shiro.hasPermission name="sys:joblog:del">
+		<a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">
+			<i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>
+		</a>
+	</@shiro.hasPermission>
+	<@shiro.hasPermission name="sys:joblog:clean">
+			<a class="btn btn-danger" onclick="opt.operate.clean()">
+				<i class="fa fa-trash"></i> 清空
+			</a>
+	</@shiro.hasPermission>
+</@table>
+<@footer>
+	<script>
+		var statusDatas = ${dict.getDictListJson('sys_common_status')};
+		var groupDatas = ${dict.getDictListJson('sys_job_group')};
+		var prefix = baseURL + "sys/jobLog";
+
+		$(function() {
+		    var options = {
+		        url: prefix + "/list",
+		        cleanUrl: prefix + "/clean",
+		        delUrl: prefix + "/del",
+		        sortName: "createTime",
+		        sortOrder: "desc",
+		        modalName: "调度日志",
+		        columns: [
+		        {
+		            checkbox: true
+		        },
+		        {
+                    title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+		        {
+		            field: 'jobId',
+		            title: '任务编号'
+		        },
+		        {
+		            field: 'jobName',
+		            title: '任务名称'
+		        },
+				{
+					field: 'beanName',
+					title: 'SpringBean'
+				},
+				{
+					field: 'methodName',
+					title: '方法名称',
+					formatter: function(value, row, index) {
+						return $.table.tooltip(value);
+					}
+				},
+		        {
+		            field: 'jobGroup',
+		            title: '任务分组',
+		            formatter: function(value, row, index) {
+		            	return $.table.selectDictLabel(groupDatas, value);
+		            }
+		        },
+				{
+					field: 'params',
+					title: '参数',
+					formatter: function(value, row, index) {
+						return $.table.tooltip(value);
+					}
+				},
+		        {
+		            field: 'times',
+		            title: '耗时',
+					formatter: function(value, row, index) {
+						return value + "(毫秒)";
+					}
+		        },
+		        {
+		            field: 'status',
+		            title: $.i18n.prop("状态"),
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	return $.table.selectDictLabel(statusDatas, value);
+		            }
+		        },
+		        {
+		            field: 'createTime',
+		            title: '执行时间',
+		            sortable: true
+		        }]
+		    };
+		    $.table.init(options);
+		});
+	</script>
+</@footer>
+</@pageTheme>

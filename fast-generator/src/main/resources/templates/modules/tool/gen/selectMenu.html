@@ -1,0 +1,172 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="选择菜单"/>
+    <@addorEdit fromId="form-menu-add">
+        <input id="treeId" name="parentId" type="hidden" value="${gen_table.parentId}" />
+        <div class="form-group">
+            <label class="col-sm-3 control-label "><@ctx.i18n text = "上级菜单"/>：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input class="form-control" type="text" onclick="selectMenuTree()" id="treeName" readonly="true" value="${gen_table.parentName?default("")}" required>
+                    <span class="input-group-btn"><a  href="javascript:selectMenuTree();" class="btn btn-default"><i class="fa fa-fw fa-search"></i></a></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "菜单名称"/>：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="name" id="name" value="${gen_table.menuName?default("")}"  required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "所属模块"/>：</label>
+            <div class="col-sm-8">
+                <#list modules>
+                    <#items as d>
+                        <#if d.status =='0' >
+                            <label>
+                                <#assign a=0 />
+                                <#list gen_table.moduleCodes?default("")?split(",") as x>
+                                    <#if x == d.moduleCode>
+                                        <#assign a=1 />
+                                    </#if>
+                                </#list>
+                                <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" <#if a== 1>checked</#if> required/><@ctx.i18n text = "${d.moduleName}" /></label>
+                            </label>
+                        </#if>
+                    </#items>
+                </#list>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "目标"/>：
+                <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="bottom"
+                   data-content="菜单已什么形式打开">
+                    <i class="fa fa-question-circle-o" style="color: orange"></i></a>
+            </label>
+            <div class="col-sm-8">
+                <select id="menuTarget" name="menuTarget" class="form-control">
+                    <#list dict.getType('sys_menu_target')>
+                        <#items as d>
+                            <#if d.status =='0' >
+                                <option value="${d.dictValue}" <#if (d.isDefault =='Y' && gen_table.menuTarget == "") ||
+                                (gen_table.menuTarget ==d.dictValue ) >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                            </#if>
+                        </#items>
+                    </#list>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "排序"/>：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="menuOrder" value="${gen_table.menuOrder?default(0)}" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "图标"/>：
+                <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-html="true" data-placement="bottom"
+                   data-content="自定义获取图标:<a href='http://www.fontawesome.com.cn/faicons/' target='_blank'>http://www.fontawesome.com.cn/faicons/</a>">
+                    <i class="fa fa-question-circle-o" style="color: orange"></i></a>
+            </label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <span class="input-group-addon"><i id="menuIconIcon" class="fa fa-fw ${gen_table.menuIcon?default("")}"></i></span>
+                    <input id="icmenuIconon" name="icmenuIconon" type="text" value="${gen_table.menuIcon?default("")}" class="form-control" placeholder="选择图标">
+                    <span class="input-group-btn"><a id="menuIconButton" href="javascript:" class="btn btn-default"
+                        ><i class="fa fa-fw fa-search"></i></a></span>
+                </div>
+            </div>
+        </div>
+    </@addorEdit>
+    <@footer>
+        <script>
+
+            var prefix = baseURL + "sys/menu";
+
+            $("#form-menu-add").validate({
+                onkeyup: false,
+                rules:{
+                    menuType:{
+                        required:true,
+                    },
+                    name:{
+                        remote: {
+                            url: prefix + "/checkMenuNameUnique",
+                            type: "POST",
+                            dataType: "html",
+                            data: {
+                                "parentId": function() {
+                                    return $("input[name='parentId']").val();
+                                },
+                                "name" : function() {
+                                    return opt.common.trim($("#name").val());
+                                }
+                            },
+                            dataFilter: function(data, type) {
+                                return opt.validate.unique(data);
+                            }
+                        }
+                    },
+                    orderNum:{
+                        digits:true
+                    },
+                },
+                messages: {
+                    "name": {
+                        remote: "菜单已经存在"
+                    }
+                },
+                focusCleanup: true
+            });
+
+            function submitHandler() {
+                if (opt.validate.form()) {
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+
+            $(function() {
+                $("#menuIconButton").click(function(){
+                    var options = {
+                        url: prefix+'/iconSelect?value='+$("#menuIcon").val(),
+                        title:'<@ctx.i18n text = "图标选择"/>',
+                        callBack: doIconSubmit
+                    };
+                    opt.modal.openMainWin(options);
+                });
+            });
+
+            /*菜单管理-新增-选择菜单树*/
+            function selectMenuTree() {
+                var treeId = $("#treeId").val();
+                var menuId = treeId > 0 ? treeId : 1;
+                var url = prefix + "/selectMenuTree/" + menuId;
+                var options = {
+                    title: '菜单选择',
+                    width: "380",
+                    url: url,
+                    callBack: doSubmit
+                };
+                opt.modal.openOptions(options);
+            }
+
+            function doSubmit(index, layero){
+                var body = layer.getChildFrame('body', index);
+                $("#treeId").val(body.find('#treeId').val());
+                $("#treeName").val(body.find('#treeName').val());
+                layer.close(index);
+            }
+
+            function doIconSubmit(index, layero,_layer){
+                var body = _layer.getChildFrame('body', index);
+                var icon = body.find('#icon').val();
+                $("#menuIconIcon").attr("class",'fa fa-fw '+icon);
+                $("#icmenuIconon").val(icon).change();
+                _layer.close(index);
+            }
+        </script>
+    </@footer>
+</@pageTheme>

@@ -1,0 +1,153 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="用户列表">
+</@header>
+<@search fromId="user-form">
+    <div class="select-list">
+         <ul>
+             <li>
+                 <label><@ctx.i18n text = "登陆账号"/></label>：<input type="text" name="username"/>
+             </li>
+             <li>
+                 <@ctx.i18n text = "邮箱"/>:<input type="text" name="email"/>
+             </li>
+             <li>
+                 <@ctx.i18n text = "手机号码"/>:<input type="text" name="mobile"/>
+             </li>
+             <li>
+                 <label><@ctx.i18n text = "所属公司"/></label>：
+                 <select name="compId" class="form-control">
+                     <option value=""><@ctx.i18n text = "所有"/></option>
+                     <#list comps as comp>
+                         <option  value="${comp.id}">${comp.name}</option>
+                     </#list>
+                 </select>
+             </li>
+             <li>
+                 <label><@ctx.i18n text = "用户状态"/></label>：
+                 <select name="status" class="form-control">
+                     <option value=""><@ctx.i18n text = "所有"/></option>
+                     <#list dict.getType('sys_normal_disable')>
+                         <#items as d>
+                             <#if d.status =='0' >
+                                 <option value="${d.dictValue}" text="<@ctx.i18n text = "${d.dictLabel}"/>"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                             </#if>
+                         </#items>
+                     </#list>
+                 </select>
+             </li>
+             <li>
+                 <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
+                 <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+             </li>
+         </ul>
+    </div>
+</@search>
+<@table tableId="bootstrap-table">
+	<@shiro.hasPermission name="sys:user:add">
+       <a class="btn btn-success" onclick="opt.operate.addTab()"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
+     </@shiro.hasPermission>
+     <@shiro.hasPermission name="sys:user:edit">
+         <a class="btn btn-primary single disabled" onclick="opt.operate.edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
+     </@shiro.hasPermission>
+     <@shiro.hasPermission name="sys:user:del">
+         <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">
+             <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>
+         </a>
+     </@shiro.hasPermission>
+</@table>
+<@footer>
+<script>
+
+    var editFlag = "${permission.hasPermi('sys:user:edit')}";
+    var delFlag = "${permission.hasPermi('sys:user:del')}";
+    var resetPwdFlag = "${permission.hasPermi('sys:user:resetPwd')}";
+    var visible = ${permission.isPermitteds("sys:user:edit,
+    sys:user:del,sys:user:resetPwd")?string('true', 'false')};
+    var datas = ${dict.getDictListJson('sys_user_show_hide')};
+    var prefix = baseURL + 'sys/user';
+
+    $(function() {
+        /* 初始表格对象 */
+        var options = {
+            url: prefix + "/list",
+            addUrl: prefix + "/add",
+            editUrl: prefix + "/edit/{id}",
+            delUrl: prefix + "/del",
+            sortName: "createTime",
+            uniqueId: "userId", /* 唯一ID */
+            modalName: "用户",
+            columns: [
+                {
+                    title: "<@ctx.i18n text = "序号"/>", width: 10, formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+                /* {field: 'userId', title: "<@ctx.i18n text = "用户ID"/>", sortable: true}, */
+                {field: 'username', title: "<@ctx.i18n text = "账号"/>"},
+                {field: 'name', title:  "<@ctx.i18n text = "姓名"/>"},
+                {field: 'compName', title:  "<@ctx.i18n text = "公司"/>"},
+                {field: 'roleName', title: "<@ctx.i18n text = "角色"/>",formatter: function (value, row, index) {
+                        return $.table.tooltip(value,5);}
+                },
+                {field: 'email', title:  "<@ctx.i18n text = "邮箱"/>"},
+                {field: 'mobile', title:  "<@ctx.i18n text = "手机"/>"},
+                {
+                    field: 'status', title: "<@ctx.i18n text = "状态"/>", formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(datas, value);
+                    }
+                },
+                {field: 'createTime', title: "<@ctx.i18n text = "创建时间"/>", sortable: true},
+                {title: "<@ctx.i18n text = "操作"/>", align: 'left',visible:visible,class:'action', formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "修改"/>" onclick="opt.operate.edit(\'' + row.userId + '\')"><i class="fa fa-edit"></i></a> ');
+                        if(row.status === "0"){
+                            actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "停用"/>" onclick="disable(\'' + row.userId + '\')"><i class="glyphicon glyphicon-ban-circle"></i></a> ');
+                        }else{
+                            actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "启用"/>" onclick="enable(\'' + row.userId + '\')"><i class="glyphicon glyphicon-ok-circle"></i></a> ');
+                        }
+                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.userId + '\')"><i class="fa fa-trash-o"></i></a> ');
+                        var info = "<a  class='btn btn-default btn-xs' onclick=javascript:resetPwd(\'" + row.userId + "\');><i class='fa icon-key'></i> <@ctx.i18n text = "重置密码"/></a>&nbsp;";
+                        info += "<a  class='btn btn-default btn-xs' onclick=javascript:authRole(\'" + row.userId +"\');><i class='fa icon-check'></i> <@ctx.i18n text = "分配角色"/></a>";
+                        actions.push('<a tabindex="0" class="' + resetPwdFlag + '" role="button" data-container="body" ' +
+                            'data-placement="left" data-toggle="popover" data-html="true" data-trigger="hover" ' +
+                            'data-content="'+info+'"><i class="fa fa-chevron-circle-right" title="<@ctx.i18n text = "更多操作"/>"></i></a>');
+                        return actions.join('');
+                    }
+                }
+                ]
+        };
+        $.table.init(options);
+    });
+
+    
+    /* 用户管理-重置密码 */
+    function resetPwd(userId) {
+        console.log("userId:" +userId)
+        var url = prefix + '/resetPwd/' + userId;
+        opt.modal.open("重置密码", url,'800', '225');
+    }
+
+    /* 用户管理-停用 */
+    function disable(userId) {
+        opt.modal.confirm("确认要停用用户吗？", function() {
+            opt.operate.post(prefix + "/changeStatus", { "userId": userId, "status": 1 });
+        })
+    }
+
+    /* 用户管理启用 */
+    function enable(userId) {
+        opt.modal.confirm("确认要启用用户吗？", function() {
+            opt.operate.post(prefix + "/changeStatus", { "userId": userId, "status": 0 });
+        })
+    }
+
+    /* 授权角色*/
+    function authRole(userId) {
+        opt.modal.openTab("<@ctx.i18n text = "用户分配角色"/>", prefix + "/authRole/" + userId);
+        return;
+    }
+
+</script>
+</@footer>
+</@pageTheme>

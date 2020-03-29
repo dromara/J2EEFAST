@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.fast</groupId>
+    <artifactId>fast</artifactId>
+    <version>3.2.0</version>
+  </parent>
+  <artifactId>fast-web</artifactId>
+  <name>子模块</name>
+  <description>
+	    子模块
+  </description>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+		<dependency>
+			<groupId>com.fast</groupId>
+			<artifactId>fast-system</artifactId>
+		</dependency>
+  </dependencies>
+   <build>
+		<plugins>
+			<!-- 打jar包的插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<!-- 不打包资源文件（配置文件和依赖包分开） -->
+					<excludes>
+						<exclude>templates/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+	
+		</plugins>
+ 	</build>
+</project>

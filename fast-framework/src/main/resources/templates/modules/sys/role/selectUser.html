@@ -1,0 +1,98 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="授权用户列表"/>
+    <@search fromId="select-user-form">
+        <input id="roleId" name="roleId" type="hidden" value="${roleId}"/>
+        <div class="select-list">
+            <li>
+                <@ctx.i18n text = "登陆账号"/>:<input type="text" name="username"/>
+            </li>
+            <li>
+                <@ctx.i18n text = "邮箱"/>:<input type="text" name="email"/>
+            </li>
+            <li>
+                <@ctx.i18n text = "手机号码"/>:<input type="text" name="mobile"/>
+            </li>
+            <li>
+                <label><@ctx.i18n text = "所属公司"/></label>：
+                <select name="compId" class="form-control">
+                    <option value=""><@ctx.i18n text = "所有"/></option>
+                    <#list comps as comp>
+                        <option  value="${comp.id}">${comp.name}</option>
+                    </#list>
+                </select>
+            </li>
+            <li>
+                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
+                <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+            </li>
+            </ul>
+        </div>
+    </@search>
+    <@table tableId="bootstrap-table">
+    </@table>
+    <@footer>
+        <script>
+            var datas = ${dict.getDictListJson('sys_user_show_hide')};
+            var prefix = baseURL + 'sys/role/authUser';
+
+            $(function() {
+                /* 初始表格对象 */
+                var options = {
+                    url: prefix + "/unallocatedList",
+                    sortName: "createTime",
+                    queryParams: queryParams,
+                    uniqueId: "userId", /* 唯一ID */
+                    showSearch: false,
+                    showRefresh: false,
+                    showToggle: false,
+                    showColumns: false,
+                    clickToSelect: true,
+                    modalName: "用户",
+                    columns: [
+                        {
+                            field: 'state',
+                            checkbox: true
+                        },
+                        {
+                            title: "<@ctx.i18n text = "序号"/>", width: 10, formatter: function (value, row, index) {
+                                return $.table.serialNumber(index);
+                            }
+                        },
+                        {field: 'username', title: "<@ctx.i18n text = "账号"/>"},
+                        {field: 'name', title:  "<@ctx.i18n text = "姓名"/>"},
+                        {field: 'compName', title:  "<@ctx.i18n text = "公司"/>"},
+                        {field: 'email', title:  "<@ctx.i18n text = "邮箱"/>"},
+                        {field: 'mobile', title:  "<@ctx.i18n text = "手机"/>"},
+                        {
+                            field: 'status', title: "<@ctx.i18n text = "状态"/>", formatter: function (value, row, index) {
+                                return $.table.selectDictLabel(datas, value);
+                            }
+                        },
+                        {field: 'createTime', title: "<@ctx.i18n text = "创建时间"/>", sortable: true}
+                    ]
+                };
+                $.table.init(options);
+            });
+
+            function queryParams(params) {
+                var search = $.table.queryParams(params);
+                search.roleId = $("#roleId").val();
+                return search;
+            }
+
+            /* 添加用户-选择用户-提交 */
+            function submitHandler() {
+                var rows = $.table.selectAllColumns();
+                if (rows.length == 0) {
+                    opt.modal.warning("<@ctx.i18n text = "请至少选择一条记录"/>");
+                    return;
+                }
+                var data = [];
+                data.push({"name": "roleId", "value": $("#roleId").val()});
+                data.push({"name": "userIds", "value": rows});
+                opt.operate.save(prefix + "/insertAuthUsers", data);
+            }
+        </script>
+    </@footer>
+</@pageTheme>

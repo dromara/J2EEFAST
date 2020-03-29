@@ -1,0 +1,199 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="角色修改">
+    <@cssLibs.ztree_css/>
+</@header>
+<@addorEdit fromId="form-role-edit">
+            <input id="roleId" name="roleId" type="hidden" value="${role.roleId?default("")}"/>
+            <div class="form-group">
+                <label class="col-sm-3 control-label "><span style="color: red; ">*</span>角色名称：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" name="roleName" id="roleName" value="${role.roleName?default("")}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>权限字符：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" name="roleKey" id="roleKey" value="${role.roleKey?default("")}" required>
+                </div>
+            </div>
+            <div class="form-group">
+				<label class="col-sm-3 control-label"><@ctx.i18n text = "管理模块"/>：</label>
+				<div class="col-sm-8">
+					<#list modules>
+						<#items as d>
+							<#if d.status =='0' >
+							    <#if lisModule?? && (lisModule?size > 0)>
+                                    <#assign a=0 />
+                                    <#list lisModule as c>
+                                        <#if c == d.moduleCode >
+                                            <#assign a=1 />
+                                        </#if>
+                                    </#list>
+                                    <#if a== 1>
+                                         <label>
+                                            <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" checked required/><@ctx.i18n text = "${d.moduleName}" /></label>
+                                        </label>
+                                    <#else>
+                                         <label>
+                                            <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" required/><@ctx.i18n text = "${d.moduleName}" /></label>
+                                        </label>
+                                    </#if>
+								<#else>
+                                    <label>
+									    <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" required/><@ctx.i18n text = "${d.moduleName}" /></label>
+								    </label>
+							    </#if>
+							</#if>
+						</#items>
+					</#list>
+				</div>
+			</div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>显示顺序：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" type="text" name="roleSort" id="roleSort" value="${role.roleSort?default("")}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>状态：</label>
+                <div class="col-sm-8">
+                    <label class="toggle-switch switch-solid">
+                        <input type="checkbox" id="status" <#if role.status == "0">checked="true"</#if>">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input id="remark" name="remark" class="form-control" type="text" value="${role.remark?default("")}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">菜单权限</label>
+                <div class="col-sm-8">
+                    <div class="box box-solid" style="background:#FAFAFA;border-top: 0;">
+                        <div id="menuTrees" class="ztree"></div>
+                    </div>
+                </div>
+            </div>
+</@addorEdit>
+<@footer>
+<@jsLibs.ztree_js/>
+<script>
+    $(function() {
+        var txt = opt.common.getCheckboxValue("moduleCodes");
+        var url = baseURL + "sys/menu/roleModuleMenuTreeData?roleId=" + $("#roleId").val() + "&moduleCodes=" + txt;
+        var options = {
+            id: "menuTrees",
+            url: url,
+            check: { enable: true },
+            expandLevel: 0
+        };
+        $.tree.init(options);
+
+        $('input[name="moduleCodes"]').each(function () {
+            $(this).on('ifChanged', function(event){
+                var txt = opt.common.getCheckboxValue("moduleCodes");
+                if(opt.common.isEmpty(txt)){
+                    $("#menuTrees").hide();
+                }else{
+                    $("#menuTrees").show();
+                }
+
+                var url = baseURL + "sys/menu/roleModuleMenuTreeData?moduleCodes="+txt+"&roleId="+$("#roleId").val();
+                var options = {
+                    id: "menuTrees",
+                    url: url,
+                    check: { enable: true },
+                    expandLevel: 0
+                };
+                $.tree.init(options);
+            });
+        })
+    });
+
+    /*校验表单*/
+    $("#form-role-edit").validate({
+        rules:{
+            onkeyup: false,
+            roleName:{
+                remote: {
+                    url: baseURL + "sys/role/checkRoleNameUnique",
+                    type: "POST",
+                    dataType: "html",
+                    data: {
+                        "roleName" : function() {
+                            return opt.common.trim($("#roleName").val());
+                        },
+                        "roleId":function () {
+                            return opt.common.trim($("#roleId").val());
+                        }
+                    },
+                    dataFilter: function(data, type) {
+                        return opt.validate.unique(data);
+                    }
+                }
+            },
+            roleKey:{
+                remote: {
+                    url: baseURL + "sys/role/checkRoleKeyUnique",
+                    type: "POST",
+                    dataType: "html",
+                    data: {
+                        "roleKey" : function() {
+                            return opt.common.trim($("#roleKey").val());
+                        },
+                        "roleId":function () {
+                            return opt.common.trim($("#roleId").val());
+                        }
+                    },
+                    dataFilter: function(data, type) {
+                        return opt.validate.unique(data);
+                    }
+                }
+            },
+            roleSort:{
+                number: opt.common.trim($("#roleSort").val()),
+                minlength: 1,
+                maxlength: 2
+            }
+        },
+        messages: {
+            "roleName": {
+                remote: $.i18n.prop("sys.msg.role.already")
+            },
+            "roleKey": {
+                remote: $.i18n.prop("sys.msg.permission.already")
+            }
+        },
+        focusCleanup: true
+    });
+
+    /*窗口打开执行*/
+/*    function onLoadSuccess (obj) {
+
+    }*/
+
+    /*提交*/
+    function submitHandler(index, layero){
+        if (opt.validate.form()) {
+            var options = {
+                id:'form-role-edit',
+                delete:['moduleCodes']
+            };
+            var data = opt.form.dataUp(options);
+            var menuIds = $.tree.getCheckedNodes();
+            var status = $("input[id='status']").is(':checked') == true ? "0" : "1";
+            var moduleCodes = opt.common.getCheckboxValue("moduleCodes");
+            data.push({"name": "status", "value": status});
+            data.push({"name": "menuIdList", "value": menuIds});
+            data.push({"name": "moduleCodes", "value": moduleCodes});
+            opt.operate.save(baseURL+'sys/role/edit',data);
+        }
+    }
+
+</script>
+</@footer>
+</@pageTheme>

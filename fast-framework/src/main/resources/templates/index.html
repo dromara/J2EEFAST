@@ -1,0 +1,147 @@
+<#include "/common/include.html">
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<#import "/common/springctx.ftl" as ctx>
+<#-- 基于AdminLTE 前端框架 -->
+<meta charset="utf-8">
+<title>${config.getTitle()}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<#-- Tell the browser to be responsive to screen width -->
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<#-- jQuery 3 -->
+<script src="${ctxStatic}/statics/libs/jquery.min.js?V=${config.getDvVersion()}"></script>
+<#-- Font Awesome -->
+<link rel="stylesheet" href="${ctxStatic}/statics/css/font-awesome.min.css?V=${config.getDvVersion()}"/>
+<#-- Ionicons -->
+<link rel="stylesheet" href="${ctxStatic}/statics/css/Ionicons/css/ionicons.min.css?V=${config.getDvVersion()}"/>
+<#-- Bootstrap 3.3.7 -->
+<link rel="stylesheet" href="${ctxStatic}/statics/css/bootstrap.min.css?V=${config.getDvVersion()}"/>
+<!-- animate 样式-->
+<link rel="stylesheet" href="${ctxStatic}/statics/css/animate.css?V=${config.getDvVersion()}"/>
+<#-- Theme style -->
+<link rel="stylesheet" href="${ctxStatic}/statics/css/AdminLTE.css?V=${config.getDvVersion()}"/>
+<#-- 皮肤样式 -->
+<link rel="stylesheet" href="${ctxStatic}/statics/css/all-skins.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/statics/css/jquery.contextMenu.min.css" />
+<#--  layui-->
+<link rel="stylesheet" href="${ctxStatic}/statics/plugins/layui/css/layui.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/statics/css/style.css?V=${config.getDvVersion()}">
+<link rel="stylesheet" href="${ctxStatic}/statics/js/lixin/css/fast-ui.css?V=${config.getDvVersion()}"/>
+<!---->
+<link rel="stylesheet" href="${ctxStatic}/statics/css/index.css?V=${config.getDvVersion()}"/>
+<!-- jQuery toast 提示框  -->
+<link rel="stylesheet" href="${ctxStatic}/statics/css/jquery.toast.min.css?V=${config.getDvVersion()}"/>
+<#--<link rel="stylesheet" src="${ctxStatic}/statics/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.css?V=${config.getDvVersion()}"/>-->
+<link rel="shortcut icon" href="${ctxStatic}/statics/img/favicon.ico">
+<#-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<#-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+<#-- Google Font-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+<#-- Vue单页面刷新闪烁标签{{}}问题解决-->
+<style>
+	/*#larry-body{*/
+	/*	height: calc(100% - 116px);*/
+	/*}*/
+</style>
+</head>
+<script>var baseURL = "${ctxStatic}" , _username = "<@shiro.principal property="username"/>"
+			, _unlock="${_unlock?default("0")}" , LockScreen = ${config.getKey('SYS_LOCK_SCEREEN')}</script>
+<body class="fixed hold-transition ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')} sidebar-mini">
+<#include "/common/notice.html">
+<#include "/common/upgrade.html"><!-- 如果客户浏览器版本过低，则显示浏览器升级提示-->
+<div id="_menu" v-cloak>
+<div class="wrapper">
+	<!-- 上面头部 -->
+	<#include "/common/index/indexTop.html"/>
+	<!-- 左侧菜单栏 -->
+	<#include "/common/index/leftMenu.html"/>
+	<!-- 主体部分-->
+	<div class="content-wrapper">
+		<div class="layui-body" id="larry-body">
+			<div class="layui-tab layui-tab-card larry-tab-box" id="larry-tab" lay-filter="main-tab">
+				<!-- lay-allowclose="true" -->
+				<ul class="layui-tab-title">
+<#--					<li class="layui-this" lay-id="0"><i class="fa fa-home"></i><em><@ctx.i18n text = "首页"/></em></li>-->
+				</ul>
+				<div id="content-main" class="layui-tab-content">
+<#--					<div class="layui-tab-item layui-show">-->
+<#--						<iframe data-id='0' width="100%" height="100%"  src="main" class="larry-iframe"></iframe>-->
+<#--					</div>-->
+				</div>
+			</div>
+			<!-- 查看左侧 -->
+			<div class="layui-icon admin-tabs-control layui-icon-prev" id="scrollTabLeft"></div>
+			<!-- 查看右侧 -->
+			<div class="layui-icon admin-tabs-control layui-icon-next" id="scrollTabRight"></div>
+		</div>
+	</div>
+	<!-- 底部-->
+	<footer class="main-footer" style="bottom: 0px;position: fixed;width: 100%;left: 0px;">
+		<div style="position: fixed;right: 10px;">
+			<b>Version</b> ${config.getVersion()}
+		</div>
+		<strong>Copyright &copy; 2018-${config.getCopyrightYear()} ${config.getCompany()} .</strong> All rights reserved.
+	</footer>
+	 <#--右侧工具类-->
+	<#include "/common/index/rightControl.html"/>
+	<div class="control-sidebar-bg"></div>
+</div>
+<!-- 修改密码 -->
+<div id="passwordLayer" style="display: none;">
+	<form class="layui-form" action="" id="form-user-updatePass">
+		<div class="layui-form-item">
+	    	<label class="layui-form-label"><@ctx.i18n text = "账号"/></label>
+	    	<label class="laber-account">${user.username}</label>
+		</div>
+		<div class="layui-form-item">
+	    	<label class="layui-form-label"><@ctx.i18n text = "旧密码"/></label>
+	    	<div class="layui-input-inline">
+	    		<input type="password"  name="oldPassword" placeholder="<@ctx.i18n text = "旧密码"/>" autocomplete="off" class="form-control">
+	    	</div>
+		</div>
+		<div class="layui-form-item">
+	    	<label class="layui-form-label"><@ctx.i18n text = "新密码"/></label>
+	    	<div class="layui-input-inline">
+	    		<input type="password"  id="newPassword" name="newPassword" placeholder="<@ctx.i18n text = "新密码"/>" autocomplete="off" class="form-control">
+	    	</div>
+		</div>
+	</form>
+</div>
+</div>
+<img id="verifySn" style="display: none;" src="${ctxStatic}/statics/img/verifySn.png" width="100%" height="100%" alt="机器码与注册码">
+
+<!-- ./wrapper -->
+<#-- Bootstrap 3.3.7 -->
+<script src="${ctxStatic}/statics/libs/bootstrap.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/libs/jquery.contextMenu.min.js?V=${config.getDvVersion()}"></script>
+<#--
+<script src="${ctxStatic}/statics/libs/demo.js?V=${config.getDvVersion()}"></script>-->
+<script src="${ctxStatic}/statics/libs/jquery.i18n.properties.js?V=${config.getDvVersion()}"></script>
+<#-- jquery-validate 表单验证插件 -->
+<script src="${ctxStatic}/statics/plugins/validate/jquery.validate.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/validate/jquery.validate.extend.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/slimscroll/jquery.slimscroll.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.js?V=${config.getDvVersion()}"></script>
+<!-- 全局遮罩-->
+<script type="text/javascript" src="${ctxStatic}/statics/plugins/blockUI/jquery.blockUI.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/layer/layer.js?V=${config.getDvVersion()}"></script>
+<script type="text/javascript" src="${ctxStatic}/statics/plugins/layui/layui.js?V=${config.getDvVersion()}"></script>
+<script type="text/javascript" src="${ctxStatic}/statics/libs/vue.min.js?V=${config.getDvVersion()}"></script>
+<!-- jQuery toast 提示框  -->
+<script src="${ctxStatic}/statics/libs/jquery.toast.min.js?V=${config.getDvVersion()}"></script>
+<!-- 全屏显示-->
+<script type="text/javascript" src="${ctxStatic}/statics/js/lixin/fastJS.js?V=${config.getDvVersion()}"></script>
+<#--<script type="text/javascript" src="${ctxStatic}/statics/js/index.min.js?V=${config.getDvVersion()}"></script>-->
+<script type="text/javascript" src="${ctxStatic}/statics/js/index.js?V=${config.getDvVersion()}"></script>
+<script type="text/javascript" src="${ctxStatic}/statics/plugins/fullscreen/jquery.fullscreen.js?V=${config.getDvVersion()}"></script>
+<#-- AdminLTE App -->
+<#--<script src="${ctxStatic}/statics/libs/app.js?V=${config.getDvVersion()}"></script>-->
+</body>
+</html>
+</@pageTheme>

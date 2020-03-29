@@ -1,0 +1,78 @@
+<!--/* Fast 生成器自动生成 */ -->
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="修改岗位信息">
+    </@header>
+    <@addorEdit fromId="form-post-edit">
+        <input name="postId" value="${sysPost.postId}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "岗位编码"/>：
+            </label>
+            <div class="col-sm-8">
+                <input name="postCode" value="${sysPost.postCode?default("")}" class="form-control" type="text"  required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "岗位名称"/>：
+            </label>
+            <div class="col-sm-8">
+                <input name="postName" value="${sysPost.postName?default("")}" class="form-control" type="text"  required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "显示顺序"/>：
+            </label>
+            <div class="col-sm-8">
+                <input name="postSort" value="${sysPost.postSort?default("")}" class="form-control" type="text"  required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "岗位分类"/>：</label>
+            <div class="col-sm-8">
+                <select name="postType" class="form-control m-b" required>
+                    <#list dict.getType('sys_post_type')>
+                        <#items as d>
+                            <#if d.status =='0' >
+                                <option  value="${d.dictValue}" text="${d.dictLabel}" <#if d.dictValue==sysPost.postType?default("") >selected = "selected"</#if>>${d.dictLabel}</option>
+                            </#if>
+                        </#items>
+                    </#list>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "状态"/>：</label>
+            <div class="col-sm-8">
+                <#list dict.getType('sys_status')>
+                    <#items as d>
+                        <div class="radio-box">
+                            <input type="radio" id="status" name="status" value="${d.dictValue}"
+                                   <#if d.dictValue == sysPost.status?default("") >checked</#if>  required>
+                            <label for="${d.dictCode}">${d.dictLabel}</label>
+                        </div>
+                    </#items>
+                </#list>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "备注"/>：</label>
+            <div class="col-sm-8">
+                <textarea name="remark" class="form-control">${sysPost.remark?default("")}</textarea>
+            </div>
+        </div>
+    </@addorEdit>
+    <@footer>
+        <script type="text/javascript">
+            var prefix = baseURL + "sys/post";
+            $("#form-post-edit").validate({
+                focusCleanup: true
+            });
+
+            function submitHandler() {
+                if (opt.validate.form()) {
+                    opt.operate.save(prefix + "/edit", $('#form-post-edit').serialize());
+                }
+            }
+        </script>
+    </@footer>
+</@pageTheme>

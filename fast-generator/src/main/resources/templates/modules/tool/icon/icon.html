@@ -1,0 +1,182 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="图标选择">
+<#-- Theme style -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/AdminLTE.css?V=${config.getDvVersion()}">
+    <style>
+        body{
+            font-size: 15px !important;
+        }
+        .nav-tabs-custom{margin-bottom:0 !important;box-shadow:none !important;border-radius:0 !important;}
+        #search {
+            position: relative;
+            font-size: 18px;
+            padding-top: 20px;
+            margin: -20px auto 0;
+        }
+        #search label {
+            position: absolute;
+            left: 15px;
+            top: 28px;
+        }
+        .form-control {
+            height: 40px !important;
+            font-size: 14px !important;
+        }
+        #search #search-input, #search .hint {
+            padding-left: 38px;
+            padding-right: 43px;
+            border-radius: 23px;
+        }
+        .input-lg {
+            height: 46px;
+            padding: 10px 16px;
+            font-size: 18px;
+            line-height: 1.3333333;
+            border-radius: 6px;
+        }
+        #search #search-clear {
+            text-decoration: none;
+            position: absolute;
+            right: 12px;
+            top: 31px;
+            color: #b3b3b3;
+        }
+        #search #search-clear:hover {
+            color: #8f8f8f;
+        }
+    </style>
+</@header>
+<body class="hold-transition box box-main sidebar-mini ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')}">
+    <div class="wrapper">
+        <input type="hidden" id="icon" value="" />
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li><a href="#tab_1_1" data-toggle="tab">Simple Line Icons</a></li>
+                <li class="active"><a href="#tab_1_2" data-toggle="tab">Font Awesome Icons</a></li>
+                <li><a href="#tab_1_3" data-toggle="tab">Glyphicons</a></li>
+            </ul>
+            <#include "/common/icon.html"/>
+        </div>
+    </div>
+    <@footer>
+        <script>
+
+            $(function() {
+                opt.modal.alertInfo('<span style="color: red; font-size: 13px; font-weight: bold">双击选择图标直接复制到剪贴板!</span>');
+            });
+
+            function selectOnclick(){
+                opt.modal.confirm('所选图标&nbsp;<span style="padding: 4px 6px;font-size: 14px;color: #337ab7;border-radius: 4px;border: solid 1px;"> ' +
+                    '<i class="fa fa-fw '+$("#icon").val()+'"></i></span>:&nbsp;['+$("#icon").val()+'], 您需要复制吗?',selectIcon);
+            }
+
+            function selectIcon(){
+                opt.common.copy($("#icon").val());
+                opt.modal.msg('复制成功!');
+            }
+            
+            $("#tab_1_1").find('.fa-hover').dblclick(function() {
+                $("#icon").val($(this).find('i').attr('class'));
+                selectIcon()
+            });
+            $("#tab_1_2").find('.fa-hover').dblclick(function() {
+                $("#icon").val($(this).find('i').attr('class'));
+                selectIcon()
+            });
+            $("#tab_1_3").find('.fa-hover').dblclick(function() {
+                $("#icon").val($(this).find('i').attr('class').replace('fa ',''));
+                selectIcon()
+            });
+
+            $('input[name="search2"]').bind("blur", function blurKey(e) {
+                if($(this).val() === ""){
+                    $("#tab_fa_2").removeClass('hide');
+                }
+            }).bind("input propertychange", function f(){
+                search("2");
+
+            });
+
+            $('input[name="search1"]').bind("blur", function blurKey(e) {
+                if($(this).val() === ""){
+                    $("#tab_fa_1").removeClass('hide');
+                }
+            }).bind("input propertychange", function f(){
+                search("1");
+            })
+
+            $('input[name="search3"]').bind("blur", function blurKey(e) {
+                if($(this).val() === ""){
+                    $("#tab_fa_3").removeClass('hide');
+                }
+            }).bind("input propertychange", function f(){
+                search("3");
+            })
+
+            function search(index){
+                var $search = $('input[name="search'+index+'"]');
+                var $tab = $("#tab_fa_"+index);
+                var  $results = $("#search-results"+index)
+                if($search.val() === ""){
+                    $tab.removeClass('hide');
+                    $results.html("");
+                    $results.addClass('hide');
+                }else{
+                    $tab.addClass('hide');
+                    var text = $search.val();
+                    var html = "<h2 class=\"page-header\">搜索:"+text+"</h2><div class=\"row fontawesome-icon-list\">";
+                    var arrt = [];
+                    $tab.find('.fa-hover').each(function(){
+                        var _s;
+                        if(index == "2"){
+                            _s = $(this).find('i').attr('class').replace('fa fa-','');
+                        }
+                        if(index == "1" || index == "3"){
+                            _s = $(this).find('i').attr('class').replace('fa','');
+                        }
+
+                        var flag = false;
+                        for(var i=0; i<arrt.length; i++){
+                            if(arrt[i] == _s){
+                                flag = true;
+                            }
+                        }
+                        if(!flag){
+                            arrt.push(_s);
+                        }
+                    })
+                    console.log("-->")
+                    for(var i=0; i<arrt.length;i++){
+                        if(arrt[i].indexOf(text) != -1){
+
+                            html+="<div class=\"fa-hover col-md-3 col-sm-4\"><i class=\"fa "+(index == "2"? "fa-":"")+arrt[i]+"\" aria-hidden=\"true\"></i>"+arrt[i]+"</div>";
+                        }
+                    }
+
+                    if(!opt.common.isEmpty(html)){
+                        html+="</div>";
+                        $results.html("");
+                        $results.html(html);
+                        $results.removeClass('hide');
+
+                        $results.find('.fa-hover').dblclick(function() {
+                            $("#icon").val($(this).find('i').attr('class'));
+                            selectIcon()
+                        });
+                    }
+                }
+            }
+
+            function close(index){
+                var $search = $('input[name="search'+index+'"]');
+                $search.val("");
+                var $tab = $("#tab_fa_"+index);
+                var  $results = $("#search-results"+index)
+                $tab.removeClass('hide');
+                $results.html("");
+                $results.addClass('hide');
+            }
+        </script>
+    </@footer>
+</@pageTheme>

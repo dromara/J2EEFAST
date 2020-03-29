@@ -1,0 +1,174 @@
+package ${packageName}.controller;
+
+import com.lixinos.common.core.convert.Convert;
+import com.lixinos.common.core.utils.PageUtils;
+import com.lixinos.common.core.utils.R;
+import com.lixinos.common.enums.BusinessType;
+import com.lixinos.framework.annotation.SysLog;
+import com.lixinos.framework.utils.AbstractController;
+import com.lixinos.framework.annotation.RepeatSubmit;
+import com.lixinos.common.validator.ValidatorUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.ui.ModelMap;
+import java.util.Map;
+import java.util.Date;
+import org.springframework.web.bind.annotation.*;
+import ${packageName}.entity.${ClassName}Entity;
+import ${packageName}.service.${ClassName}Service;
+#if($table.tree)
+import com.lixinos.common.core.domain.Ztree;
+#end
+
+/**
+ *
+ * @ClassName: ${functionName}Controller
+ * @Package: ${packageName}
+ * @Description: ${tableName}
+ * @author: ${author}
+ * @time ${datetime}
+ 
+ * /----------------------------/
+ * /---><---/
+ * /----------------------------/
+ */
+@Controller
+@RequestMapping("/${moduleName}/${businessName}")
+public class ${ClassName}Controller extends AbstractController
+{
+    private String prefix = "modules/${moduleName}/${businessName}";
+
+    @Autowired
+    private ${ClassName}Service ${className}Service;
+
+    @RequiresPermissions("${permissionPrefix}:view")
+    @GetMapping()
+    public String ${businessName}()
+    {
+        return prefix + "/${businessName}";
+    }
+
+    #if($table.crud || $table.r)
+    #*有查询列表*#
+    @RequestMapping("/list")
+    @RequiresPermissions("${permissionPrefix}:list")
+    @ResponseBody
+    public R list(@RequestParam Map<String, Object> params) {
+        PageUtils page = ${className}Service.queryPage(params);
+        return R.ok().put("page", page);
+    }
+    #end
+
+    #if($table.tree)
+    /**
+     * 选择${functionName}树
+     */
+    #set($BusinessName=$businessName.substring(0,1).toUpperCase() + ${businessName.substring(1)})
+    @GetMapping(value = { "/select${BusinessName}Tree/{${pkColumn.javaField}}", "/select${BusinessName}Tree/" })
+    public String select${BusinessName}Tree(@PathVariable(value = "${pkColumn.javaField}", required = false) Long ${pkColumn.javaField}, ModelMap mmap)
+    {
+        if (StringUtils.isNotNull(${pkColumn.javaField}))
+        {
+            mmap.put("${className}", ${className}Service.select${ClassName}ById(${pkColumn.javaField}));
+        }
+        return prefix + "/tree";
+    }
+
+    /**
+     * 加载${functionName}树列表
+     */
+    @GetMapping("/treeData")
+    @ResponseBody
+    public List<Ztree> treeData()
+    {
+        List<Ztree> ztrees = ${className}Service.select${ClassName}Tree();
+        return ztrees;
+    }
+    #end
+
+    #if($table.crud || $table.c)
+    #*新增*#
+    /**
+     * 新增参数配置
+     */
+    @GetMapping("/add")
+    public String add()
+    {
+        return prefix + "/add";
+    }
+
+    /**
+     * 新增保存${functionName}
+     */
+    @RepeatSubmit
+    @RequiresPermissions("${permissionPrefix}:add")
+    @SysLog(title = "${functionName}", businessType = BusinessType.INSERT)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ResponseBody
+    public R addSave(@Validated ${ClassName}Entity ${className})
+    {
+        //校验参数
+        ValidatorUtils.validateEntity(${className});
+        ${className}.setCreateBy(getUser().getUsername());
+        ${className}.setCreateTime(new Date());
+        ${className}.setUpdateTime(new Date());
+        ${className}Service.insert${ClassName}(${className});
+        return R.ok();
+    }
+    #end
+
+    #if($table.crud || $table.u)
+    /**
+     * 修改${functionName} 页面
+     */
+    @RequiresPermissions("${permissionPrefix}:edit")
+    @GetMapping("/edit/{${pkColumn.javaField}}")
+    public String edit(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}, ModelMap mmap)
+    {
+        ${ClassName}Entity ${className} = ${className}Service.select${ClassName}ById(${pkColumn.javaField});
+        mmap.put("${className}", ${className});
+        return prefix + "/edit";
+    }
+
+    /**
+     * 修改保存${functionName}
+     */
+    @RepeatSubmit
+    @RequiresPermissions("${permissionPrefix}:edit")
+    @SysLog(title = "${functionName}", businessType = BusinessType.UPDATE)
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @ResponseBody
+    public R editSave(${ClassName}Entity ${className})
+    {
+        ValidatorUtils.validateEntity(${className});
+        ${className}.setUpdateBy(getLoginName());
+        ${className}Service.update${ClassName}(${className});
+        return R.ok();
+    }
+    #end
+
+    #if($table.crud || $table.d || ($table.r && $table.rDel))
+    #*删除*#
+    /**
+     * 删除${functionName}
+     */
+    @RepeatSubmit
+    @SysLog(title = "${functionName}", businessType = BusinessType.DELETE)
+    @RequestMapping(value = "/del", method = RequestMethod.POST)
+    @RequiresPermissions("${permissionPrefix}:del")
+    @ResponseBody
+    public R delete(${pkColumn.javaType}[] ids) {
+
+##        List<SysConfigEntity> list= sysConfigService.selectList(new EntityWrapper<SysConfigEntity>().
+##                eq("config_type","Y").in("id",ids));
+##        if(StrUtil.isNotNull(list)){
+##            return R.error("删除参数失败，系统参数不能删除");
+##        }
+      ${className}Service.deleteBatch(ids);
+      return R.ok();
+    }
+    #end
+
+}

@@ -1,0 +1,160 @@
+<#--页面主题-->
+<#macro pageTheme mark>
+	<#if mark == "true">
+		<@compress single_line=true>
+			<#nested>
+		</@compress>
+	<#else>
+		<#nested>
+	</#if>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?02ec2b13c89b31a294fc7d44be9a384b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+</#macro>
+<#--页面公共头部-->
+<#macro header title>
+<!DOCTYPE html>
+<html>
+<head>
+	<#import "springctx.ftl" as ctx>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<#-- Tell the browser to be responsive to screen width -->
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<title>${title}</title>
+	<#-- jQuery 3 -->
+    <script src="${ctxStatic}/statics/libs/jquery.min.js?V=${config.getDvVersion()}"></script>
+	<#-- Font Awesome -->
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/font-awesome.min.css?V=${config.getDvVersion()}"/>
+	<#-- Ionicons -->
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/Ionicons/css/ionicons.min.css?V=${config.getDvVersion()}"/>
+	<#-- Bootstrap 3.3.7 -->
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/bootstrap.min.css?V=${config.getDvVersion()}"/>
+	<link rel="stylesheet" href="${ctxStatic}/statics/plugins/select2/select2.css?V=${config.getDvVersion()}"/>
+    <link rel="stylesheet" href="${ctxStatic}/statics/plugins/select2/select2-bootstrap.css?V=${config.getDvVersion()}"/>
+	<!-- bootstrap-table 表格插件样式 -->
+	<link rel="stylesheet" href="${ctxStatic}/statics/plugins/bootstrap-table/bootstrap-table.min.css?V=${config.getDvVersion()}"/>
+<#--	<link rel="stylesheet" src="${ctxStatic}/statics/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.css?V=${config.getDvVersion()}"/>-->
+	<!-- animate 样式-->
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/animate.css?V=${config.getDvVersion()}"/>
+	<#-- 皮肤样式 -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/all-skins.css?V=${config.getDvVersion()}">
+    <#-- iCheck -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/iCheck/all.css?V=${config.getDvVersion()}">
+	<#--  layui-->
+	<link rel="stylesheet" href="${ctxStatic}/statics/plugins/layui/css/layui.css?V=${config.getDvVersion()}"/>
+	<#nested>
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/style.css?V=${config.getDvVersion()}">
+	<link rel="stylesheet" href="${ctxStatic}/statics/js/lixin/css/fast-ui.css?V=${config.getDvVersion()}"/>
+	<link rel="shortcut icon" href="${ctxStatic}/statics/img/favicon.ico">
+	<#-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<#-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<#-- Google Font-->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"/>
+	<#-- Vue单页面刷新闪烁标签{{}}问题解决-->
+	<style>
+		[v-cloak]{display:none !important;}
+	</style>
+</head>
+</#macro>
+
+<#--需要表格页面 如果fromId 为"" 则不要搜索框-->
+<#macro search fromId>
+<body class="gray-bg sidebar-mini ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')}">
+<div class="container-div animated fadeInRight" id="_app">
+<div class="row">
+		<#if fromId!="">
+            <div class="col-sm-12 search-collapse">
+                <form id="${fromId}">
+                    <#nested>
+                </form>
+            </div>
+		</#if>
+</#macro>
+
+<#--弹出窗口添加修改宏-->
+<#macro addorEdit fromId>
+<body class="white-bg sidebar-mini ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')}">
+    <div class="row">
+        <div class="wrapper wrapper-content animated fadeInRight ibox-content" id="_app">
+            <form class="form-horizontal" id="${fromId}">
+                <#nested>
+            </form>
+</#macro>
+
+<#--单独表格表格搜索 -->
+<#macro tableSearch fromId>
+        <div class="col-sm-12 search-collapse">
+            <form id="${fromId}">
+                <#nested>
+            </form>
+        </div>
+</#macro>
+
+<#--表格宏-->
+<#macro table tableId>
+		<div class="btn-group-sm" id="toolbar" role="group">
+			<#nested>
+		</div>
+		<div class="col-sm-12 select-table table-striped">
+			<table id="${tableId}"></table>
+		</div>
+</#macro>
+
+
+
+<#--页面公共尾部-->
+<#macro footer>
+</div>
+</div>
+<a id="scroll-up" href="#" class="btn btn-sm display"><i class="fa fa-angle-double-up"></i></a>
+<script> var baseURL = "${ctxStatic}/", _lang = "${config.getSysLang()}",  _username = "<@shiro.principal property="username"/>"  ,
+ LockScreen = ${config.getKey('SYS_LOCK_SCEREEN')}</script>
+<#-- i18n 国际化参数 -->
+<!-- <script src="${ctxStatic}/statics/js/i18n/lixin_${config.getSysLang()}.js?V=${config.getDvVersion()}"></script> -->
+<#-- Bootstrap 3.3.7 -->
+<#--<script src="${ctxStatic}/statics/libs/bootstrap.min.js?V=${config.getDvVersion()}"></script>-->
+<script src="${ctxStatic}/statics/libs/bootstrap.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/select2/select2.js?V=${config.getDvVersion()}"></script>
+<#--全局遮罩-->
+<script src="${ctxStatic}/statics/plugins/blockUI/jquery.blockUI.js?V=${config.getDvVersion()}"></script>
+<#--bootstrap-table 表格插件-->
+<script src="${ctxStatic}/statics/plugins/bootstrap-table/bootstrap-table.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/bootstrap-table/locale/bootstrap-table-i18n.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/bootstrap-table/extensions/toolbar/bootstrap-table-toolbar.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/bootstrap-table/extensions/columns/bootstrap-table-fixed-columns.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.js?V=${config.getDvVersion()}"></script>
+<#-- bootstrap-treetable 表单树插件-->
+<script src="${ctxStatic}/statics/plugins/bootstrap-treetable/bootstrap-treetable.js?V=${config.getDvVersion()}"></script>
+<#-- layui-->
+<script src="${ctxStatic}/statics/plugins/layer/layer.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/layui/layui.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/libs/jquery.i18n.properties.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/iCheck/icheck.min.js?V=${config.getDvVersion()}"></script>
+<#-- jquery-validate 表单验证插件 -->
+<script src="${ctxStatic}/statics/plugins/validate/jquery.validate.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/validate/jquery.validate.extend.js?V=${config.getDvVersion()}"></script>
+<#--公共方法-->
+<#--<script src="${request.contextPath}/statics/js/lixin/commom.js?V=${config.getDvVersion()}"></script>-->
+<#--<script src="${request.contextPath}/statics/js/lixin/lixin-ui.js?V=${config.getDvVersion()}"></script>-->
+<script src="${request.contextPath}/statics/js/lixin/fastJS.js?V=${config.getDvVersion()}"></script>
+<#--VUE-->
+<script src="${ctxStatic}/statics/libs/vue.min.js?V=${config.getDvVersion()}"></script>
+<#nested>
+</body>
+</html>
+</#macro>
+ 
+<#import "jslibs.html" as jsLibs>
+<#import "csslibs.html" as cssLibs>

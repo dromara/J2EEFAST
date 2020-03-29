@@ -1,0 +1,274 @@
+<#include "/common/include.html">
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <#import "/common/springctx.ftl" as ctx>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>主题选择</title>
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/bootstrap.min.css?V=${config.getDvVersion()}">
+	<!-- animate 样式-->
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/animate.css?V=${config.getDvVersion()}">
+	<#-- Theme style -->
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/AdminLTE.min.css?V=${config.getDvVersion()}">
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/style.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/statics/js/lixin/css/fast-ui.css?V=${config.getDvVersion()}"/>
+    <style type="text/css">
+		.list-unstyled{margin:10px;}
+		.full-opacity-hover{opacity:1;filter:alpha(opacity=1);border:1px solid #fff}
+		.full-opacity-hover:hover{border:1px solid #f00;}
+	</style>
+</head>
+<body class="gray-bg">
+</body>
+<script src="${ctxStatic}/statics/libs/jquery.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/iCheck/icheck.min.js?V=${config.getDvVersion()}"></script>
+<script> var baseURL = "${ctxStatic}/";var _lang = "${config.getSysLang()}"; var _username = "<@shiro.principal property="username"/>"  ; var LockScreen = ${config.getKey('SYS_LOCK_SCEREEN')}</script>
+<script type="text/javascript">
+
+function get(name) {
+    if (typeof (Storage) !== 'undefined') {
+        return window.localStorage.getItem(_username+name);
+    } else {
+        errrInfo('Please use a modern browser to properly view this template!')
+    }
+}
+
+function store(name, val) {
+    if (typeof (Storage) !== 'undefined') {
+        window.localStorage.setItem(_username+name, val)
+    } else {
+        errrInfo('Please use a modern browser to properly view this template!')
+    }
+}
+
+$(function () {
+	var $skinsList = $('<ul />', {'class': 'list-unstyled clearfix'});
+	/*Dark sidebar skins*/
+	var $skinBlue =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-blue" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div>' +
+							'<span style="display:block; width: 20%; float: left; height: 13px; background: #367fa9"></span>' +
+							'<span class="bg-light-blue" style="display:block; width: 80%; float: left; height: 13px;"></span>' +
+							'</div>'
+							+ '<div>' +
+							'<span style="display:block; width: 20%; float: left; height: 25px; background: #222d32"></span>' +
+							'<span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span>' +
+							'</div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin"><@ctx.i18n text = "蓝色"/></p>');
+	$skinsList.append($skinBlue);
+	var $skinBlack =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-black" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div style="box-shadow: 0 0 2px rgba(0,0,0,0.1)" class="clearfix">' +
+							'<span style="display:block; width: 20%; float: left; height: 13px; background: #fefefe"></span>' +
+							'<span style="display:block; width: 80%; float: left; height: 13px; background: #fefefe"></span>' +
+							'</div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #222"></span>' +
+							'<span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span>' +
+							'</div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin"><@ctx.i18n text = "白色"/></p>');
+	$skinsList.append($skinBlack);
+	var $skinPurple =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-purple" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px;" class="bg-purple-active"></span>' +
+							'<span class="bg-purple" style="display:block; width: 80%; float: left; height: 13px;"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #222d32"></span>' +
+							'<span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin"><@ctx.i18n text = "紫色"/></p>');
+	$skinsList.append($skinPurple);
+	var $skinGreen =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-green" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px;" class="bg-green-active"></span>' +
+							'<span class="bg-green" style="display:block; width: 80%; float: left; height: 13px;"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #222d32"></span>' +
+							'<span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin"><@ctx.i18n text = "绿色"/></p>');
+	$skinsList.append($skinGreen);
+	var $skinRed =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-red" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px;" class="bg-red-active"></span>' +
+							'<span class="bg-red" style="display:block; width: 80%; float: left; height: 13px;"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #222d32"></span>' +
+							'<span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin"><@ctx.i18n text = "红色"/></p>');
+	$skinsList.append($skinRed);
+	var $skinYellow =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-yellow" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px;" class="bg-yellow-active"></span><span class="bg-yellow" style="display:block; width: 80%; float: left; height: 13px;"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #222d32"></span><span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin"><@ctx.i18n text = "黄色"/></p>');
+	$skinsList.append($skinYellow);
+
+	/*Light sidebar skins*/
+	var $skinBlueLight =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-blue-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px; background: #1681e5"></span><span style="display:block; width: 80%; float: left; height: 13px;background:#1890ff"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin" ><@ctx.i18n text = "亮蓝色"/></p>');
+	$skinsList.append($skinBlueLight);
+	var $skinBlackLight =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-black-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div style="box-shadow: 0 0 2px rgba(0,0,0,0.1)" class="clearfix"><span style="display:block; width: 20%; float: left; height: 13px; background: #fefefe"></span><span style="display:block; width: 80%; float: left; height: 13px; background: #fefefe"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin" ><@ctx.i18n text = "亮白色"/></p>');
+	$skinsList.append($skinBlackLight);
+	var $skinPurpleLight =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-purple-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px;" class="bg-purple-active"></span><span class="bg-purple" style="display:block; width: 80%; float: left; height: 13px;"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin" ><@ctx.i18n text = "亮紫色"/></p>');
+	$skinsList.append($skinPurpleLight);
+	var $skinGreenLight =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-green-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px;" class="bg-green-active"></span><span class="bg-green" style="display:block; width: 80%; float: left; height: 13px;"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin" ><@ctx.i18n text = "亮绿色"/></p>');
+	$skinsList.append($skinGreenLight);
+	var $skinRedLight =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-red-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px;" class="bg-red-active"></span><span class="bg-red" style="display:block; width: 80%; float: left; height: 13px;"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin" ><@ctx.i18n text = "亮红色"/></p>');
+	$skinsList.append($skinRedLight);
+	var $skinYellowLight =
+			$('<li />', {style: 'float:left; width: 33.33333%; padding: 5px;'})
+					.append('<a href="javascript:void(0)" data-skin="skin-yellow-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 13px;" class="bg-yellow-active"></span>' +
+							'<span class="bg-yellow" style="display:block; width: 80%; float: left; height: 13px;"></span></div>'
+							+ '<div><span style="display:block; width: 20%; float: left; height: 25px; background: #f9fafc"></span>' +
+							'<span style="display:block; width: 80%; float: left; height: 25px; background: #f4f5f7"></span></div>'
+							+ '</a>'
+							+ '<p class="text-center no-margin" ><@ctx.i18n text = "亮黄色"/></p>');
+	$skinsList.append($skinYellowLight);
+
+    $skinsList.append('<li style="float:left; width: 33.33333%; padding: 5px;">' +
+        '<span  class="checkbox check-box">' +
+        '<label style="padding-left: 10px;"><input name="menu" type="checkbox" style="margin-right:20px"><@ctx.i18n text = "左侧菜单自动收缩"/></label>' +
+        '</li>');
+
+    $skinsList.append('<li style="float:left; width: 33.33333%; padding: 5px;">' +
+        '<span  class="checkbox check-box">' +
+        '<label style="padding-left: 10px;"><input name="tab" type="checkbox" style="margin-right:20px"><@ctx.i18n text = "Tab 记忆"/></label>' +
+        '</li>');
+
+    $skinsList.append('<li style="float:left; width: 33.33333%; padding: 5px;">' +
+        '<span  class="checkbox check-box">' +
+        '<label style="padding-left: 10px;"><input name="tabRef" type="checkbox" style="margin-right:20px"><@ctx.i18n text = "Tab 切换刷新"/></label>' +
+        '</li>');
+
+	$(".gray-bg").html($skinsList);
+
+	$('[data-skin]').on('click', function (e) {
+		if ($(this).hasClass('knob'))
+			return;
+		e.preventDefault();
+		parent.opt.changeSkin($(this).data('skin'));
+		parent.opt.navDelTabNow();
+	});
+
+    var temp = get("pushMenu");
+
+    var _tab = get("_Tab");
+
+    var _tabRef = get("_tabRef");
+
+	if(temp){
+        if(temp === "0"){
+            $("input[name='menu']").iCheck('uncheck');
+        }else{
+            $("input[name='menu']").iCheck('check');
+        }
+    }
+
+	if(_tab){
+        if(_tab === "0"){
+            $("input[name='tab']").iCheck('uncheck');
+        }else{
+            $("input[name='tab']").iCheck('check');
+        }
+    }
+
+	if(_tabRef){
+        if(_tabRef === "0"){
+            $("input[name='tabRef']").iCheck('uncheck');
+        }else{
+            $("input[name='tabRef']").iCheck('check');
+        }
+    }
+
+    /*iCheck单选框及复选框事件绑定*/
+    if ($.fn.iCheck !== undefined) {
+        $(".check-box:not(.noicheck),.radio-box:not(.noicheck)").each(function() {
+            $(this).iCheck({
+                checkboxClass: 'icheckbox-blue',
+                radioClass: 'iradio-blue',
+            })
+        })
+    }
+
+
+
+
+    $('input').on('ifChanged', function(event){
+
+        if($(this).attr("name") == "menu"){
+            if($(this).is(':checked')){
+                parent.opt.sidebarCollapse();
+                store("pushMenu","1");
+            }else{
+                parent.opt.pushMenuInit();
+                store("pushMenu","0");
+            }
+        }
+
+        if($(this).attr("name") == "tab"){
+            if($(this).is(':checked')){
+                store("_Tab","1");
+                parent.location.reload();
+            }else{
+                store("_Tab","0");
+                parent.location.reload();
+            }
+        }
+
+        if($(this).attr("name") == "tabRef"){
+            if($(this).is(':checked')){
+                store("_tabRef","1");
+            }else{
+                store("_tabRef","0");
+            }
+        }
+    });
+
+
+})
+</script>
+</html>
+</@pageTheme>

@@ -1,0 +1,261 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="新增用户"/>
+<@addorEdit fromId="form-user-add">
+    <input type="hidden" id="compId" name="compId"/>
+    <input type="hidden" id="deptId" name="deptIdList"/>
+    <h4 class="form-header h4">基本信息</h4>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>登录账号：</label>
+                <div class="col-sm-8">
+                    <input id="username" name="username" placeholder="请输入登录账号" class="form-control" type="text" required>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>归属公司：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input name="compName"  id="compName" type="text" placeholder="请选择归属公司" onclick="selectCompTree()" class="form-control" required>
+                        <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>用户姓名：</label>
+                <div class="col-sm-8">
+                    <input name="name" id="name" placeholder="请输入用户名称" class="form-control" type="text" maxlength="30" required>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>管理地区：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input name="deptName"  id="deptName"  type="text"  onclick="selectDeptTree()"  placeholder="请选择管理地区" class="form-control" required>
+                        <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>登录密码：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input name="password"  id="password"  placeholder="请输入登录密码" class="form-control" type="password" value="${config.getKey('SYS_USER_INITPASSWORD')}" required>
+                       <span class="input-group-addon" title="<@ctx.i18n text = "登录密码,鼠标按下显示密码"/>"
+                              data-toggle="tooltip"
+                              data-placement="bottom"
+     data-custom-class="tooltip-warning"
+                    onmousedown="$('#password').attr('type','text')"
+                    onmouseup="$('#password').attr('type','password')"><i class="fa fa-fw fa-key"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>所属角色：</label>
+                <div class="col-sm-8">
+                    <select id="_role" class="form-control select2-multiple" multiple required>
+                        <#list roles  as role>
+                            <option  value="${role.roleId}">${role.roleName}</option>
+                        </#list>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>手机号码：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input id="mobile" name="mobile" v-model="user.mobile" placeholder="请输入手机号码" class="form-control" type="text" maxlength="11" required>
+                        <span class="input-group-addon"><i class="fa fa-fw fa-mobile"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">卡号：</label>
+                <div class="col-sm-8">
+                    <input name="cardId" id="cardId" v-model="user.cardId" placeholder="请输入卡号" class="form-control" type="text" maxlength="30">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">邮箱：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input id="email" name="email" class="form-control email" type="text" maxlength="50" placeholder="请输入邮箱">
+                        <span class="input-group-addon"><i class="fa fa-fw fa-envelope"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">用户状态：</label>
+                <div class="col-sm-8">
+                    <label class="toggle-switch switch-solid">
+                        <input type="checkbox" id="status" checked>
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</@addorEdit>
+    <div class="hr-line-dashed"></div>
+    <div class="row" id="_addTab">
+        <div class="col-sm-offset-5 col-sm-10">
+            <button type="button" class="btn btn-sm btn-primary" onclick="opt.form.submit()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+        </div>
+    </div>
+<@footer>
+	<script>
+	    var prefix = baseURL + "sys/user";
+
+        $("#form-user-add").validate({
+            onkeyup: false,
+            rules:{
+                username:{
+                    minlength: 3,
+                    maxlength: 10,
+                    isUserName: opt.common.trim($("#username").val()),
+                    remote: {
+                        url: prefix + "/checkUserNameUnique",
+                        type: "POST",
+                        dataType: "html", 
+                        data: {
+                            "username": function() {
+                                return opt.common.trim($("#username").val());
+                            }
+                        },
+                        dataFilter: function(data, type) {
+                            return opt.validate.unique(data);
+                        }
+                    }
+                },
+                password:{
+                    minlength: 5,
+                    maxlength: 20
+                },
+                _role:{
+                    minlength: 1
+                },
+                mobile:{
+                    isMobile: opt.common.trim($("#mobile").val()),
+                    remote: {
+                        url: prefix + "/checkMobileUnique",
+                        type: "POST",
+                        dataType: "html",
+                        data: {
+                            "mobile": function() {
+                                return opt.common.trim($("#mobile").val());
+                            }
+                        },
+                        dataFilter: function(data, type) {
+                            return opt.validate.unique(data);
+                        }
+                    }
+                }
+            },
+            messages: {
+                "username": {
+                    remote:"<@ctx.i18n text = "sys.msg.user.already"/>"
+                },
+                "mobile":{
+                    remote:"<@ctx.i18n text = "sys.msg.mobile.already"/>"
+                }
+            },
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+	        if (opt.validate.form()) {
+                var options = {
+                    id:'form-user-add',
+                    delete:['compName','deptName'], /*需要删除提交表单数据*/
+                    conversion:[ /*需要转数据*/
+                        {
+                            name:'deptIdList',
+                            value:'arr'
+                        }
+                    ]
+                };
+                var data = opt.form.dataUp(options);
+                var postIds = opt.form.selectSelects("_role");
+                var status = $("input[id='status']").is(':checked') == true ? 0 :1;
+                data.push({"name": "status", "value": status});
+                data.push({"name": "roleIdList", "value": postIds});
+                opt.operate.saveTab(prefix + "/add", data);
+	        }
+	    }
+         
+        /*用户管理-新增-选择公司树*/
+        function selectCompTree() {
+        	var treeId = $("#compId").val();
+        	var compId = opt.common.isEmpty(treeId) ? "1" : $("#compId").val();
+        	var url = baseURL + "sys/comp/selectCompTree/" + compId;
+			var options = {
+				title: '选择公司',
+				width: "380",
+				url: url,
+				callBack: doSubmit
+			};
+			opt.modal.openOptions(options);
+		}
+		
+		function doSubmit(index, layero){
+            var _v = $.tree.callBackTree(layero,index);
+            $("#compId").val(_v.id);
+            $("#compName").val(_v.name);
+            layer.close(index);
+		}
+
+        /*获取公司对应地区*/
+        function selectDeptTree(){
+            var options = {
+                title:"<@ctx.i18n text = "sys.select.dept"/>",
+                width: "380",
+                url: baseURL+'sys/dept/selectDeptTree',
+                obj:{"compId":$("#compId").val(),"list":$("#deptId").val()},
+                callBack: DeptDoSubmit
+            };
+            opt.modal.openOptions(options);
+        }
+        function DeptDoSubmit(index, layero){
+            var _v = $.tree.callBackTree(layero,index);
+            $("#deptId").val(_v.id);
+            $("#deptName").val(_v.name);
+            layer.close(index);
+        }
+
+		$(function() {
+            $('#_role').select2({
+                placeholder:"请选择校色",
+                allowClear: true
+            });
+        })
+    </script>
+</@footer>
+</@pageTheme>

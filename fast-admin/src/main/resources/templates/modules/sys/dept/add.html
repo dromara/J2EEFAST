@@ -1,0 +1,126 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="新增地区"/>
+<@addorEdit fromId="form-dept-add">
+        <input id="treeId" name="parentId" type="hidden" value="${dept.deptId}"   />
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>类型：</label>
+            <div class="col-sm-8">
+                <#list dict.getType('sys_dept_line')>
+                    <#items as d>
+                        <#if d.status =='0' >
+                            <label class="radio-box"> <input type="radio" name="type" value="${d.dictValue}" <#if d.isDefault =='Y' >checked</#if>/>${d.dictLabel}</label>
+                        </#if>
+                    </#items>
+                </#list>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label "><span style="color: red; ">*</span>上级地区：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input class="form-control" type="text" onclick="selectDeptTree()" id="treeName" readonly="true" value="${dept.name}">
+                    <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>名称：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="name" id="name" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>显示排序：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="orderNum" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>状态：</label>
+            <div class="col-sm-8">
+                <#list dict.getType('sys_normal_disable')>
+                    <#items as d>
+                        <#if d.status =='0' >
+                            <div class="radio-box">
+                                <input type="radio" id="${d.dictCode}" name="status"
+                                       value="${d.dictValue}" <#if d.isDefault =='Y' >checked</#if>>
+                                <label for="${d.dictCode}" text="${d.dictLabel}">${d.dictLabel}</label>
+                            </div>
+                        </#if>
+                    </#items>
+                </#list>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">备注：</label>
+            <div class="col-sm-8">
+                <textarea id="remark" name="remark" class="form-control"></textarea>
+            </div>
+        </div>
+</@addorEdit>
+<@footer>
+<script>
+    var prefix = baseURL + "sys/dept";
+
+    $("#form-dept-add").validate({
+        onkeyup: false,
+        rules:{
+            name:{
+                remote: {
+                    url: prefix + "/checkDeptNameUnique",
+                    type: "POST",
+                    dataType: "html",
+                    data: {
+                        "parentId": function() {
+                            return $("input[name='parentId']").val();
+                        },
+                        "name" : function() {
+                            return opt.common.trim($("#name").val());
+                        }
+                    },
+                    dataFilter: function(data, type) {
+                        return opt.validate.unique(data);
+                    }
+                }
+            },
+            orderNum:{
+                digits:true
+            }
+        },
+        messages: {
+            "name": {
+                remote: "已经存在"
+            }
+        },
+        focusCleanup: true
+    });
+
+
+    function submitHandler() {
+        if (opt.validate.form()) {
+            opt.operate.save(prefix + "/add", $('#form-dept-add').serialize());
+        }
+    }
+
+    /*地区管理-新增-选择父地区树*/
+    function selectDeptTree() {
+        var options = {
+            title: '地区选择',
+            width: "380",
+            url: prefix + "/deptTree/" + $("#treeId").val(),
+            obj:{"type":0}, /*页面传递参数*/
+            callBack: doSubmit
+        };
+        opt.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero){
+        var _v = $.tree.callBackTree(layero,index);
+        $("#treeId").val(_v.id);
+        $("#treeName").val(_v.name);
+        opt.selfLayer.close(index);
+    }
+</script>
+</@footer>
+</@pageTheme>

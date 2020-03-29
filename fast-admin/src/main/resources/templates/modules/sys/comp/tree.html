@@ -1,0 +1,47 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="公司树">
+	<@cssLibs.ztree_css/>
+	<style>
+		body{height:auto;font-family: "Microsoft YaHei";}
+		button{font-family: "SimSun","Helvetica Neue",Helvetica,Arial;}
+	</style>
+</@header>
+<body class="hold-transition box box-main">
+	<input id="treeId"   name="treeId"    type="hidden" value="${comp.compId?default(0)}"/>
+	<input id="treeName" name="treeName"  type="hidden" value="${comp.name?default("")}"/>
+		<div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
+			<label id="btnShow" title="显示搜索" style="display:none;">︾</label>
+			<label id="btnHide" title="隐藏搜索">︽</label>
+		</div>
+		<div class="treeSearchInput" id="search">
+			<label for="keyword">关键字：</label><input type="text" class="empty" id="keyword" maxlength="50">
+			<button class="btn" id="btn" onclick="$.tree.searchNode()"> 搜索 </button>
+		</div>
+		<div class="treeExpandCollapse">
+			<a href="#" onclick="$.tree.expand()">展开</a> /
+			<a href="#" onclick="$.tree.collapse()">折叠</a>
+		</div>
+		<div id="tree" class="ztree treeselect"></div>
+<@footer>
+	<@jsLibs.ztree_js/>
+	<script>
+		$(function() {
+			var url = baseURL + "sys/comp/treeData";
+			var options = {
+				url: url,
+				expandLevel: 2,
+				onClick : zOnClick
+			};
+			$.tree.init(options);
+		});
+
+		function zOnClick(event, treeId, treeNode) {
+			var treeId = treeNode.id;
+			var treeName = treeNode.name;
+			$("#treeId").val(treeId);
+			$("#treeName").val(treeName);
+		}
+	</script>
+</@footer>
+</@pageTheme>

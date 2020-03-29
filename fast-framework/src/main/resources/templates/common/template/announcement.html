@@ -1,0 +1,57 @@
+<#include "/common/include.html">
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8" />
+<title>${noticeTitle}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" >
+<link rel="shortcut icon" href="../../statics/img/favicon.ico">
+<meta name="renderer" content="webkit"><base target="_blank" />
+    <style type="text/css">
+a{text-decoration:none;color:#0072c6;}a:hover{text-decoration:none;color:#004d8c;}
+body{width:960px;margin:0 auto;padding:10px;font-size:14px;line-height:24px;color:#454545;font-family:'Microsoft YaHei UI','Microsoft YaHei',DengXian,SimSun,'Segoe UI',Tahoma,Helvetica,sans-serif;}
+h1{font-size:30px;line-height:80px;font-weight:300;margin-bottom:10px;}
+/*h2{font-size:20px;line-height:25px;font-weight:100;margin:10px 0;}*/
+/*p{margin-bottom:10px;font-size:14px;}*/
+hr{margin:20px 0;border:0;border-top:1px solid #dadada}
+img{width:34px;height:34px;border:0;float:left;margin-right:10px;}
+span{display:block;font-size:12px;line-height:12px;}
+.browser{padding:10px 0;}
+.browser li{width:180px;height:34px;line-height:22px;float:left;list-style:none;padding-left:25px}
+.clean{clear:both;}
+.ibox-content {
+    background-color: #ffffff !important;
+    color: inherit;
+    padding: 15px 25px 20px 30px;
+    border-color: #e7eaec;
+    -webkit-border-image: none;
+    -o-border-image: none;
+    border-image: none;
+    /*border-style: solid solid none;*/
+    border: 1px solid #ddd;
+}
+</style>
+</head><body>
+<div style="width:100%;text-align: center;"><h1>${noticeTitle}</h1></div>
+<div style="width:100%;font-size: 12px;margin-bottom: -10px;">
+    <div style="width: 100%;">
+        <span style="text-align: left; width: 20%;float: left">发布时间: ${startTime?string('yyyy-MM-dd HH:mm:ss')}</span> <span style="text-align: center; width: 80%;">等级:
+            <#list dict.getType('sys_notice_level')>
+                <#items as d>
+                    <#if d.status =='0' >
+                        <#if d.dictValue == noticeLevel >${d.dictLabel}</#if>
+                    </#if>
+                </#items>
+            </#list>
+        </span>
+    </div>
+</div>
+<hr>
+${noticeContent}
+<hr>
+<div style="width:100%;text-align: right;font-size: 12px;">
+    发布人: ${createBy}
+</div>
+</body>
+</html>
+</@pageTheme>

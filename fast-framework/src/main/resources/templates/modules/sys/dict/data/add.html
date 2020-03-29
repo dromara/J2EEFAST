@@ -1,0 +1,140 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="新增字典数据"/>
+<@addorEdit fromId="form-dict-add">
+    <div class="form-group">
+        <label class="col-sm-3 control-label "><span style="color: red; ">*</span>字典标签：</label>
+        <div class="col-sm-8">
+            <input class="form-control" type="text" name="dictLabel"  required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label "><span style="color: red; ">*</span>字典键值：</label>
+        <div class="col-sm-8">
+            <input class="form-control" type="text" name="dictValue" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">字典类型：</label>
+        <div class="col-sm-8">
+            <input class="form-control" type="text"  name="dictType" readonly="true" value="${dictType}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span style="color: red; ">*</span>系统内置：</label>
+        <div class="col-sm-8">
+            <#list dict.getType('sys_yes_no')>
+                <#items as d>
+                    <#if d.status =='0' >
+                        <div class="radio-box">
+                            <input type="radio" id="${d.dictCode}" name="isSys"
+                                   value="${d.dictValue}"  <#if d.isDefault =='Y' >checked</#if>>
+                            <label for="${d.dictCode}" text="${d.dictLabel}">${d.dictLabel}</label>
+                        </div>
+                    </#if>
+                </#items>
+            </#list>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">CSS类名：</label>
+        <div class="col-sm-8">
+            <input class="form-control" type="text"  name="cssClass">
+            <span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i> 如:class="red", 请填写:red</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">CSS样式：</label>
+        <div class="col-sm-8">
+            <input class="form-control" type="text" name="cssStyle">
+            <span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i> 如：style="color:red", 请填写：color:red</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span style="color: red; ">*</span>字典排序：</label>
+        <div class="col-sm-8">
+            <input class="form-control" type="text" name="dictSort" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><@ctx.i18n text = "回显样式"/>：
+<#--            <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="<@ctx.i18n text = "回显样式"/>"-->
+<#--               data-content="table表格字典列显示样式属性">-->
+<#--                <i class="fa fa-question-circle-o" style="color: orange"></i></a>-->
+            <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="<@ctx.i18n text = "回显样式"/>"
+               data-content="table表格字典列显示样式属性">
+                <i class="fa fa-question-circle-o" style="color: orange"></i></a>
+        </label>
+        <div class="col-sm-8">
+            <select name="listClass" class="form-control">
+                <option value="">---请选择---</option>
+                <option value="default">默认--default</option>
+                <option value="primary">主要--primary</option>
+                <option value="success">成功--success</option>
+                <option value="info">   信息--info</option>
+                <option value="warning">警告--warning</option>
+                <option value="danger"> 危险--danger</option>
+            </select>
+<#--            <span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: orange"></i> table表格字典列显示样式属性</span>-->
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span style="color: red; ">*</span>系统默认：</label>
+        <div class="col-sm-8">
+            <#list dict.getType('sys_yes_no')>
+                <#items as d>
+                    <#if d.status =='0' >
+                        <div class="radio-box">
+                            <input type="radio" id="${d.dictCode}" name="isDefault"
+                                   value="${d.dictValue}"  <#if d.isDefault =='Y' >checked</#if>>
+                            <label for="${d.dictCode}" text="${d.dictLabel}">${d.dictLabel}</label>
+                        </div>
+                    </#if>
+                </#items>
+            </#list>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span style="color: red; ">*</span>状态：</label>
+        <div class="col-sm-8">
+            <#list dict.getType('sys_normal_disable')>
+                <#items as d>
+                    <#if d.status =='0' >
+                        <div class="radio-box">
+                            <input type="radio" id="${d.dictCode}" name="status"
+                                   value="${d.dictValue}"  <#if d.isDefault =='Y' >checked</#if>>
+                            <label for="${d.dictCode}" text="${d.dictLabel}">${d.dictLabel}</label>
+                        </div>
+                    </#if>
+                </#items>
+            </#list>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">备注：</label>
+        <div class="col-sm-8">
+            <textarea id="remark" name="remark" class="form-control"></textarea>
+        </div>
+    </div>
+</@addorEdit>
+<@footer>
+<script>
+    var prefix = baseURL + "sys/dict/data";
+
+    $("#form-dict-add").validate({
+        rules:{
+            dictSort:{
+                digits:true
+            },
+        },
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if (opt.validate.form()) {
+            opt.operate.save(prefix + "/add", $('#form-dict-add').serialize());
+        }
+    }
+</script>
+</@footer>
+</@pageTheme>

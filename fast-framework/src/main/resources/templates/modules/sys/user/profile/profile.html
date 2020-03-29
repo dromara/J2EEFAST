@@ -1,0 +1,309 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="用户个人信息"/>
+<body class="gray-bg animated fadeInRight">
+    <input id="userId" name="userId" type="hidden" value="${user.userId}" />
+    <section class="section-content">
+    <div class="row">
+        <div class="col-sm-3 pr5">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title ibox-title-gray dashboard-header gray-bg">
+                    <h5><@ctx.i18n text = "个人资料"/></h5>
+                </div>
+                <div class="ibox-content animated fadeInDown">
+                    <div class="text-center">
+                        <p><img onclick="avatar()" class="img-circle img-lg" src="${ctxStatic}${((user.avatar!'')?length>0)?string((user.avatar!''),"/statics/img/user2-160x160.jpg")}"></p>
+                        <p><a href="javascript:avatar()"><@ctx.i18n text = "修改头像"/></a></p>
+                    </div>
+                    <ul class="list-group list-group-striped">
+                        <li class="list-group-item"><i class="fa fa-user"></i>
+                            <b class="font-noraml"><@ctx.i18n text = "账号"/></b>：</b>
+                            <p class="pull-right"><label class="label label-success">${user.username?default("/")}</label></p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-key"></i>
+                            <b  class="font-noraml"><@ctx.i18n text = "密码安全等级"/>：</b>
+                            <p class="pull-right" >
+                                <#list dict.getType('sys_user_passwordModifySecurityLevel')>
+                                    <#items as d>
+                                        <#if d.status =='0' && d.dictValue == user.pwdSecurityLevel>
+                                            <label class="label label-${d.listClass}"><@ctx.i18n text = "${d.dictLabel}"/></label>
+                                        </#if>
+                                    </#items>
+                                </#list>
+                            </p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-phone"></i>
+                            <b  class="font-noraml"><@ctx.i18n text = "手机号码"/>：</b>
+                            <p class="pull-right">${user.mobile?default("/")}</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-envelope-o"></i>
+                            <b  class="font-noraml"><@ctx.i18n text = "电子邮箱"/>：</b>
+                            <p class="pull-right" >${user.email?default("/")}</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-map-marker"></i>
+                            <b  class="font-noraml"><@ctx.i18n text = "上次登陆地点"/>：</b>
+                            <p class="pull-right" >${user.loginLocation?default("/")}</p>
+                        </li>
+                        <li class="list-group-item"><i class="fa fa-calendar"></i>
+                            <b  class="font-noraml"><@ctx.i18n text = "上次登陆时间"/>：</b>
+                            <p class="pull-right" >${(user.loginTime?string('yyyy-MM-dd HH:mm:ss'))?default("/")}</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-9 about">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title ibox-title-gray dashboard-header">
+                    <h5><@ctx.i18n text = "基本资料"/></h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <#if active=="info">
+                                <li class="active"><a href="#user_info" data-toggle="tab" aria-expanded="true"><@ctx.i18n text = "基本资料"/></a></li>
+                                <li><a href="#modify_password" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "修改密码"/></a></li>
+                            <#elseif active=="password">
+                                <li ><a href="#user_info" data-toggle="tab" aria-expanded="true"><@ctx.i18n text = "基本资料"/></a></li>
+                                <li class="active"><a href="#modify_password" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "修改密码"/></a></li>
+                             </#if>
+                        </ul>
+                        <div class="tab-content">
+                            <!--用户信息-->
+                            <div class="tab-pane<#if active=="info"> active</#if> animated fadeInDown" id="user_info">
+                                <form class="form-horizontal" id="form-user-edit">
+                                    <!--隐藏ID-->
+                                    <input name="id" id="id" type="hidden">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "用户姓名"/>：</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="name" value="${user.name?default("")}" placeholder="<@ctx.i18n text = "用户姓名"/>">
+                                                <span class="input-group-addon"><i class="fa fa-fw fa-user"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "手机号码"/>：</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="mobile" name="mobile" maxlength="11" value="${user.mobile?default("/")}" placeholder="<@ctx.i18n text = "手机号码"/>">
+                                                <span class="input-group-addon"><i class="fa fa-fw fa-mobile"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"><@ctx.i18n text = "电子邮箱"/>：</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="email" value="${user.email?default("/")}" placeholder="<@ctx.i18n text = "电子邮箱"/>">
+                                                <span class="input-group-addon"><i class="fa fa-fw fa-envelope"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-4 col-sm-8">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="submitUserInfo()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!--修改密码-->
+                            <div class="tab-pane<#if active=="password"> active</#if> animated fadeInDown" id="modify_password">
+                                <form class="form-horizontal" id="form-user-resetPwd">
+                                    <#if user.pwdSecurityLevel == "0">
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <div class="alert alert-dismissible callout callout-danger">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                                    <p><i class="icon fa fa-info"></i><@ctx.i18n text = "您的密码还是初始密码,为了您的账户安全请尽快修改密码!"/></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <#elseif user.pwdSecurityLevel == "1" || user.pwdSecurityLevel == "2">
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <div class="alert alert-dismissible callout callout-warning">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                                    <p><i class="icon fa fa-info"></i><@ctx.i18n text = "您的密码强度级别低,为了您的账户安全请尽快修改密码!"/></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </#if>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "旧密码"/>：</label>
+                                        <div class="col-sm-8">
+                                            <input type="password" class="form-control" name="oldPassword" placeholder="<@ctx.i18n text = "旧密码"/>">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "新密码"/>：</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" name="newPassword" id="newPassword" placeholder="<@ctx.i18n text = "新密码"/>">
+                                                <span class="input-group-addon" title="<@ctx.i18n text = "点击显示密码"/>"
+                                                      data-toggle="tooltip"
+                                                      data-placement="bottom"
+                                                      data-custom-class="tooltip-warning"
+                                                      onclick="changePass();"><i class="fa fa-fw fa-key text-danger"></i></span>
+                                            </div>
+                                            <span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red;"></i><@ctx.i18n text = "密码填写建议：长度不小于8位，且包含，大写英文字母、小写英文字母、数字和符号。"/></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"><span style="color: red;">*</span><@ctx.i18n text = "确认新密码"/>：</label>
+                                        <div class="col-sm-8">
+                                            <input type="password" class="form-control" name="confirmPassword" placeholder="<@ctx.i18n text = "确认新密码"/>">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-4 col-sm-8">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="submitChangPassword()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	</section>
+    <@footer>
+    <script>
+	    /*用户管理-头像*/
+	    function avatar() {
+	        var url = baseURL + 'sys/user/profile/avatar';
+	        console.log("--->>>");
+	        opt.modal.open("<@ctx.i18n text = "修改头像"/>", url);
+	    }
+
+	    function changePass(){
+	        if($('#newPassword').attr('type') == "password"){
+                $('[data-toggle="tooltip"]').attr('data-original-title',"<@ctx.i18n text = "点击隐藏密码"/>");
+                $('#newPassword').attr('type',"text");
+            }else{
+                $('[data-toggle="tooltip"]').attr('data-original-title',"<@ctx.i18n text = "点击显示密码"/>");
+                $('#newPassword').attr('type','password');
+            }
+        }
+	    
+	    /*用户信息-修改*/
+	    $("#form-user-edit").validate({
+			onkeyup: false,
+			rules:{
+				name:{
+					required:true,
+				},
+                mobile:{
+                    isMobile: opt.common.trim($("input[name='mobile']").val()),
+                    remote: {
+                        url: baseURL + "sys/user/checkMobileUnique",
+                        type: "POST",
+                        dataType: "html",           /* 接受数据格式 */
+                        data: {
+                            "mobile": function() {
+                                return opt.common.trim($("input[name='mobile']").val());
+                            },
+                            "userId":function() {
+                                return opt.common.trim($("#userId").val());
+                            }
+                        },
+                        dataFilter: function(data, type) {
+                            return opt.validate.unique(data);
+                        }
+                    }
+                }
+			},
+			messages: {
+				"name": {
+	                required: "请输入用户名称"
+	            },
+				"mobile":{
+					required: "请输入手机号码",
+		        	remote: "手机号码已经存在"
+				}
+		    },
+		    focusCleanup: true
+		});
+		
+		function submitUserInfo() {
+	        if (opt.validate.form("form-user-edit")) {
+	        	opt.operate.saveModal(baseURL + "sys/user/profile/updateUser", $('#form-user-edit').serialize(),resultExe);
+	        }
+	    }
+
+	    function resultExe(r){
+            if(r.code == opt.variable.web_status.SUCCESS){
+                 opt.modal.success($.i18n.prop("操作成功!"), function () {
+                     parent.location.reload();
+                     return;
+                 });
+            }else{
+                opt.modal.warning(r.msg);
+                return;
+            }
+        }
+
+	    /*用户管理-修改密码*/
+	    $("#form-user-resetPwd").validate({
+	    	onkeyup: false,
+			rules:{
+				oldPassword:{
+					required:true,
+					remote: {
+	                    url: baseURL + "sys/user/profile/checkPassword",
+	                    type: "get",
+	                    dataType: "html",
+	                    data: {
+	                        password: function() {
+	                            return $("input[name='oldPassword']").val();
+	                        }
+	                    },
+                        dataFilter: function(data, type) {
+                            return opt.validate.unique(data);
+                        }
+	                }
+				},
+				newPassword: {
+	                required: true,
+	                minlength: 8,
+	    			maxlength: 20
+	            },
+	            confirmPassword: {
+	                required: true,
+	                equalTo: "#newPassword"
+	            }
+			},
+			messages: {
+	            oldPassword: {
+	                required: "请输入原密码",
+	                remote: "原密码错误"
+	            },
+	            newPassword: {
+	                required: "请输入新密码",
+	                minlength: "密码不能小于8个字符",
+	                maxlength: "密码不能大于20个字符"
+	            },
+	            confirmPassword: {
+	                required: "请再次输入新密码",
+	                equalTo: "两次密码输入不一致"
+	            }
+
+	        },
+	        focusCleanup: true
+		});
+		
+		function submitChangPassword () {
+	        if (opt.validate.form("form-user-resetPwd")) {
+	        	opt.operate.saveModal(baseURL + "sys/user/profile/resetPwd", $('#form-user-resetPwd').serialize(),resultExe);
+	        }
+	    }
+	</script>
+    </@footer>
+</@pageTheme>

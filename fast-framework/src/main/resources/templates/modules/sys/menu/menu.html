@@ -1,0 +1,123 @@
+<#include "/common/include.html">
+<@pageTheme mark="${config.optimize()?string('true','false')}">
+<@header title="菜单列表"/>
+<@search fromId="menu-form">
+    <div class="select-list">
+        <ul>
+            <li>
+                <@ctx.i18n text = "菜单名称"/>：<input type="text" name="name"/>
+            </li>
+            <li>
+                <@ctx.i18n text = "菜单状态"/>：
+                <select name="hide" class="form-control">
+                    <option value=""><@ctx.i18n text = "所有"/></option>
+                    <#list dict.getType('sys_show_hide')>
+                        <#items as d>
+                            <#if d.status =='0' >
+                                <option value="${d.dictValue}" text="<@ctx.i18n text = "${d.dictLabel}"/>"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                            </#if>
+                        </#items>
+                    </#list>
+                </select>
+            </li>
+            <li>
+                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
+                <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+            </li>
+        </ul>
+    </div>
+</@search>
+<@table tableId="bootstrap-tree-table">
+    <@shiro.hasPermission name="sys:menu:add">
+        <a class="btn btn-success" onclick="opt.operate.add(0)">
+            <i class="fa fa-plus"></i> <@ctx.i18n text = "新增"/>
+        </a>
+    </@shiro.hasPermission>
+     <@shiro.hasPermission name="sys:menu:edit">
+        <a class="btn btn-primary" onclick="opt.operate.edit()">
+            <i class="fa fa-edit"></i> <@ctx.i18n text = "修改"/>
+        </a>
+    </@shiro.hasPermission>
+    <a class="btn btn-info" id="expandAllBtn">
+        <i class="fa fa-exchange"></i> <@ctx.i18n text = "展开/折叠"/>
+    </a>
+</@table>
+<@footer>
+<script>
+    var addFlag = "${permission.hasPermi('sys:menu:add')}";
+    var editFlag = "${permission.hasPermi('sys:menu:edit')}";
+    var delFlag = "${permission.hasPermi('sys:menu:del')}";
+    var visible = ${permission.isPermitteds("sys:menu:edit,sys:menu:del,sys:menu:add")?string('true', 'false')};
+    var datas = ${dict.getDictListJson('sys_show_hide')};
+    var datas_type = ${dict.getDictListJson('sys_menu_type')};
+    var datas_target= ${dict.getDictListJson('sys_menu_target')};
+    var prefix = baseURL + "sys/menu";
+
+    $(function() {
+
+        var options = {
+            code: "menuId",
+            parentCode: "parentId",
+            uniqueId: "menuId",
+            expandAll: false,
+            expandFirst: false,
+            url: prefix + "/list",
+            addUrl: prefix + "/add/{id}",
+            editUrl: prefix + "/edit/{id}",
+            delUrl: prefix + "/del/{id}",
+            modalName: "菜单",
+            columns: [
+                {field: 'selectItem', radio: true},
+                {title: "<@ctx.i18n text = "菜单名称"/>", field: 'name', width: '20%',align: "left",halign:"left", formatter: function(value, row, index) {
+                        if (opt.common.isEmpty(row.icon)) {
+                            return row.name;
+                        } else {
+                            return '<i class="' + row.icon + '"></i> <span class="nav-label">' + row.name + '</span>';
+                        }}
+                },
+                {field: 'moduleCodes', title: "<@ctx.i18n text = "归属模块"/>", width: '10%'},
+                {title: "<@ctx.i18n text = "请求地址"/>", field: 'url', width: '15%'},
+                {title: "<@ctx.i18n text = "目标"/>", field: 'target', width: '15%', formatter: function(value, row, index) {
+                        if(row.type === 1){
+                            return $.table.selectDictLabel(datas_target, value);
+                        }
+                    }
+                },
+                {title: "<@ctx.i18n text = "类型"/>", field: 'type', width: '10%', formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(datas_type, value);
+                    }
+                },
+                {field: 'hide',title: "<@ctx.i18n text = "可见"/>", width: '10%', formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(datas, value);}
+                },
+                {field: 'perms', title: "<@ctx.i18n text = "权限标识"/>", width: '15%'},
+                {title: "<@ctx.i18n text = "操作"/>", width: '20%', class:'action', formatter: function(value, row, index) {
+                        /*if(row.type != 2){
+                            var actions = [];
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.menuId + '\')"><i class="fa fa-edit"></i><@ctx.i18n text = "修改"/></a> ');
+                            actions.push('<a class="btn btn-info btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="opt.operate.add(\'' + row.menuId + '\')"><i class="fa fa-plus"></i><@ctx.i18n text = "新增"/></a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.menuId + '\')"><i class="fa fa-trash"></i><@ctx.i18n text = "删除"/></a>');
+                            return actions.join('');
+                        }else{
+                            var actions = [];
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.menuId + '\')"><i class="fa fa-edit"></i><@ctx.i18n text = "修改"/></a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.menuId + '\')"><i class="fa fa-trash"></i><@ctx.i18n text = "删除"/></a>');
+                            return actions.join('');
+                        }*/
+                        var actions = [];
+                        actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "修改"/>" onclick="opt.operate.edit(\'' + row.menuId + '\')"><i class="fa fa-edit"></i></a> ');
+                        if(row.type != 2){
+                            actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "新增"/>" onclick="opt.operate.add(\'' + row.menuId + '\')"><i class="fa fa-plus"></i></a> ');
+                        }
+                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.menuId + '\')"><i class="fa fa-trash-o"></i></a> ');
+                        return actions.join('');
+
+                    }
+                }]
+        };
+        /*初始化*/
+        $.treeTable.init(options);
+    })
+</script>
+</@footer>
+</@pageTheme>

@@ -1,0 +1,183 @@
+<!--/* Fast 生成器自动生成 */ -->
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="公告列表">
+    </@header>
+    <@search fromId="module-form">
+        <div class="select-list">
+            <ul>
+                <li>
+                    <@ctx.i18n text = "公告标题"/>：
+                    <input type="text" name="noticeTitle"/>
+                </li>
+                <li>
+                    <@ctx.i18n text = "类型"/>：
+                    <select name="noticeType" class="form-control">
+                        <option value=""><@ctx.i18n text = "所有"/></option>
+                        <#list dict.getType('sys_notice_type')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <option value="${d.dictValue}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                </#if>
+                            </#items>
+                        </#list>
+                    </select>
+                </li>
+                <li>
+                    <@ctx.i18n text = "状态"/>：
+                    <select name="status" class="form-control">
+                        <option value=""><@ctx.i18n text = "所有"/></option>
+                        <#list dict.getType('sys_notice_status')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <option value="${d.dictValue}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                </#if>
+                            </#items>
+                        </#list>
+                    </select>
+                </li>
+                <li>
+                    <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>  <@ctx.i18n text = "查询"/></a>
+                    <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i> <@ctx.i18n text = "重置"/></a>
+                </li>
+            </ul>
+        </div>
+    </@search>
+    <@table tableId="bootstrap-table">
+
+        <@shiro.hasPermission name="sys:notice:add">
+            <a class="btn btn-success" onclick="opt.operate.addTab()"><i class="fa fa-plus"></i> <@ctx.i18n text = "新增"/></a>
+        </@shiro.hasPermission>
+        <@shiro.hasPermission name="sys:notice:edit">
+            <a class="btn btn-primary single disabled" onclick="opt.operate.editTab()"><i class="fa fa-pencil-square-o"></i> <@ctx.i18n text = "修改"/></a>
+        </@shiro.hasPermission>
+        <@shiro.hasPermission name="sys:notice:del">
+            <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">
+                <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>
+            </a>
+        </@shiro.hasPermission>
+    </@table>
+    <@footer>
+        <script>
+            var editFlag = "${permission.hasPermi("sys:notice:edit")}";
+            var listFlag = "${permission.hasPermi("sys:notice:add")}";
+            var delFlag = "${permission.hasPermi("sys:notice:del")}";
+            var visible = ${permission.isPermitteds("sys:notice:edit,
+    sys:notice:del,sys:notice:add")?string('true', 'false')};
+            var statusDatas = ${dict.getDictListJson('sys_notice_status')};
+            var typeDatas = ${dict.getDictListJson('sys_notice_type')};
+            var levelDatas = ${dict.getDictListJson('sys_notice_level')};
+            var prefix = baseURL + "sys/notice";
+
+            $(function() {
+                var options = {
+                    url: prefix + "/list",
+                    addUrl: prefix + "/add",
+                    editUrl: prefix + "/edit/{id}",
+                    delUrl: prefix + "/del",
+                    modalName: "公告",
+                    uniqueId:    'id'                           , /* 唯一ID */
+                    columns: [{
+                        title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);
+                        }
+                    }
+                        ,{
+                            field : 'id'
+                            ,title : '<@ctx.i18n text = "公告编号"/>'
+                            /*,visible: false*/
+                        }
+                        ,{
+                            field : 'noticeTitle'
+                            ,title : '<@ctx.i18n text = "标题"/>'
+                            ,formatter: function(value, row, index) {
+                                return "<i class='"+row.icon+"'></i> "+value;
+                            }
+                        }
+                        ,{
+                            field : 'noticeTipTitle'
+                            ,title : '<@ctx.i18n text = "公告提示栏"/>'
+                            ,formatter: function(value, row, index) {
+                                return $.table.tooltip(value,35);
+                            }
+                        }
+                        ,{
+                            field : 'noticeType'
+                            ,title : '<@ctx.i18n text = "公告类型"/>'
+                            ,formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(typeDatas, value);
+                            }
+                        }
+                        ,{
+                            field : 'noticeLevel'
+                            ,title : '<@ctx.i18n text = "等级"/>'
+                            ,formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(levelDatas, value);
+                            }
+                        }
+                        ,{
+                            field : 'startTime'
+                            ,title : '<@ctx.i18n text = "开始时间"/>'
+                        }
+                        ,{
+                            field : 'endTime'
+                            ,title : '<@ctx.i18n text = "结束时间"/>'
+                        }
+                        ,{
+                            field : 'status'
+                            ,title : '<@ctx.i18n text = "状态"/>'
+                            ,formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(statusDatas, value);
+                            }
+                        }
+                        ,{
+                            title:"<@ctx.i18n text = "操作"/>"
+                            ,align: 'left'
+                            ,visible:visible
+                            ,class:'action'
+                            ,formatter: function(value, row, index) {
+                                var actions = [];
+                                actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "预览"/>" onclick="preview(\'' + row.htmlNo + '\')"><i class="fa fa-search"></i></a> ');
+                                actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "编辑"/>" onclick="opt.operate.editTab(\'' + row.id + '\')"><i class="fa fa-edit"></i></a> ');
+                                /*if(row.status === '0'){
+                                    actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "未发布"/>" onclick="disable(\'' + row.id + '\')"><i class="glyphicon glyphicon-ban-circle"></i></a> ');
+                                }else{
+                                    if(row.status === '1'){
+                                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "发布"/>" onclick="enable(\'' + row.id + '\')"><i class="glyphicon glyphicon-ok-circle"></i></a> ');
+                                    }
+                                }*/
+                                actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.id + '\')"><i class="fa fa-trash-o"></i></a> ');
+                                return actions.join('');
+                            }
+                        }
+                    ]
+                };
+                $.table.init(options);
+            });
+
+            /* 用户管理-停用 */
+            function disable(id) {
+                opt.modal.confirm("确认要停用模块吗？", function() {
+                    opt.operate.post(prefix + "/changeStatus", { "id": id, "status": 1 });
+                })
+            }
+
+            /* 用户管理启用 */
+            function enable(id) {
+                opt.modal.confirm("确认要发布公告\\通知吗?", function() {
+                    opt.operate.post(prefix + "/changeStatus", { "id": id, "status": 0 });
+                })
+            }
+            
+            /*预览*/
+            function preview(htmlNo) {
+                var options = {
+                    url: prefix + "/preview/" + htmlNo,
+                    title:'公告通知预览',
+                    btn:['<i class="fa fa-close"></i> '+$.i18n.prop("取消")],
+                };
+                opt.modal.openMainWin(options);
+            }
+        </script>
+    </@footer>
+</@pageTheme>

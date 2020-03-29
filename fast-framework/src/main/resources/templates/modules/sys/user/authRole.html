@@ -1,0 +1,116 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="角色授权"/>
+    <@addorEdit fromId="form-role-authorization">
+        <input id="userId" name="userId" type="hidden" value="${user.userId?default("")}"/>
+        <h4 class="form-header h4"><@ctx.i18n text = "基本信息"/></h4>
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "账号"/>：</label>
+                    <div class="col-sm-8">
+                        <input class="form-control" name="username" type="text" readonly="true"  value="${user.username?default("")}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <label class="col-sm-2"><span style="color: red; ">*</span><@ctx.i18n text = "用户姓名"/>：</label>
+                    <div class="col-sm-7">
+                        <input  class="form-control" name="name" type="text" readonly="true"  value="${user.name?default("")}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </@addorEdit>
+        <h4 class="form-header h4 mb5"><@ctx.i18n text = "分配角色"/></h4>
+        <div class="row">
+            <div class="col-md-12">
+                <@table tableId="bootstrap-table">
+                </@table>
+            </div>
+        </div>
+        <div class="hr-line-dashed"></div>
+        <div class="row" id="_addTab">
+            <div class="col-sm-offset-5 col-sm-10">
+                <button type="button" class="btn btn-sm btn-primary" onclick="opt.form.submit()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+                <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+            </div>
+        </div>
+    <@footer>
+        <script>
+            var data = ${roleIdList};
+            var prefix = baseURL + 'sys/user/authRole';
+            $(function() {
+                /*初始表格对象*/
+                var options = {
+                    url: prefix + "/list",
+                    sortName: "createTime",
+                    uniqueId: "roleId", /*唯一ID*/
+                    showSearch: false,
+                    showRefresh: false,
+                    showToggle: false,
+                    showColumns: false,
+                    clickToSelect: true,
+                    responseHandler:responseHandler,
+                    modalName: "角色",
+                    columns: [
+                        {
+                            field: 'state',
+                            checkbox: true
+                            ,formatter:function (value, row, index) {
+                                for(var i=0; i<data.length; i++){ /*设置默认勾选*/
+                                    if(data[i] == row.roleId){
+                                        return {
+                                            checked : true
+                                        };
+                                    }
+                                }
+                                return {
+                                    checked : false
+                                };
+                        }
+                        },
+                        {title: "序号",width:10,align:"center", formatter: function (value, row, index) {
+                                return $.table.serialNumber(index);
+                            }},
+                        {field: 'roleName', title: "<@ctx.i18n text = "角色名称"/>"},
+                        {field: 'roleKey', title: "<@ctx.i18n text = "权限字符"/>"}]
+                };
+                $.table.init(options);
+            });
+
+            function responseHandler(res) {
+                /**********************初始化默认选择记住我**********/
+                // $.each(res.page.list, function(i, row) {
+                //     for(var i=0; i<data.length; i++){
+                //         if(row['roleId'] == data[i]){
+                //             var selectedRows = opt.table.rememberSelecteds[opt.table.options.id];
+                //             if(opt.common.isNotEmpty(selectedRows)) {
+                //                 opt.table.rememberSelecteds[opt.table.options.id] = _['union'](selectedRows, row);
+                //             } else {
+                //                 opt.table.rememberSelecteds[opt.table.options.id] = _['union']([], row);
+                //             }
+                //         }
+                //     }
+                // })
+                // opt.table.rememberSelectedIds[opt.table.options.id] = _['union']([], data);
+                /*************************************************/
+            }
+
+            /*提交*/
+            function submitHandler(index, layero){
+                var rows = $.table.selectAllColumns();
+                if (rows.length == 0) {
+                    opt.modal.warning("请至少选择一条记录!");
+                    return;
+                }
+                var data = [];
+                data.push({"name": "userId", "value": $("#userId").val()});
+                data.push({"name": "roleIds", "value": rows});
+                opt.operate.saveTab(prefix + "/insertAuthRoles",data);
+            }
+
+        </script>
+    </@footer>
+</@pageTheme>

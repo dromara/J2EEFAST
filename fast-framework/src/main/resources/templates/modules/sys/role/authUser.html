@@ -1,0 +1,147 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="授权角色列表"/>
+<@search fromId="user-form">
+ <input id="roleId" name="roleId" type="hidden" value="${roleId}"/>
+ <div class="select-list">
+         <li>
+             <@ctx.i18n text = "登陆账号"/>:<input type="text" name="username"/>
+         </li>
+         <li>
+             <@ctx.i18n text = "邮箱"/>:<input type="text" name="email"/>
+         </li>
+         <li>
+             <@ctx.i18n text = "手机号码"/>:<input type="text" name="mobile"/>
+         </li>
+         <li>
+             <label><@ctx.i18n text = "所属公司"/></label>：
+             <select name="compId" class="form-control">
+                 <option value=""><@ctx.i18n text = "所有"/></option>
+                 <#list comps as comp>
+                     <option  value="${comp.id}">${comp.name}</option>
+                 </#list>
+             </select>
+         </li>
+         <li>
+             	<@ctx.i18n text = "用户状态"/>：
+             <select name="status" class="form-control">
+                 <option value=""><@ctx.i18n text = "所有"/></option>
+                 <#list dict.getType('sys_normal_disable')>
+                     <#items as d>
+                         <#if d.status =='0' >
+                             <option value="${d.dictValue}" text="<@ctx.i18n text = "${d.dictLabel}"/>"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                         </#if>
+                     </#items>
+                 </#list>
+             </select>
+         </li>
+         <li>
+             <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
+             <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+         </li>
+     </ul>
+ </div>
+</@search>
+<@table tableId="bootstrap-table">
+	<@shiro.hasPermission name="sys:user:add">
+       <a class="btn btn-success" onclick="selectUser()"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "批量添加用户"/></a>
+     </@shiro.hasPermission>
+     <@shiro.hasPermission name="sys:user:edit">
+         <a class="btn btn-primary multiple disabled" onclick="cancelAuthUserAll()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "批量取消"/></a>
+     </@shiro.hasPermission>
+    <a class="btn btn-warning" onclick="opt.modal.closeTab()">
+        <i class="fa fa-reply-all"></i> <@ctx.i18n text = "关闭"/>
+    </a>
+</@table>
+<@footer>
+<script>
+    var editFlag = "${permission.hasPermi('sys:user:edit')}";
+    var delFlag = "${permission.hasPermi('sys:user:del')}";
+    var resetPwdFlag = "${permission.hasPermi('sys:user:resetPwd')}";
+    var visible = ${permission.isPermitteds("sys:user:edit,
+    sys:user:del,sys:user:resetPwd")?string('true', 'false')};
+    var datas = ${dict.getDictListJson('sys_user_show_hide')};
+    var prefix = baseURL + 'sys/role/authUser';
+
+    $(function() {
+        /* 初始表格对象 */
+        var options = {
+            url: prefix + "/list",
+            addUrl: prefix + "/add",
+            delUrl: baseURL + "tbc/user/del",
+            sortName: "createTime",
+            queryParams: queryParams,
+            uniqueId: "userId", /* 唯一ID */
+            modalName: "用户角色权限",
+            columns: [
+                {
+                    title: "<@ctx.i18n text = "序号"/>", width: 10, formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+                {field: 'username', title: "<@ctx.i18n text = "账号"/>"},
+                {field: 'name', title: "<@ctx.i18n text = "姓名"/>"},
+                {field: 'compName', title: "<@ctx.i18n text = "公司"/>"},
+                {field: 'email', title: "<@ctx.i18n text = "邮箱"/>"},
+                {field: 'mobile', title: "<@ctx.i18n text = "手机"/>"},
+                {
+                    field: 'status', title: "<@ctx.i18n text = "状态"/>", formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(datas, value);
+                    }
+                },
+                {field: 'createTime', title: "<@ctx.i18n text = "创建时间"/>", sortable: true},
+                {
+                    title: "<@ctx.i18n text = "操作"/>",
+                    visible: visible,
+                    class: 'action',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="cancelAuthUser(\'' + row.userId + '\')"><i class="fa fa-trash-o"></i></a> ');
+                        return actions.join('');
+                    }
+                }
+            ]
+        };
+        $.table.init(options);
+    });
+
+    function queryParams(params) {
+        var search = $.table.queryParams(params);
+        search.roleId = $("#roleId").val();
+        return search;
+    }
+    
+    /*取消授权*/
+    function cancelAuthUser(userId) {
+        opt.modal.confirm("<@ctx.i18n text = "确定确认要取消该用户角色吗?"/>", function() {
+            var data = [];
+            data.push({"name": "roleId", "value": $("#roleId").val()});
+            data.push({"name": "userIds", "value": userId});
+            opt.operate.post(prefix + "/cancel",data);
+        })
+    }
+
+    /*批量添加用户*/
+    function selectUser(){
+        var url = prefix + '/selectUser/' + $("#roleId").val();
+        opt.modal.open("<@ctx.i18n text ="选择用户"/>", url,1000);
+    }
+
+    /* 分配用户-批量取消授权 */
+    function cancelAuthUserAll() {
+        var rows = $.table.selectAllColumns();
+        /*if (rows.length == 0) {
+            opt.modal.warning("请至少选择一条记录!");
+            return;
+        }*/
+        opt.modal.confirm("确认要删除选中的" + rows.length + "条数据吗?", function() {
+            var data = [];
+            data.push({"name": "roleId", "value": $("#roleId").val()});
+            data.push({"name": "userIds", "value": rows});
+            opt.operate.post(prefix + "/cancel",data);
+        });
+    }
+
+</script>
+</@footer>
+</@pageTheme>

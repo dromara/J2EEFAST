@@ -1,0 +1,165 @@
+<header class="main-header">
+    <!-- Logo -->
+    <a href="javascript:void(0);" class="logo">
+        <span class="logo-mini"><b>${config.getKeyToValue("SYS_CONFIG_TITLE_MINI")}</b></span>
+        <span class="logo-lg">${config.getTitle()}</span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+            <span class="sr-only">导航切换</span>
+        </a>
+        <div class="navbar-custom-menu pull-left">
+            <ul class="nav navbar-nav" id="topMenu">
+                <#if modules?? && (modules?size > 0)>
+                    <#list modules as c>
+                        <li class="treeview"><a href="javascript:" class="addTabPage" title="${c.moduleName}" data-code="${c.moduleCode}"><i class="fa-fw ${c.icon}"></i> <span><@ctx.i18n text = "${c.moduleName}"/></span></a></li>
+                    </#list>
+                </#if>
+            </ul>
+            <script>
+                $(function () {
+                    /*顶部菜单ID*/
+                    var topMenuId = 'topMenu';
+                    var code = $('#' + topMenuId).children('li:first-child').find('a').attr('data-code');
+                    if(typeof(code) != "undefined"){
+                        $("#leftMenu-" + code).removeClass('hide');
+                        $('#' + topMenuId).children('li:first-child').addClass('active');
+                    }
+                    /*顶部菜单添加事件*/
+                    $('#'+topMenuId).on('click', '.addTabPage', function (e) {
+                        $('#'+topMenuId+' li').removeClass('active');
+                        $(this).closest('li').addClass('active');
+                        var code = $(this).data("code");
+                        if ($("#leftMenu-" + code).length > 0) {
+                            $("#leftMenu > ul").addClass('hide');
+                            $("#leftMenu-" + code).removeClass('hide');
+                        }
+                    });
+                })
+            </script>
+        </div>
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <!-- Messages: style can be found in dropdown.less-->
+                <li class="dropdown messages-menu">
+                    <a href="#" id="fullScreen" data-toggle="tooltip"
+                       data-placement="bottom"
+<#--                       data-custom-class="tooltip-primary"-->
+                       title="<@ctx.i18n text = "全屏显示"/>" class="dropdown-toggle">
+                        <i class="fa icon-size-fullscreen"></i>
+                        <@ctx.i18n text = "全屏显示"/>
+                    </a>
+                </li>
+                <li class="dropdown messages-menu">
+                    <a href="#" id="lockOs" data-toggle="tooltip"
+                       data-placement="bottom"
+<#--                       data-custom-class="tooltip-primary"-->
+                       title="<@ctx.i18n text = "锁屏"/>" class="dropdown-toggle">
+                        <i class="fa fa-lock"></i>
+                        <@ctx.i18n text = "锁屏"/>
+                        <span data-index="_new" class="label label-danger"><@ctx.i18n text = "新"/></span>
+                    </a>
+                </li>
+               <#-- <li class="dropdown messages-menu">
+                    <a href="#" id="switchSkin" class="dropdown-toggle" data-toggle="dropdown" data-original-title="切换主题">
+                        <i class="fa fa-dashboard jump5"></i>
+                    </a>
+                </li>-->
+
+<#--                <li class="dropdown messages-menu">-->
+<#--                    <a href="javascript:;" class="dropdown-toggle" >-->
+<#--                        <i class="fa fa-refresh"></i>-->
+<#--                        <span class="label label-success">4</span>-->
+<#--                    </a>-->
+<#--                    <ul class="dropdown-menu">-->
+<#--                        <li class="mt5"></li>-->
+<#--                        <li><a href="javascript:;" class="refresh" tag="1"><i class="fa fa-refresh text-green" aria-hidden="true"></i>&nbsp;刷新当前</a></li>-->
+<#--                        <li><a href="javascript:;" class="closePageOther"><i class="fa fa-ban text-yellow" aria-hidden="true"></i>&nbsp;关闭其他</a></li>-->
+<#--                        <li><a href="javascript:;" class="closePageAll"><i class="fa fa-times text-red" aria-hidden="true"></i>&nbsp;关闭全部</a></li>-->
+<#--                        <li class="mt10"></li>-->
+<#--                        &lt;#&ndash; <li class="footer"><a href="#">关闭</a></li>&ndash;&gt;-->
+<#--                    </ul>-->
+<#--                </li>-->
+
+                <!-- Notifications: style can be found in dropdown.less -->
+                <li class="dropdown messages-menu">
+                    <a href="#" data-toggle="control-sidebar">
+                        <i class="fa fa-bell-o"></i>
+                        <span class="label label-warning">10</span>
+                    </a>
+                </li>
+                <!--  -->
+                <li class="dropdown tasks-menu">
+                    <a href="javascript:void(0);" class="dropdown-toggle">
+                        <i class="fa fa-language"></i>
+                        <@ctx.i18n text = "中文(简体)"/>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="mt5"></li>
+                        <#list dict.getType('sys_lang_type')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <li><a href="${ctxStatic}/index?_lang=${d.dictValue}">${d.dictLabel}</a></li>
+                                </#if>
+                            </#items>
+                        </#list>
+                        <li class="mt5"></li>
+                    </ul>
+                </li>
+                <!-- User Account: style can be found in dropdown.less -->
+                <li class="dropdown user user-menu">
+                    <a href="javascript:void(0);" class="dropdown-toggle">
+                        <img src="${ctxStatic}<#if user.avatar?? && user.avatar!="">${user.avatar}<#else>/statics/img/user2-160x160.jpg</#if>"
+                             class="user-image" alt="User Image">
+                        <span class="hidden-xs">${user.name}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- 头像图片User image -->
+                        <li class="user-header">
+                            <img src="${ctxStatic}<#if user.avatar?? && user.avatar!="">${user.avatar}<#else>/statics/img/user2-160x160.jpg</#if>"
+                                 class="img-circle" alt="User Image">
+                            <p>
+                            <h4><@ctx.i18n text = "上次登陆时间"/> :
+                                <#if user.loginTime?exists>
+                                    ${user.loginTime?string('yyyy-dd-MM HH:mm:ss')}
+                                </#if>
+                                </h4>
+                            <small><@ctx.i18n text = "上次登陆地点"/>:${user.loginLocation?default("/")}</small>
+                            </p>
+                        </li>
+                        <!-- Menu Body -->
+                        <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-6 text-left">
+                                    <a click-id="userInfo" href="javascript:void(0);"><i class="fa fa-address-card"></i> <@ctx.i18n text = "个人中心"/></a>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                  <a id="switchSkin" href="javascript:void(0);"><i class="fa fa-dashboard"></i> <@ctx.i18n text = "切换主题"/></a>
+                                </div>
+                                <!-- <div class="col-xs-4 text-center">
+                                  <a href="#">Friends</a>
+                                </div>-->
+                            </div>
+                        </li>
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <a id="updatePassword" href="javascript:void(0);" class="btn btn-default btn-flat"><@ctx.i18n text = "修改密码"/></a>
+                            </div>
+                            <div class="pull-right">
+                                <a click-id="logout" href="javascript:void(0);" class="btn btn-default btn-flat"><@ctx.i18n text = "退出"/></a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Control Sidebar Toggle Button
+                <li>
+                    <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                </li>
+                -->
+            </ul>
+        </div>
+    </nav>
+</header>

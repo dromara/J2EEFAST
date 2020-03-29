@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.fast</groupId>
+		<artifactId>fast</artifactId>
+		<version>3.2.0</version>
+	</parent>
+	<artifactId>fast-generator</artifactId>
+	<name>fast 代码生成模块</name>
+	<description>
+		fast 代码生成模块
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>com.fast</groupId>
+			<artifactId>fast-framework</artifactId>
+		</dependency>
+		<!--velocity代码生成使用模板 -->
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+		</dependency>
+    </dependencies>
+	<build>
+		<plugins>
+			<!-- 打jar包的插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<!-- 不打包资源文件（配置文件和依赖包分开）-->
+					<excludes>
+						<exclude>templates/**</exclude>
+						<exclude>mapper/**</exclude>
+						<exclude>vm/**</exclude>
+						<exclude>*.yml</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

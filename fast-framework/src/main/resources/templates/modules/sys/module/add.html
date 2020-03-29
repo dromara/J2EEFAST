@@ -1,0 +1,93 @@
+<!--/* Fast 生成器自动生成 */ -->
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="新增模块">
+</@header>
+<@addorEdit fromId="form-sysModule-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "模块名称"/>：
+                                 </label>
+                <div class="col-sm-8">
+                    <input name="moduleName" class="form-control" type="text" required>
+                                    </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "模块编码"/>：
+                                 </label>
+                <div class="col-sm-8">
+                    <input name="moduleCode" class="form-control" type="text" required>
+                                    </div>
+            </div>
+            <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "图标"/>：
+                <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-html="true" data-placement="bottom"
+                   data-content="自定义获取图标:<a href='http://www.fontawesome.com.cn/faicons/' target='_blank'>http://www.fontawesome.com.cn/faicons/</a>">
+                    <i class="fa fa-question-circle-o" style="color: orange"></i></a>
+            </label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <span class="input-group-addon"><i id="menuIconIcon" class="fa fa-fw"></i></span>
+                    <input id="_icon" name="icon"  type="text" class="form-control" placeholder="<@ctx.i18n text = "选择图标"/>" >
+                    <span class="input-group-btn"><a id="_iconButton" href="javascript:" class="btn btn-default"><i class="fa fa-fw fa-search"></i></a></span>
+                </div>
+            </div>
+        </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "模块描述"/>：</label>
+                <div class="col-sm-8">
+                    <textarea name="description" class="form-control" required></textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "主类全名"/>：
+                                                                  </label>
+                <div class="col-sm-8">
+                    <input name="mainClassName" class="form-control" type="text" required>
+                                                                        <span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>该模块的状态验证类，如果该类检测不存在，则该模块状态提示 “未安装” ，验证原理：Class.forName()</span>
+                                                            </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "版本"/>：
+                                 </label>
+                <div class="col-sm-8">
+                    <input name="currentVersion" class="form-control" type="text" required>
+                                    </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><@ctx.i18n text = "备注信息"/>：</label>
+                <div class="col-sm-8">
+                    <textarea name="remark" class="form-control"></textarea>
+                </div>
+            </div>
+</@addorEdit>
+<@footer>
+    <script type="text/javascript">
+        var prefix = baseURL + "sys/sysModule"
+        $("#form-sysModule-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if (opt.validate.form()) {
+                opt.operate.save(prefix + "/add", $('#form-sysModule-add').serialize());
+            }
+        }
+        $("#_iconButton").click(function(){
+            var options = {
+                url: baseURL + 'sys/menu/iconSelect?value='+$("#_icon").val(),
+                title:'<@ctx.i18n text = "图标选择"/>',
+                callBack: doIconSubmit
+            };
+            opt.modal.openMainWin(options);
+        });
+
+        function doIconSubmit(index, layero,_layer){
+            var body = _layer.getChildFrame('body', index);
+            var icon = body.find('#icon').val();
+            $("#menuIconIcon").attr("class",'fa fa-fw '+icon);
+            $("#_icon").val(icon).change();
+            _layer.close(index);
+        }
+</script>
+</@footer>
+</@pageTheme>

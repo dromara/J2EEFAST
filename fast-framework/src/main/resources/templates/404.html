@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<#import "/common/springctx.ftl" as ctx>
+<title>404</title>
+<!-- Meta tag Keywords -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- Meta tag Keywords -->
+<!-- css files -->
+<link href="${ctxStatic}/statics/css/400style.css" rel="stylesheet" type="text/css" media="all">
+<link href="${ctxStatic}/statics/css/font-awesome.min.css" rel="stylesheet" type="text/css" media="all">
+<!-- online-fonts -->
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese" rel="stylesheet">
+<!--//online-fonts -->
+<body>
+<div class="header">
+	<h1><@ctx.i18n text = "sys.error.page"/></h1>
+</div>
+<div class="w3-main">
+	<div class="agile-info">
+		<h2>404</h2>
+		<h3><@ctx.i18n text = "sys.error"/>!</h3>
+		<p><@ctx.i18n text = "sys.error.info"/></p>
+			<div class="social">
+				<ul>
+					<li><a href="#" class="link facebook" target="_parent"><span class="fa fa-facebook-square"></span></a></li>
+					<li><a href="#" class="link twitter" target="_parent"><span class="fa fa-twitter"></span></a></li>
+					<li><a href="#" class="link google-plus" target="_parent"><span class="fa fa-google-plus-square"></span></a></li>
+					<div class="clear"></div>
+				</ul>
+			</div>
+		<a href="index.html"><@ctx.i18n text = "sys.return"/></a>
+	</div>
+</div>
+<div class="footer-w3l">
+	<p>Copyright &copy; 2016-${config.getCopyrightYear()} .Company name All rights reserved. <a target="_blank" href="http://www.lixinfintech.com" class="text-black">${config.getCompany()}</a></p>
+</div>
+</body>
+</html>

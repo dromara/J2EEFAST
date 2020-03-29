@@ -1,0 +1,134 @@
+package ${packageName}.entity;
+
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
+#if($table.crud)
+import com.lixinos.common.core.domain.BaseEntity;
+#end
+#foreach ($import in $importList)
+import ${import};
+#end
+
+/**
+
+ * @ClassName: ${functionName}
+ * @Package: ${packageName}
+ * @Description: ${tableName}
+ * @author: ${author}
+ * @time ${datetime}
+ 
+ * /----------------------------/
+ * /---><---/
+ * /----------------------------/
+ */
+#if($table.crud)
+#set($Entity="extends BaseEntity")
+#else
+#set($Entity="implements Serializable")
+#end
+@TableName("${tableName}")
+public class ${ClassName}Entity ${Entity}
+{
+    private static final long serialVersionUID = 1L;
+
+#foreach ($column in $columns)
+#if($table.crud)
+#if(!$table.isSuperColumn($column.javaField))
+    /** $column.columnComment */
+#if($column.plus)
+    @TableField(exist = false)
+#if($column.javaType == 'Date')
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
+#end
+    private $column.javaType $column.javaField;
+#else
+#if($column.pk) #* 是表主键*#
+#if($column.increment) #* 是主键自增型*#
+    @TableId
+    private $column.javaType $column.javaField;
+#else
+    @TableId(value = "$column.columnName",type = IdType.INPUT)
+    private $column.javaType $column.javaField;
+#end
+#else
+#if($column.javaType == 'Date')
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
+#end
+#if($column.required)#*是否未必填项*#
+#if($column.javaType == 'String')
+    @NotBlank(message = "参数值不能为空")
+#else
+    @NotNull(message = "参数值不能为空")
+#end
+#end
+    private $column.javaType $column.javaField;
+#end
+#end
+#end
+#else
+    /** $column.columnComment */
+#if($column.plus)
+    @TableField(exist = false)
+#if($column.javaType == 'Date')
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
+#end
+    private $column.javaType $column.javaField;
+#else
+#if($column.pk) #* 是表主键*#
+#if($column.increment) #* 是主键自增型*#
+    @TableId
+    private $column.javaType $column.javaField;
+#else
+    @TableId(value = "$column.columnName",type = IdType.INPUT)
+    private $column.javaType $column.javaField;
+#end
+#else
+#if($column.javaType == 'Date')
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
+#end
+#if($column.required)#*是否未必填项*#
+#if($column.javaType == 'String')
+    @NotBlank(message = "参数值不能为空")
+#else
+    @NotNull(message = "参数值不能为空")
+#end
+#end
+    private $column.javaType $column.javaField;
+#end
+#end
+#end
+
+#end
+#foreach ($column in $columns)
+#if($table.crud)
+#if(!$table.isSuperColumn($column.javaField))
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+    public void set${AttrName}($column.javaType $column.javaField)
+    {
+        this.$column.javaField = $column.javaField;
+    }
+    public $column.javaType get${AttrName}()
+    {
+        return $column.javaField;
+    }
+#end
+#else
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+    public void set${AttrName}($column.javaType $column.javaField)
+    {
+        this.$column.javaField = $column.javaField;
+    }
+    public $column.javaType get${AttrName}()
+    {
+        return $column.javaField;
+    }
+#end
+
+#end
+
+}

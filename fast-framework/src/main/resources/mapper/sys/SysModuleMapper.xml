@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fast.framework.sys.mapper.SysModuleMapper">
+    
+    <resultMap type="SysModuleEntity" id="SysModuleResult">
+        <result property="id"    column="id"    />
+        <result property="moduleCode"    column="module_code"    />
+        <result property="moduleName"    column="module_name"    />
+        <result property="description"    column="description"    />
+        <result property="mainClassName"    column="main_class_name"    />
+        <result property="icon"    column="icon"    />
+        <result property="currentVersion"    column="current_version"    />
+        <result property="upgradeInfo"    column="upgrade_info"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectSysModuleVo">
+        select id, module_code, module_name, description, main_class_name, icon, current_version, upgrade_info, status, create_by, del_flag , create_time, update_by, update_time, remark from sys_module
+    </sql>
+
+    <select id="selectSysModuleByRoleId" resultType="SysModuleEntity">
+		SELECT u.id, u.module_code, u.module_name, u.icon FROM sys_module u  LEFT JOIN sys_role_module ur ON ur.module_code = u.module_code WHERE
+		u.del_flag = 0 and
+        ur.role_id in
+        <foreach item="id" collection="ids"  open="(" separator="," close=")">
+			 #{id}
+		</foreach>
+	</select>
+	
+	 <update id="setStatus">
+		update sys_module set status = #{status} where id =
+		#{id}
+	</update>
+
+
+<!--     <update id="updateSysModule" parameterType="com.fast.framework.sys.entity.SysModuleEntity">
+        update sys_module
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="moduleCode != null  and moduleCode != ''">module_code = #{moduleCode},</if>
+            <if test="moduleName != null  and moduleName != ''">module_name = #{moduleName},</if>
+            <if test="description != null  and description != ''">description = #{description},</if>
+            <if test="mainClassName != null  and mainClassName != ''">main_class_name = #{mainClassName},</if>
+            <if test="icon != null  and icon != ''">icon = #{icon},</if>
+            <if test="currentVersion != null  and currentVersion != ''">current_version = #{currentVersion},</if>
+            <if test="upgradeInfo != null  and upgradeInfo != ''">upgrade_info = #{upgradeInfo},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            update_time = sysdate()
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysModuleById" parameterType="Long">
+        delete from sys_module where id = #{id}
+    </delete>
+
+    <delete id="deleteBatch" parameterType="Long">
+        delete from sys_module where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete> -->
+    
+</mapper>

@@ -1,0 +1,78 @@
+<#include "/common/include.html">
+<@pageTheme mark="${config.optimize()?string('true','false')}">
+<@header title="定时任务详细">
+</@header>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<#if name == 'jobLog'>
+		<form class="form-horizontal m-t" id="jobLogForm">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">日志序号：</label>
+				<div class="form-control-static">
+					${jobLog.jobLogId}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">任务名称：</label>
+				<div class="form-control-static">
+					${jobLog.jobName}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">任务分组：</label>
+				<div class="form-control-static">
+					${jobLog.jobGroup}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">调用目标字符串：</label>
+				<div class="form-control-static">
+					${jobLog.invokeTarget}
+				</div>
+			</div>
+		</form>
+	</#if>
+	<#if name == 'job'>
+		<form class="form-horizontal m-t" id="jobForm">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">任务序号：</label>
+				<div class="form-control-static">
+					${job.jobId}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">任务名称：</label>
+				<div class="form-control-static">
+					${job.jobName}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">任务分组：</label>
+				<div class="form-control-static">
+					${job.jobGroup}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">SpringBean：</label>
+				<div class="form-control-static">
+					${job.beanName}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">方法名称：</label>
+				<div class="form-control-static">
+					${job.methodName}
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">执行状态：</label>
+				<div class="form-control-static" class="<#if job.status?c == '0'> label label-primary <#else> label label-danger</#if>>
+						<#if job.status?c == '0'> 正常 <#else> 暂停</#if>
+				</div>
+			</div>
+		</form>
+	</#if>
+    </div>
+</body>
+<@footer/>
+</@pageTheme>

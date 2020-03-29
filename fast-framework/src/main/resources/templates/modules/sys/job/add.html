@@ -1,0 +1,165 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="新增任务"/>
+<@addorEdit fromId="form-job-add">
+	<h4 class="form-header h4">基本信息</h4>
+	<div class="row">
+		<div class="col-xs-6">
+			<div class="form-group">
+				<label class="col-sm-4 control-label"><span style="color: red; ">*</span>任务名称:</label>
+				<div class="col-sm-8">
+					<input id="jobName" name="jobName" placeholder="请输入任务名称" class="form-control" type="text" required>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-6">
+			<div class="form-group">
+				<label class="col-sm-4 control-label"><span style="color: red; ">*</span>任务分组：</label>
+				<div class="col-sm-8">
+					<select name="jobGroup" class="form-control m-b">
+						<#list dict.getType('sys_job_group')>
+							<#items as d>
+								<#if d.status =='0' >
+									<option value="${d.dictValue}" text="${d.dictLabel}" <#if d.isDefault =='Y' >checked</#if>>${d.dictLabel}</option>
+								</#if>
+							</#items>
+						</#list>
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="control-label col-sm-2" title="">
+					<span style="color: red; ">*</span>SpringBean:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="text" name="beanName" id="beanName" required>
+					<span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: orange"></i> SpringBean 调用示例：@Component("heartbeatTask") 填写 heartbeatTask</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="control-label col-sm-2" title="">
+					<span style="color: red; ">*</span>方法名称:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="text" name="methodName" id="methodName" required>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="control-label col-sm-2" title="">
+					<span style="color: red; ">*</span>参数:</label>
+				<div class="col-sm-10">
+					<input class="form-control" type="text" name="params" id="params">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="control-label col-sm-2" title="">
+					<span style="color: red; ">*</span> Cron执行表达式:</label>
+				<div class="col-sm-10">
+					<input type="hidden" id="cronExpression" name="cronExpression" value="" maxlength="255" class="form-control required "/>
+					<iframe id="cronFrame" src="${ctxStatic}/sys/schedule/cron" style="width:100%;height:530px;border:0;"></iframe>
+					<script type="text/javascript">
+						$('#cronFrame').load(function(){
+							var win = $(this)[0].contentWindow;
+							win.$('#cron').val($('#cronExpression').val());
+							win.$("input[name^='v_'],#cron").change(function(){
+								$('#cronExpression').val(win.$('#cron').val());
+							});
+							win.$('#btnFan').click();
+						});
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-6">
+			<div class="form-group">
+				<label class="col-sm-4 control-label">状态：</label>
+				<div class="col-sm-8">
+					<#list dict.getType('sys_job_status')>
+						<#items as d>
+							<#if d.status =='0' >
+								<div class="radio-box">
+									<input type="radio" id="${d.dictCode}" name="status"
+										   value="${d.dictValue}"  <#if d.isDefault =='Y' >checked</#if>>
+									<label  text="${d.dictLabel}">${d.dictLabel}</label>
+								</div>
+							</#if>
+						</#items>
+					</#list>
+				</div>
+			</div>
+		</div>
+	</div>
+	<h4 class="form-header h4">其它信息</h4>
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">备注：</label>
+				<div class="col-sm-10">
+					<textarea id="remark" name="remark" class="form-control"></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+	</@addorEdit>
+	<div class="hr-line-dashed"></div>
+	<div class="row" id="_addTab">
+		<div class="col-sm-offset-5 col-sm-10">
+			<button type="button" class="btn btn-sm btn-primary" onclick="opt.form.submit()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+			<button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+		</div>
+	</div>
+<@footer>
+	<script type="text/javascript">
+		var prefix = baseURL + "sys/schedule";
+	
+		$("#form-job-add").validate({
+			onkeyup: false,
+			rules:{
+				cronExpression:{
+					remote: {
+	                    url: prefix + "/checkCronExpressionIsValid",
+	                    type: "post",
+	                    dataType: "html",
+	                    data: {
+	                        "cronExpression": function() {
+	                            return opt.common.trim($("#cronExpression").val());
+	                        }
+	                    },
+	                    dataFilter: function(data, type) {
+							return opt.validate.unique(data);
+	                    }
+	                }
+				},
+			},
+			messages: {
+	            "cronExpression": {
+	                remote: "表达式不正确"
+	            }
+	        },
+	        focusCleanup: true
+		});
+		
+		function submitHandler() {
+	        if (opt.validate.form()) {
+	        	opt.operate.saveTab(prefix + "/add", $('#form-job-add').serialize());
+	        }
+	    }
+	</script>
+</@footer>
+</@pageTheme>

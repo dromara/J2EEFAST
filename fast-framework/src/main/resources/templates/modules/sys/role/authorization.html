@@ -1,0 +1,141 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="角色授权">
+        <@cssLibs.ztree_css/>
+    </@header>
+    <@addorEdit fromId="form-role-authorization">
+                <input id="roleId" name="roleId" type="hidden" value="${role.roleId?default("")}"/>
+                <h4 class="form-header h4"><@ctx.i18n text = "基本信息"/></h4>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "角色名称"/>：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" name="roleName" type="text" readonly="true"  value="${role.roleName?default("")}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="form-group">
+                            <label class="col-sm-2"><span style="color: red; ">*</span><@ctx.i18n text = "角色编码"/>：</label>
+                            <div class="col-sm-7">
+                                <input  class="form-control" name="roleKey" type="text" readonly="true"  value="${role.roleKey?default("")}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="form-header h4"><@ctx.i18n text = "授权功能菜单"/></h4>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "管理模块"/>：</label>
+                            <div class="col-sm-8">
+                                <#list modules>
+                                    <#items as d>
+                                        <#if d.status =='0' >
+                                            <#if lisModule?? && (lisModule?size > 0)>
+                                                <#assign a=0 />
+                                                <#list lisModule as c>
+                                                    <#if c == d.moduleCode >
+                                                        <#assign a=1 />
+                                                    </#if>
+                                                </#list>
+                                                <#if a== 1>
+                                                    <label>
+                                                        <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" checked required/><@ctx.i18n text = "${d.moduleName}" /></label>
+                                                    </label>
+                                                <#else>
+                                                    <label>
+                                                        <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" required/><@ctx.i18n text = "${d.moduleName}" /></label>
+                                                    </label>
+                                                </#if>
+                                            <#else>
+                                                <label>
+                                                    <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" required/><@ctx.i18n text = "${d.moduleName}" /></label>
+                                                </label>
+                                            </#if>
+                                        </#if>
+                                    </#items>
+                                </#list>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="form-group">
+                            <label class="col-sm-2"><span style="color: red; ">*</span><@ctx.i18n text = "菜单权限"/>：</label>
+                            <div class="col-sm-9">
+                                <div class="box box-solid" style="background:#FAFAFA;border-top: 0;">
+                                    <div id="menuTrees" class="ztree"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </@addorEdit>
+    <@footer>
+        <@jsLibs.ztree_js/>
+        <script>
+            $(function() {
+                var txt = opt.common.getCheckboxValue("moduleCodes");
+                var url = baseURL + "sys/menu/roleModuleMenuTreeData?roleId=" + $("#roleId").val() + "&moduleCodes=" + txt;
+                var options = {
+                    id: "menuTrees",
+                    url: url,
+                    check: { enable: true },
+                    expandLevel: 0
+                };
+                $.tree.init(options);
+
+                $('input[name="moduleCodes"]').each(function () {
+                    $(this).on('ifChanged', function(event){
+                        var txt = opt.common.getCheckboxValue("moduleCodes");
+                        if(opt.common.isEmpty(txt)){
+                            $("#menuTrees").hide();
+                        }else{
+                            $("#menuTrees").show();
+                        }
+
+                        var url = baseURL + "sys/menu/roleModuleMenuTreeData?moduleCodes="+txt+"&roleId="+$("#roleId").val();
+                        var options = {
+                            id: "menuTrees",
+                            url: url,
+                            check: { enable: true },
+                            expandLevel: 0
+                        };
+                        $.tree.init(options);
+                    });
+                })
+            });
+
+            /*校验表单*/
+            $("#form-role-authorization").validate({
+                rules:{
+                    onkeyup: false,
+                },
+                focusCleanup: true
+            });
+
+            /*窗口打开执行*/
+            /*    function onLoadSuccess (obj) {
+
+                }*/
+
+            /*提交*/
+            function submitHandler(index, layero){
+                if (opt.validate.form()) {
+                    var options = {
+                        id:'form-role-authorization',
+                        delete:['moduleCodes']
+                    };
+                    var data = opt.form.dataUp(options);
+                    var menuIds = $.tree.getCheckedNodes();
+                    var moduleCodes = opt.common.getCheckboxValue("moduleCodes");
+                    data.push({"name": "menuIdList", "value": menuIds});
+                    data.push({"name": "moduleCodes", "value": moduleCodes});
+                    opt.operate.save(baseURL+'sys/role/authorization',data);
+                }
+            }
+
+        </script>
+    </@footer>
+</@pageTheme>

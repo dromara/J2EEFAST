@@ -1,0 +1,79 @@
+<!--/* Fast 生成器自动生成 */ -->
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="新增岗位信息">
+</@header>
+<@addorEdit fromId="form-post-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "岗位编码"/>：
+                                 </label>
+                <div class="col-sm-8">
+                    <input name="postCode" class="form-control" type="text" required>
+                                    </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "岗位名称"/>：
+                                 </label>
+                <div class="col-sm-8">
+                    <input name="postName" class="form-control" type="text" required>
+                                    </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "显示顺序"/>：
+                                 </label>
+                <div class="col-sm-8">
+                    <input name="postSort" class="form-control" type="text" required>
+                                    </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "岗位分类"/>：</label>
+                <div class="col-sm-8">
+                    <select id="postType" name="postType" class="form-control">
+                        <#list dict.getType('sys_post_type')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                   <option  value="${d.dictValue}" text="${d.dictLabel}">${d.dictLabel}</option>
+                                </#if>
+                            </#items>
+                         </#list>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "状态"/>：</label>
+                <div class="col-sm-8">
+                   <#list dict.getType('sys_status')>
+                        <#items as d>
+                            <#if d.status =='0' >
+                                <div class="radio-box">
+                                    <input type="radio" id="status_${d.dictCode}" name="status"
+                                           value="${d.dictValue}" <#if d.isDefault =="Y" >checked</#if>>
+                                    <label for="${d.dictCode}" text="${d.dictLabel}">${d.dictLabel}</label>
+                                </div>
+                            </#if>
+                        </#items>
+                    </#list>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><@ctx.i18n text = "备注"/>：</label>
+                <div class="col-sm-8">
+                    <textarea name="remark" class="form-control"></textarea>
+                </div>
+            </div>
+</@addorEdit>
+<@footer>
+    <script type="text/javascript">
+        var prefix = baseURL + "sys/post"
+        $("#form-post-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if (opt.validate.form()) {
+                opt.operate.save(prefix + "/add", $('#form-post-add').serialize());
+            }
+        }
+</script>
+</@footer>
+</@pageTheme>

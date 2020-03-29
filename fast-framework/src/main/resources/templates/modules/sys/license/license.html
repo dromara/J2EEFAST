@@ -1,0 +1,233 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="产品许可信息"/>
+<body class="gray-bg animated fadeInRight">
+<section class="section-content">
+    <div class="error-page">
+        <div class="headline text-aqua">&nbsp; <i class="fa icon-key"></i></div>
+        <div class="error-content">
+            <h3>产品许可信息. </h3>
+            <p>
+                您当前的版本为专业版,非常感谢您对FASTOS的认可与支持！
+                <br/>
+                <br/>    机器码是：${fastSN}
+                <br/>    产品名称：${productName}
+                <br/>    公司名称：${config.getCompany()}
+                <br/>    授权时间：${authorizationTime}
+            </p>
+            <button type="button" class="btn btn-success btn-sm" id="licSelect"><i
+                        class="fa fa-upload"></i> 上传许可(*.lic)</button>&nbsp
+            <button type="button" class="btn btn-danger btn-sm" id="licDownload"><i
+                        class="fa fa-download"></i> 生成许可</button>&nbsp
+            <button type="button" class="btn btn-info btn-sm" onclick="opt.modal.closeTab()"><i
+                        class="fa fa-reply-all"></i> 关闭页面</button>
+        </div>
+        <div class="copyright">
+            &copy; ${config.getCopyrightYear()} ${productName} &nbsp;&nbsp; <a
+                    href="http://www.j2eefast.com">${config.getCompany()} V${config.getVersion()}</a>
+        </div>
+    </div>
+</section>
+<@footer>
+    <script>
+        var prefix = baseURL + "sys/license";
+        //上传许可文件
+        $('#licSelect').click(function(){
+            opt.layer.open({
+                type: 1,
+                area: ['580px', '180px'],
+                title: '上传许可文件 <i class="fa fa-info-circle" style="color: red"></i>注意:此操作会影响系统,谨慎!',
+                aanim: 1,
+                shade: 0.6,
+                shadeClose: true,
+                resize: false,
+                scrollbar: true,
+                content: opt.template('licUploadTpl'),
+                btn: ['<i class="fa fa-check"></i> 上传',
+                    '<i class="fa fa-remove"></i> 取消'],
+                btn1: function(index, layero){
+                    var form = {
+                        inputForm: layero.find('#inputForm'),
+                        f: layero.find('#f').val()
+                    };
+                    if (form.f == '' || !opt.common.endWith(form.f, '.lic')){
+                        opt.warning("<@ctx.i18n text = "许可文件不正确，请选择后缀为 .lic 的文件。"/>")
+                        return false;
+                    }
+                    var formdata = new FormData();
+                    var file = layero.find('#f')[0].files[0];
+                    formdata.append("licfile", file);
+                    $.ajax({
+                        url: prefix + "/uploadLic",
+                        data: formdata,
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        success: function(result) {
+                            if(result.code == opt.variable.web_status.SUCCESS){
+                                opt.layer.closeAll();
+                                opt.success("<@ctx.i18n text = "许可文件上传成功!"/>");
+                                location.reload();
+                            }else{
+                                opt.error(result.msg);
+                            }
+                        }
+                    })
+                    return true;
+                }
+            });
+        });
+
+        /*下载许可证书*/
+        $("#licDownload").click(function(){
+            opt.layer.open({
+                type: 1,
+                area: ['590px', '320px'],
+                title: '下载许可文件',
+                aanim: 1,
+                shade: 0.6,
+                shadeClose: true,
+                resize: false,
+                scrollbar: true,
+                content: opt.template('licDownloadTpl'),
+                btn: ['<i class="fa fa-check"></i> 确认',
+                    '<i class="fa fa-remove"></i> 取消'],
+                btn1: function(index, layero) {
+                    layero.find('#form-downlod').validate({
+                        rules:{
+                            sn:{
+                                required:true,
+                                maxlength: 32,
+                                minlength: 32
+                            },
+                            verifyNo:{
+                                required:true,
+                                maxlength: 6,
+                                minlength: 6,
+                                remote: {
+                                    url: prefix + "/checkverifyNoUnique",
+                                    type: "POST",
+                                    dataType: "html",
+                                    data: {
+                                        "sn": function() {
+                                            return opt.common.trim(layero.find('input[name="sn"]').val());
+                                        },
+                                        "verifyNo": function() {
+                                            return opt.common.trim(layero.find('input[name="verifyNo"]').val());
+                                        }
+                                    },
+                                    dataFilter: function(data, type) {
+                                        return opt.validate.unique(data);
+                                    }
+                                }
+                            }
+                        },
+                        messages: {
+                            "verifyNo":{
+                                remote: "<@ctx.i18n text = "机器码或者验证码不正确,请仔细核对!"/>"
+                            }
+                        },
+                        focusCleanup: true
+                    });
+                    if(layero.find('#form-downlod').validate().form()){
+
+                        $.ajax({
+                            url: prefix + "/creatLicense",
+                            data: layero.find('#form-downlod').serialize(),
+                            type: "POST",
+                            dataType: 'json',
+                            success: function(result) {
+                                if(result.code == opt.variable.web_status.SUCCESS){
+                                    downLoadXls(prefix+"/download?path="+result.path + "&checkCode=" + result.checkCode);
+                                    opt.layer.closeAll();
+                                    return;
+                                }else{
+                                    opt.error(result.msg);
+                                }
+                            }
+                        })
+                        /**下载**/
+                        /*opt.operate.post(prefix + "/creatLicense", layero.find('#form-downlod').serialize(),function (r) {
+                            console.log("--->>>"+ r.code);
+                            if(r.code == opt.variable.web_status.SUCCESS){
+                                downLoadXls(prefix+"/download?path="+r.path + "&checkCode=" + r.checkCode);
+                                return;
+                            }else{
+                                opt.error(r.msg);
+                            }
+                        });*/
+                    }
+                }
+            });
+        })
+
+        function downLoadXls(url){
+            var judgeDiv = document.getElementById("dwDiv");
+            if(judgeDiv!=null){
+                document.body.removeChild(judgeDiv);
+            }
+            var divObj = document.createElement("div");
+            divObj.id="dwDiv";
+            var aObj = document.createElement("a");
+            aObj.href=encodeURI(url);
+            aObj.id = "hrefFile";
+            divObj.appendChild(aObj);
+            document.body.appendChild(divObj);
+            document.getElementById("hrefFile").click();
+        }
+    </script>
+<script id="licUploadTpl" type="text/template">//<!--
+<form id="inputForm" method="post" enctype="multipart/form-data" class="form-horizontal mt20 mb10">
+        <label class="control-label col-xs-5"><span class="required">*</span> 许可文件(.lic)：</label>
+        <div class="col-xs-7">
+            <input type="file" id="f" name="f" style="padding-top: 4px;"/>
+        </div>
+</from>
+//-->
+</script>
+ <script id="licDownloadTpl" type="text/template">//<!--
+    <form class="layui-form" action="" id="form-downlod" class="mt20">
+        <div class="layui-form-item">
+		</div>
+		<div class="layui-form-item">
+	    	<label class="layui-form-label"><@ctx.i18n text = "机器码"/></label>
+	    	<div class="layui-input-inline">
+	    		<input type="text"  name="sn"  maxlength="32" placeholder="<@ctx.i18n text = "机器码32位"/>" autocomplete="off" class="form-control">
+	    	</div>
+		</div>
+		<div class="layui-form-item">
+	    	<label class="layui-form-label"><@ctx.i18n text = "验证码"/></label>
+	    	<div class="layui-input-inline">
+	    		<input type="text"  name="verifyNo" maxlength="6" placeholder="<@ctx.i18n text = "验证码6位"/>" autocomplete="off" class="form-control">
+	    	</div>
+		</div>
+		<div class="layui-form-item m0">
+	    	<label class="layui-form-label"><@ctx.i18n text = "IP"/></label>
+	    	<div class="layui-input-inline">
+	    		<input type="text"  name="ip" placeholder="<@ctx.i18n text = "可为不输入,如果需要验证则输入.多个IP,隔开"/>" autocomplete="off" class="form-control">
+	    	</div>
+		</div>
+		<div class="layui-form-item">
+	    	<label class="layui-form-label"></label>
+	    	<div class="layui-input-inline">
+	    		<a href="javascript:show()">什么是机器码与验证码?</a>
+	    	</div>
+		</div>
+	</form>
+	<script>
+            function show() {
+                var html='<img src="${ctxStatic}/statics/img/verifySn.png" width="100%" height="100%" alt="机器码与验证码">';
+                opt.layer.open({
+                    title: false,
+                    type: 1,
+                    closeBtn:false,
+                    shadeClose:true,
+                    area: ['700px', 'auto'],
+                    content: html
+                 });
+            };
+     </script>
+//-->
+ </script>
+</@footer>
+</@pageTheme>

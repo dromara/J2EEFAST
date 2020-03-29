@@ -1,0 +1,100 @@
+<#include "/common/include.html">
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="登陆日志列表"/>
+<@search fromId="logininfor-form">				
+	<div class="select-list">
+		<ul>
+			<li>
+				<label>登录地址：</label><input type="text" name="ipaddr"/>
+			</li>
+			<#--用户是否是最大管理员-->
+			<#if permission.isRole("ADMIN")>
+				<li>
+					<label>登录名称：</label><input type="text" name="username"/>
+				</li>
+			</#if>
+			<li>
+				<label>登录状态：</label>
+				<select name="status" class="form-control">
+					<option value="">所有</option>
+					<#list dict.getType('sys_login_status')>
+						<#items as d>
+							<#if d.status =='0' >
+								<option value="${d.dictValue}" text="${d.dictLabel}">${d.dictLabel}</option>
+							</#if>
+						</#items>
+					</#list>
+				</select>
+			</li>
+			<li class="select-time">
+				<label>登录时间： </label>
+				<input type="text" class="time-input" id="startTime" placeholder="开始时间" name="beginTime"/>
+				<span>-</span>
+				<input type="text" class="time-input" id="endTime" placeholder="结束时间" name="endTime"/>
+			</li>
+			<li>
+				<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
+				<a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+			</li>
+		</ul>
+	</div>
+</@search>
+<@table tableId="bootstrap-table">
+	<@shiro.hasPermission name="sys:logininfo:del">
+		<a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">
+			<i class="fa fa-remove"></i> 删除
+		</a>
+	</@shiro.hasPermission>
+	<@shiro.hasPermission name="sys:logininfo:clean">
+		<a class="btn btn-danger" onclick="opt.operate.clean()">
+			<i class="fa fa-trash"></i> 清空
+		</a>
+	</@shiro.hasPermission>
+</@table>
+<@footer>
+<script>
+	<#--var datas = ${dict.getDictListJson('sys_common_status')};-->
+	var prefix = baseURL + "sys/logininfo";
+	$(function() {
+		var options = {
+			url: prefix + "/list",
+			cleanUrl: prefix + "/clean",
+			delUrl: prefix + "/del",
+			sortName: "loginTime",
+			uniqueId: "id", /* 唯一ID */
+			sortOrder: "desc",
+			modalName: "登录日志",
+			escape: true,
+			columns: [
+				{field: 'state', checkbox: true},
+				 {
+                    title: "<@ctx.i18n text = "序号"/>", width: 10, formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+				{field: 'username', title: '登录名称', sortable: true},
+				{field: 'ipaddr', title: '登录地址'},
+				{field: 'loginLocation', title: '登录地点'},
+				{field: 'browser', title: '浏览器'},
+				{field: 'os', title: '操作系统'},
+				{field: 'status', title: '登录状态', align: 'center', formatter: function(value, row, index) {
+						if(value == '00000'){
+							return '<span class="label label-primary">成功</span>';
+						}else{
+							return '<span class="label label-danger">'+value+'</span>';
+						}
+					}
+				},
+				{field: 'msg', title: '操作信息'},
+				{field: 'loginTime', title: '登录时间', sortable: true}
+			]
+		};
+		$.table.init(options);
+	});
+	function unlock() {
+		opt.operate.post(prefix + "/unlock?loginName=" + $.table.selectColumns("loginName"));
+	}
+</script>
+</@footer>
+</@pageTheme>
+

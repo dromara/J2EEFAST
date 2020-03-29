@@ -1,0 +1,136 @@
+<!--/* Fast 生成器自动生成 */ -->
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="岗位信息列表">
+</@header>
+<@search fromId="post-form">
+<div class="select-list">
+<ul>
+                            <li>
+                                <@ctx.i18n text = "岗位编码"/>：
+                                <input type="text" name="postCode"/>
+                            </li>
+                            <li>
+                                <@ctx.i18n text = "岗位名称"/>：
+                                <input type="text" name="postName"/>
+                            </li>
+                            <li>
+                                <@ctx.i18n text = "岗位分类"/>：
+                                <select name="postType" class="form-control">
+                                    <option value=""><@ctx.i18n text = "所有"/></option>
+                                <#list dict.getType('sys_post_type')>
+                                    <#items as d>
+                                        <#if d.status =='0' >
+                                            <option value="${d.dictValue}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                        </#if>
+                                    </#items>
+                                </#list>
+                                </select>
+                            </li>
+                            <li>
+                                <@ctx.i18n text = "状态"/>：
+                                <select name="status" class="form-control">
+                                    <option value=""><@ctx.i18n text = "所有"/></option>
+                                <#list dict.getType('sys_status')>
+                                    <#items as d>
+                                        <#if d.status =='0' >
+                                            <option value="${d.dictValue}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                        </#if>
+                                    </#items>
+                                </#list>
+                                </select>
+                            </li>
+    <li>
+        <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;&nbsp;<@ctx.i18n text = "查询"/></a>
+        <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+    </li>
+    </ul>
+    </div>
+</@search>
+<@table tableId="bootstrap-table">
+
+    <@shiro.hasPermission name="sys:post:add">
+                    <a class="btn btn-success" onclick="opt.operate.add()"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
+    </@shiro.hasPermission>
+    <@shiro.hasPermission name="sys:post:edit">
+        <a class="btn btn-primary single disabled" onclick="opt.operate.edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
+    </@shiro.hasPermission>
+    <@shiro.hasPermission name="sys:post:del">
+        <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">
+            <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>
+        </a>
+    </@shiro.hasPermission>
+
+
+</@table>
+<@footer>
+<script>
+    var editFlag = "${permission.hasPermi("sys:post:edit")}";
+    var listFlag = "${permission.hasPermi("sys:post:add")}";
+    var delFlag = "${permission.hasPermi("sys:post:del")}";
+    var visible = ${permission.isPermitteds("sys:post:edit,
+    sys:post:del,sys:post:add")?string('true', 'false')};
+                                            var postTypeDatas = ${dict.getDictListJson('sys_post_type')};
+                var statusDatas = ${dict.getDictListJson('sys_status')};
+                                                    var prefix = baseURL + "sys/post";
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            addUrl: prefix + "/add",
+            editUrl: prefix + "/edit/{id}",
+            delUrl: prefix + "/del",
+            modalName: "岗位信息",
+            uniqueId:    'postId'                     , /* 唯一ID */
+            columns: [{
+                title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                    return $.table.serialNumber(index);
+                }
+            }
+                ,{
+                    field : 'postId'
+                    ,title : '<@ctx.i18n text = "岗位ID"/>'
+                    ,visible: false
+                }
+                                                                                                                                                                                                                                                                                            ,{
+                    field : 'postCode'
+                    ,title : '<@ctx.i18n text = "岗位编码"/>'
+                }
+                                                                                                                                                                                                                                                                                                                ,{
+                    field : 'postName'
+                    ,title : '<@ctx.i18n text = "岗位名称"/>'
+                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ,{
+                    field : 'postType'
+                    ,title : '<@ctx.i18n text = "岗位分类"/>'
+                    ,formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(postTypeDatas, value);
+                    }
+                }
+                                                                                                                                                                                                                                                                                                                ,{
+                    field : 'status'
+                    ,title : '<@ctx.i18n text = "状态"/>'
+                    ,formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(statusDatas, value);
+                    }
+                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ,{
+                    title:"<@ctx.i18n text = "操作"/>"
+                    ,align: 'left'
+                    ,visible:visible
+                    ,class:'action'
+                    ,formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "编辑"/>" onclick="opt.operate.edit(\'' + row.postId + '\')"><i class="fa fa-edit"></i></a> ');
+                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.postId + '\')"><i class="fa fa-trash-o"></i></a> ');
+                        return actions.join('');
+                    }
+                }
+                ]
+            };
+            $.table.init(options);
+        });
+
+</script>
+</@footer>
+</@pageTheme>

@@ -1,0 +1,25 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="选择数据库"/>
+<@addorEdit fromId="form-db-select">
+	<div class="form-group">
+		<label class="col-sm-3 control-label ">选择数据库：</label>
+		<div class="col-sm-8">
+			<select id="dbType" name="dbType" class="form-control">
+				<#list dict.getType('sys_db')>
+					<#items as d>
+						<#if d.status =='0' >
+							<option  value="${d.dictValue}" text="${d.dictLabel}" >${d.dictLabel}</option>
+						</#if>
+					</#items>
+				</#list>
+			</select>
+		</div>
+	</div>
+</@addorEdit>
+<@footer>
+<script>
+
+</script>
+</@footer>
+</@pageTheme>

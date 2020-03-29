@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        img{
+            display: block;
+            margin: 0 auto;
+            margin-top: 100px;
+        }
+
+    </style>
+</head>
+<body >
+    <img data-lazy-src="https://picsum.photos/500/300?image=100" />
+    <img data-lazy-src="https://picsum.photos/500/300?image=101" />
+    <img data-lazy-src="https://picsum.photos/500/300?image=102" />
+    <img data-lazy-src="https://picsum.photos/500/300?image=103" />
+    <img data-lazy-src="https://picsum.photos/500/300?image=104" />
+    <img data-lazy-src="https://picsum.photos/500/300?image=105" />
+    <img data-lazy-src="https://picsum.photos/500/300?image=106" />
+
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+<script src="./dist/EasyLazyload.min.js"></script>
+<script>
+    lazyLoadInit({
+        coverColor:"white",
+        coverDiv:"<h1>test</h1>",
+        offsetBottom:0,
+        offsetTopm:0,
+        showTime:1100,
+        onLoadBackEnd:function(i,e){
+            console.log("onLoadBackEnd:"+i);
+        }
+        ,onLoadBackStart:function(i,e){
+            console.log("onLoadBackStart:"+i);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fast.framework.sys.dao.SysDriveBreakdownDao">
+	<select id="queryAllPage" resultType="com.fast.framework.sys.entity.SysDriveBreakdownEntity">
+			SELECT sys_drive_breakdown.mach_no AS mach_no,
+		sys_drive_breakdown.`ybj_error` AS ybjError,
+			sys_drive_breakdown.`zbj_error` AS zbjError,
+			sys_drive_breakdown.`nfc_error` AS nfcError,
+			sys_drive_breakdown.`zbj_error` AS cdError,
+			 sys_drive_breakdown.`safe_error` AS safeError,
+			sys_drive_breakdown.`scan_error` AS scanError,
+			sys_drive_breakdown.`error_time` AS errorTime ,
+			sys_drive_breakdown.`license_no` AS licenseNo ,
+			sys_dept.`name` AS 'name',
+			sys_comp.`name` AS compName,
+			sys_drive_breakdown.`line` AS line,
+			sys_drive_breakdown.`comp_id` AS comp_id,
+			sys_drive_breakdown.`dept_id` AS dept_id,
+			sys_drive_breakdown.`id` AS id
+			 FROM `sys_drive_breakdown` LEFT JOIN `sys_dept` 
+			ON sys_drive_breakdown.`line` = sys_dept.`dept_id` LEFT JOIN 
+			`sys_comp` ON sys_drive_breakdown.`comp_id` = sys_comp.`comp_id` WHERE 1=1
+			<if test="key !=null and key != '' and value !=null and value !='' ">
+			 	and ${key} like '%${value}%'
+			</if>
+	</select>
+</mapper>

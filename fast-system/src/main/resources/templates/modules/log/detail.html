@@ -1,0 +1,83 @@
+<#include "/common/include.html">
+<@pageTheme mark="${config.optimize()?string('true','false')}">
+<@header title="操作日志详细">
+	<@cssLibs.jsonview_css/>
+</@header>
+<@addorEdit fromId="signupForm">
+	<div class="form-group">
+		<label class="col-sm-2 control-label">操作模块：</label>
+		<div class="form-control-static">
+			${sysLog.title}  /  ${dict.getLabel('sys_oper_type',sysLog.businessType?c)}
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">登录信息：</label>
+		<div class="form-control-static">
+			${sysLog.operName}  /  ${sysLog.compName}  /  ${sysLog.operIp}  /  ${sysLog.operLocation}
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">请求地址：</label>
+		<div class="form-control-static">
+			${sysLog.operUrl}
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">请求方式：</label>
+		<div class="label label-primary">
+			${sysLog.requestMethod}
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">响应时间：</label>
+		<div class="form-control-static">
+			${sysLog.time} 毫秒
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">操作方法：</label>
+		<div class="form-control-static">
+			${sysLog.method}
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">请求参数：</label>
+		<div class="form-control-static"><pre id="operParam"></pre></div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">返回参数：</label>
+		<div class="form-control-static"><pre id="jsonResult"></pre></div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">状态：</label>
+		<div class="<#if sysLog.status == 0 >label label-primary<#else> label label-danger</#if>">
+			<#if sysLog.status == 0 >正常<#else>异常</#if>
+		</div>
+	</div>
+	<div class="form-group" style="display:<#if sysLog.status == 0 >none<#else>block</#if>">
+		<label class="col-sm-2 control-label">异常信息：</label>
+		<div class="form-control-static">
+			${sysLog.errorMsg}
+		</div>
+	</div>
+</@addorEdit>
+<@footer>
+<@jsLibs.jsonview_js/>
+<script>
+	$(function() {
+		var operParam = "${sysLog.operParam?js_string}";
+		if (opt.common.isNotEmpty(operParam) && operParam.length < 2000) {
+			$("#operParam").JSONView(operParam);
+		} else {
+			$("#operParam").text(operParam);
+		}
+		var jsonResult = "${sysLog.jsonResult?js_string}";
+		if (opt.common.isNotEmpty(jsonResult) && jsonResult.length < 2000) {
+			$("#jsonResult").JSONView(jsonResult);
+		} else {
+			$("#jsonResult").text(jsonResult);
+		}
+	});
+</script>
+</@footer>
+</@pageTheme>

@@ -1,0 +1,220 @@
+<!--/****/ -->
+<<@>include "/common/include.html"/>
+${pageTheme}
+<@header title="新增${functionName}">
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "datetime")
+#break
+#end
+#end
+</@header>
+<@addorEdit fromId="form-${businessName}-add">
+#foreach($c in $columns)
+#set($indexTag = $velocityCount)
+#foreach($column in $columns)
+#set($field=$column.javaField)
+#if($column.insert && !$column.pk)
+#if($column.sort == $indexTag)
+#if(($column.usableColumn) || (!$column.superColumn))
+#set($parentheseIndex=$column.columnComment.indexOf("（"))
+#if($parentheseIndex != -1)
+#set($comment=$column.columnComment.substring(0, $parentheseIndex))
+#else
+#set($comment=$column.columnComment)
+#end
+#set($dictType=$column.dictType)
+#if("" != $treeParentCode && $column.javaField == $treeParentCode)
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">${comment}：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+#set($BusinessName=$businessName.substring(0,1).toUpperCase() + ${businessName.substring(1)})
+#set($treeId = "${className}?.${treeCode}")
+                        <input id="treeId" name="${treeParentCode}" type="hidden" value="${${treeId}}"/>
+                        <input class="form-control" type="text" onclick="select${BusinessName}Tree()" id="treeName" readonly="true" value="${${treeName}}"#if($column.required) required#end>
+                        <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+#elseif($column.htmlType == "input")
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">#if($column.required)<span style="color: red; ">*</span>#end<@ctx.i18n text = "${comment}"/>：
+                 #if($column.required && $column.info)
+                 #if($column.circleType == "Q")
+                 <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="bottom"
+                 data-content="${column.editInfo}">
+                 <i class="fa fa-question-circle-o" style="color: orange"></i></a>
+                 #elseif($column.circleType == "T")
+                 <i class="fa fa-question-circle-o" title="${column.editInfo}"></i>
+                #end
+                #end
+                </label>
+                <div class="col-sm-8">
+                    <input name="${field}" class="form-control" type="text"#if($column.required) required#end>
+                    #if($column.required && $column.info)
+                        #if($column.circleType == "R")
+                            <span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>${column.editInfo}</span>
+                        #end
+                    #end
+                </div>
+            </div>
+#elseif($column.htmlType == "icon")
+            <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "${comment}"/>：
+                <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-html="true" data-placement="bottom"
+                   data-content="自定义获取图标:<a href='http://www.fontawesome.com.cn/faicons/' target='_blank'>http://www.fontawesome.com.cn/faicons/</a>">
+                    <i class="fa fa-question-circle-o" style="color: orange"></i></a>
+            </label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <span class="input-group-addon"><i id="menuIconIcon" class="fa fa-fw"></i></span>
+                    <input id="_icon" name="${field}"  type="text" class="form-control" placeholder="<@ctx.i18n text = "选择图标"/>" >
+                    <span class="input-group-btn"><a id="_iconButton" href="javascript:" class="btn btn-default"><i class="fa fa-fw fa-search"></i></a></span>
+                </div>
+            </div>
+        </div>
+#elseif($column.htmlType == "select" && "" != $dictType)
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">#if($column.required)<span style="color: red; ">*</span>#end<@ctx.i18n text = "${comment}"/>：</label>
+                <div class="col-sm-8">
+                    <select id="${field}" name="${field}" class="form-control">
+                        <<@>list dict.getType('${dictType}')>
+                            <<@>items as d>
+                                <<@>if d.status =='0' >
+                                   <option  value="${d.dictValue}" text="${d.dictLabel}">${d.dictLabel}</option>
+                                </<@>if>
+                            </<@>items>
+                         </<@>list>
+                    </select>
+                </div>
+            </div>
+#elseif($column.htmlType == "select" && $dictType)
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">#if($column.required)<span style="color: red; ">*</span>#end<@ctx.i18n text = "${comment}"/>：</label>
+                <div class="col-sm-8">
+                    <select name="${field}" class="form-control m-b"#if($column.required) required#end>
+                        <option value="">所有</option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+#elseif($column.htmlType == "radio" && "" != $dictType)
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">#if($column.required)<span style="color: red; ">*</span>#end<@ctx.i18n text = "${comment}"/>：</label>
+                <div class="col-sm-8">
+                   <<@>list dict.getType('${dictType}')>
+                        <<@>items as d>
+                            <<@>if d.status =='0' >
+                                <div class="radio-box">
+                                    <input type="radio" id="${field}_${d.dictCode}" name="${field}"
+                                           value="${d.dictValue}" <<@>if d.isDefault =="Y" >checked</<@>if>>
+                                    <label for="${d.dictCode}" text="${d.dictLabel}">${d.dictLabel}</label>
+                                </div>
+                            </<@>if>
+                        </<@>items>
+                    </<@>list>
+                </div>
+            </div>
+#elseif($column.htmlType == "radio" && $dictType)
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">#if($column.required)<span style="color: red; ">*</span>#end<@ctx.i18n text = "${comment}"/>：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box">
+                        <input type="radio" name="${field}" value=""#if($column.required) required#end>
+                        <label th:for="${field}" th:text="未知"></label>
+                    </div>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+#elseif($column.htmlType == "datetime")
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">#if($column.required)<span style="color: red; ">*</span>#end<@ctx.i18n text = "${comment}"/>：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="${field}" class="form-control" placeholder="yyyy-MM-dd" type="text"#if($column.required) required#end>
+                    </div>
+                </div>
+            </div>
+#elseif($column.htmlType == "textarea")
+            <div class="form-group">
+                <label class="col-sm-3 control-label">#if($column.required)<span style="color: red; ">*</span>#end<@ctx.i18n text = "${comment}"/>：</label>
+                <div class="col-sm-8">
+                    <textarea name="${field}" class="form-control"#if($column.required) required#end></textarea>
+                </div>
+            </div>
+#end
+#end
+#end
+#end
+#end
+#end
+</@addorEdit>
+<@footer>
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "datetime")
+#break
+#end
+#end
+    <script type="text/javascript">
+        var prefix = baseURL + "${moduleName}/${businessName}"
+        $("#form-${businessName}-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if (opt.validate.form()) {
+                opt.operate.save(prefix + "/add", $('#form-${businessName}-add').serialize());
+            }
+        }
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "datetime")
+
+        $("input[name='$column.javaField']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+#end
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "icon")
+        $("#_iconButton").click(function(){
+            var options = {
+                url: baseURL + 'sys/menu/iconSelect?value='+$("#_icon").val(),
+                title:'<@ctx.i18n text = "图标选择"/>',
+                callBack: doIconSubmit
+            };
+            $.modal.openMainWin(options);
+        });
+
+        function doIconSubmit(index, layero,_layer){
+            var body = _layer.getChildFrame('body', index);
+            var icon = body.find('#icon').val();
+            $("#menuIconIcon").attr("class",'fa fa-fw '+icon);
+            $("#_icon").val(icon).change();
+            _layer.close(index);
+        }
+#end
+#end
+#if($table.tree)
+
+        /*${functionName}-新增-选择父部门树*/
+        function select${BusinessName}Tree() {
+            var options = {
+                title: '${functionName}选择',
+                width: "380",
+                url: prefix + "/select${BusinessName}Tree/" + $("#treeId").val(),
+                callBack: doSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+               $("#treeId").val(body.find('#treeId').val());
+               $("#treeName").val(body.find('#treeName').val());
+               layer.close(index);
+        }
+#end
+</script>
+</@footer>
+</@pageTheme>

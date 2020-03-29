@@ -1,0 +1,328 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="服务监控">
+	<link rel="stylesheet" href="${ctxStatic}/statics/css/AdminLTE.css?V=${config.getDvVersion()}"/>
+</@header>
+<body class="hold-transition skin-blue sidebar-mini" style="background-color: #ecf0f5;">
+  <!-- Content Wrapper. Contains page content -->
+	<!-- Main content -->
+    <section class="content" id="app" v-cloak>
+     <!-- SELECT2 EXAMPLE -->
+      <div class="box box-success box-solid">
+        <div class="box-header with-border">
+	        <i class="fa fa-windows"></i>
+	        <h5 class="box-title"><small style="color:#FFF">服务器信息</small></h5>
+	        <div class="box-tools pull-right">
+	           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+	        </div>
+        </div>
+        <!-- /.box-header  -->
+        <div class="box-body no-padding">
+             <table class="table table-hover">
+               <tr>
+                 <td>服务器名称</td>
+                 <td>{{computerName}}</td>
+                 <td>
+                   	操作系统
+                 </td>
+                 <td>{{osName}}</td>
+               </tr>
+                <tr>
+                 <td>服务器IP</td>
+                 <td>{{computerIp}}</td>
+                 <td>
+                   	系统架构
+                 </td>
+                 <td>{{osArch}}</td>
+               </tr>
+             </table>
+           </div>
+         <!--./box-body -->
+         <!-- Loading (remove the following to stop the loading)-->
+         <div v-if="loading" class="overlay">
+           <i class="fa fa-refresh fa-spin"></i>
+         </div>
+         <!-- end loading -->
+        </div>
+        
+        <div class="row">
+        <div class="col-md-6">
+
+          <div class="box box-danger">
+            <div class="box-header">
+              <i class="fa fa-microchip"></i>
+              <h3 class="box-title"><small>CPU</small></h3>
+              <div class="box-tools pull-right">
+	            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          	  </div>
+            </div>
+            <div class="box-body">
+				<table class="table table-hover">
+                <tr>
+                  <th style="width:50%">属性</th>
+                  <th style="width:50%">值</th>
+                </tr>
+                <tr>
+                  <td>核心数量</td>
+                  <td>{{cpuNum}} 个</td>
+                </tr>
+                 <tr>
+                  <td>用户使用率</td>
+                  <td v-if="used > 80"><span class="badge bg-red">{{used}} %</span></td>
+                  <td v-else><span class="badge bg-green">{{used}} %</span></td>
+                </tr>
+                 <tr>
+                  <td>系统使用率</td>
+                   <td v-if="sys > 80"><span class="badge bg-red">{{sys}} %</span></td>
+                  <td v-else><span class="badge bg-green">{{sys}} %</span></td>
+                </tr>
+                <tr>
+                  <td>当前空闲率</td>
+                  <td v-if="free < 20"><span class="badge bg-red">{{free}} %</span></td>
+                  <td v-else><span class="badge bg-green">{{free}} %</span></td>
+                </tr>
+              </table>
+            </div>
+            <!-- /.box-body -->
+            
+            <!-- Loading (remove the following to stop the loading)-->
+	         <div v-if="loading" class="overlay">
+	           <i class="fa fa-refresh fa-spin"></i>
+	         </div>
+	         <!-- end loading -->
+          </div>
+          <!-- /.box -->
+
+        </div>
+        
+        <!-- /.col (left) -->
+        <div class="col-md-6">
+          <div class="box box-primary">
+            <div class="box-header">
+              <i class="fa fa-slack"></i>
+              <h3 class="box-title"><small>内存</small></h3>
+              <div class="box-tools pull-right">
+	            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          	  </div>
+            </div>
+            <div class="box-body">
+				<table class="table table-hover">
+                <tr>
+                  <th style="width:40%">属性</th>
+                  <th style="width:30%">系统内存</th>
+                  <th style="width:30%">JVM内存</th>
+                </tr>
+                <tr>
+                  <td>总内存</td>
+                  <td>{{memTotal}} GB</td>
+                  <td>{{jvmTotal}} MB</td>
+                </tr>
+                 <tr>
+                  <td>已用内存</td>
+                  <td>{{memUsed}} GB</td>
+                  <td>{{jvmUsed}} MB</td>
+                </tr>
+                 <tr>
+                  <td>剩余内存</td>
+                  <td>{{memFree}} GB</td>
+                  <td>{{jvmFree}} MB</td>
+                </tr>
+                <tr>
+                  <td>使用率</td>
+                  <td v-if="memUsage > 80"><span class="badge bg-red">{{memUsage}} %</span></td>
+                  <td v-else><span class="badge bg-green">{{memUsage}} %</span></td>
+                  <td v-if="jvmUsage > 80"><span class="badge bg-red">{{jvmUsage}} %</span></td>
+                  <td v-else><span class="badge bg-green">{{jvmUsage}} %</span></td>
+                </tr>
+              </table>
+            </div>
+            <!-- /.box-body -->
+            <!-- Loading (remove the following to stop the loading)-->
+	         <div v-if="loading" class="overlay">
+	           <i class="fa fa-refresh fa-spin"></i>
+	         </div>
+	         <!-- end loading -->
+          </div>
+          <!-- /.box -->
+        </div>
+        </div>
+        
+        <div class="box box-solid">
+	        <div class="box-header with-border">
+	        <i class="fa fa-coffee"></i>
+	          <h5 class="box-title"><small>Java虚拟机信息</small></h5>
+	          <div class="box-tools pull-right">
+	            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+	          </div>
+	        </div>
+	        <!-- /.box-header -->
+	        <div class="box-body no-padding">
+	              <table class="table table-hover">
+	                <!--  
+	                <tr>
+	                  <th style="width: 10px">#</th>
+	                  <th>Task</th>
+	                  <th>Progress</th>
+	                  <th style="width: 40px">Label</th>
+	                </tr>
+	                -->
+	                <tr>
+	                  <td>Java名称</td>
+	                  <td>{{jvmName}}</td>
+	                  <td>Java版本</td>
+	                  <td>{{jvmVersion}}</td>
+	                </tr>
+	                <tr>
+	                  <td>启动时间</td>
+	                  <td>{{jvmStartTime}}</td>
+	                  <td>运行时长</td>
+	                  <td>{{jvmRunTime}}</td>
+	                </tr>
+	                <tr>
+	                  <td>JDK路径</td>
+	                  <td>{{jvmHome}}</td>
+	                  <td>项目路径</td>
+	                  <td>{{sysUserDir}}</td>
+	                </tr>
+	              </table>
+	            </div>
+            <!-- /.box-body -->
+            <!-- Loading (remove the following to stop the loading)-->
+	         <div v-if="loading" class="overlay">
+	           <i class="fa fa-refresh fa-spin"></i>
+	         </div>
+	         <!-- end loading -->
+        </div>
+        
+        <div class="box box-solid">
+	        <div class="box-header with-border">
+	        <i class="fa fa-hdd-o"></i>
+	          <h5 class="box-title"><small>磁盘信息</small></h5>
+	          <div class="box-tools pull-right">
+	            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+	          </div>
+	        </div>
+	        <!-- /.box-header -->
+	        <div class="box-body no-padding">
+	              <table class="table table-hover">
+	                <tr>
+	                  <th>盘符路径</th>
+	                  <th>文件系统</th>
+	                  <th>盘符类型</th>
+	                  <th>总大小</th>
+	                  <th>可用大小</th>
+	                  <th>已用大小</th>
+	                  <th>已用百分百</th>
+	                </tr>
+	                <tr v-for="file in sysFile">
+				       <td>{{ file.dirName }}</td>
+	                   <td>{{ file.sysTypeName }}</td>
+	                   <td>{{ file.typeName }}</td>
+	                   <td>{{ file.total }}</td>
+	                   <td>{{ file.free }}</td>
+	                   <td>{{ file.used }}</td>
+	                   <td v-if="file.usage > 80"><span class="badge bg-red">{{file.usage}} %</span></td>
+                 	   <td v-else><span class="badge bg-green">{{file.usage}} %</span></td>
+				    </tr>
+	              </table>
+	            </div>
+            <!-- /.box-body -->
+            <!-- Loading (remove the following to stop the loading)-->
+	         <div v-if="loading" class="overlay">
+	           <i class="fa fa-refresh fa-spin"></i>
+	         </div>
+	         <!-- end loading -->
+        </div>
+     </section>
+    <!-- /.content -->
+</body>
+<@footer>
+<script type="text/javascript">
+		var vm = new Vue({
+			el:'#app',
+			data:{
+				loading : true,
+				computerName : '',
+				computerIp :'',
+				osName :'',
+				osArch :'',
+				cpuNum :'0',
+				free :'0',
+				sys:'0',
+				used:'0',
+				memTotal:'0',
+				jvmTotal:'0',
+				memUsed:'0',
+				jvmUsed:'0',
+				memFree:'0',
+				jvmFree:'0',
+				memUsage:0,
+				jvmUsage:0,
+				jvmName:'',
+				jvmVersion:'',
+				jvmStartTime:'',
+				jvmRunTime:'',
+				jvmHome:'',
+				sysUserDir:'',
+				sysFile:[]
+			},
+			methods: {
+				errrInfo : function(text){
+					$.toast({
+						heading: '警告',
+						text: text,
+						hideAfter:4000,
+						position: 'bottom-right',
+						stack: false,
+						icon: 'error'
+					})
+				}
+			},
+			mounted :function(){
+				$.ajax({
+					type: "POST",
+					url: baseURL + 'sys/server/info',
+				    data: "",
+				    dataType: "json",
+				    success: function(result){
+						if(result.code == 0){//登录成功
+							vm.computerName = result.server.sys.computerName;
+							vm.computerIp = result.server.sys.computerIp;
+							vm.osName = result.server.sys.osName;
+							vm.osArch = result.server.sys.osArch;
+							
+							vm.cpuNum = result.server.cpu.cpuNum;
+							vm.free = result.server.cpu.free;
+							vm.used = result.server.cpu.used;
+							vm.sys = result.server.cpu.sys;
+							
+							vm.memTotal = result.server.mem.total;
+							vm.jvmTotal = result.server.jvm.total;
+							vm.memUsed = result.server.mem.used;
+							vm.jvmUsed = result.server.jvm.used;
+							vm.memFree = result.server.mem.free;
+							vm.jvmFree = result.server.jvm.free;
+							vm.memUsage = result.server.mem.usage;
+							vm.jvmUsage = result.server.jvm.usage;
+							
+							vm.jvmName = result.server.jvm.name;
+							vm.jvmVersion = result.server.jvm.version;
+							vm.jvmStartTime = result.server.jvm.startTime;
+							vm.jvmRunTime = result.server.jvm.runTime;
+							vm.jvmHome = result.server.jvm.home;
+							vm.sysUserDir = result.server.sys.userDir;
+							
+							vm.sysFile = result.server.sysFiles;
+							
+							vm.loading  = false;
+						}else{
+							vm.errrInfo(result.msg);
+						}
+					}
+				});
+			}
+		});
+</script>
+	</script>
+</@footer>
+</@pageTheme>

@@ -1,0 +1,100 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="修改字典"/>
+<@addorEdit fromId="form-type-edit">
+	<input id="dictId" name="dictId"  type="hidden" value="${dictHtml.dictId}" />
+	<div class="form-group">
+		<label class="col-sm-3 control-label ">字典名称：</label>
+		<div class="col-sm-8">
+			<input class="form-control" type="text" name="dictName" id="dictName" value="${dictHtml.dictName}" required>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label">字典类型：</label>
+		<div class="col-sm-8">
+			<input class="form-control" type="text" name="dictType" id="dictType" value="${dictHtml.dictType}" required>
+			<span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>统一规范 请务必使用小写字母下划线定义 页面获取:dict.getType('sys_yes_no')</span>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label">系统内置：</label>
+		<div class="col-sm-8">
+			<#list dict.getType('sys_yes_no')>
+				<#items as d>
+					<#if d.status == "0" >
+						<div class="radio-box">
+							<input type="radio" id="${d.dictCode}" name="isSys" value="${d.dictValue}"
+								   <#if d.dictValue == dictHtml.isSys >checked</#if>>
+							<label for="${d.dictCode}">${d.dictLabel}</label>
+						</div>
+					</#if>
+				</#items>
+			</#list>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label">状态：</label>
+		<div class="col-sm-8">
+			<#list dict.getType('sys_normal_disable')>
+				<#items as d>
+					<#if d.status == "0" >
+						<div class="radio-box">
+							<input type="radio" id="${d.dictCode}" name="status" value="${d.dictValue}"
+								   <#if d.dictValue == dictHtml.status >checked</#if>>
+							<label for="${d.dictCode}">${d.dictLabel}</label>
+						</div>
+					</#if>
+				</#items>
+			</#list>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label">备注：</label>
+		<div class="col-sm-8">
+			<textarea id="remark" name="remark" class="form-control">${dictHtml.remark?default("")}</textarea>
+		</div>
+	</div>
+</@addorEdit>
+<@footer>
+<script>
+	var prefix = baseURL + "sys/dict";
+
+	$("#form-type-edit").validate({
+		onkeyup: false,
+		rules:{
+			dictType:{
+				minlength: 5,
+				remote: {
+					url: prefix + "/checkDictTypeUnique",
+					type: "POST",
+					dataType: "html",
+					data: {
+						dictId : function() {
+							return $("#dictId").val();
+						},
+						dictType : function() {
+							return opt.common.trim($("#dictType").val());
+						}
+					},
+					dataFilter: function(data, type) {
+						return opt.validate.unique(data);
+					}
+				}
+			},
+		},
+		messages: {
+			"dictType": {
+				remote: "该字典类型已经存在"
+			}
+		},
+		focusCleanup: true
+	});
+
+	function submitHandler() {
+		if (opt.validate.form()) {
+			opt.operate.save(prefix + "/edit", $('#form-type-edit').serialize());
+		}
+	}
+</script>
+</@footer>
+</@pageTheme>
