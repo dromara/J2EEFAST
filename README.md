@@ -119,8 +119,9 @@ spring:
 * FASTOS 前身主要用于银行项目,本身很注重安全因素,可以从项目登陆可以看出.但是您也需了解使用本软件的风险，是软件皆有漏洞，任何人都无法保证100%没有漏洞，所以由软件漏洞造成的损失不予赔偿，也不承担任何因使用本软件而产生相关法律责任。请软件上线使用前进行足够的安全检测，以避免此问题发生。
 * 新版本会增加项目启动证书认证,可以使用你的机器码在演示地址中生成证书后启动。若你是大神则略过!
 
-#### 码云Gitee(主):https://gitee.com/zhouhuanOGP/J2EEFAST
-#### Github(辅):https://github.com/zhouhuan751312/J2EEFAST
+>  **码云Gitee(主): [https://gitee.com/zhouhuanOGP/J2EEFAST](https://gitee.com/zhouhuanOGP/J2EEFAST)** 
+> 
+>  **Github(辅): [https://github.com/zhouhuan751312/J2EEFAST](https://github.com/zhouhuan751312/J2EEFAST)** 
 
 #### 演示图
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0328/234931_48e39435_1816537.png "屏幕截图.png")
