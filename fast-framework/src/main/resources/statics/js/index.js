@@ -2,20 +2,31 @@
  * Copyright (c) 2020-Now http://www.j2eefast.com All rights reserved.
  *
  * index 主页菜单、按钮事件
- * @author ZhouHuan
+ * @author zhouzhou
  * @data 2020-02-20
- * @version 1.0.10
+ *       2020-04-10 优化国际化参数
+ * @version 1.0.11
  */
 //菜单添加事件
 +function ($) {
+
+    //初始化i18n插件
+    $.i18n.properties({
+        path: baseURL + 'i18n/',//这里表示访问路径
+        name: 'i18n',//文件名开头
+        language: _lang,//文件名语言 例如en_US
+        cache: true,
+        mode: 'map'//默认值
+    });
+
     var Default = {
-        base : 'statics/js/',
-        elem : '.larry-tab-box',
-        element : null,
+        base: 'statics/js/',
+        elem: '.larry-tab-box',
+        element: null
     };
 
     var ClassName = {
-        class  : '.sidebar-menu',
+        classType: '.sidebar-menu',
         treeview: '.treeview'
     };
 
@@ -217,9 +228,6 @@
             }else{
                 //切换
                 if(opt.storage.get("_tabRef") === "1"){
-                    // var target = $('iframe[data-id="' + $(this).attr("lay-id") + '"]');
-                    // var url = target.attr('src');
-                    target.attr('src', url).ready();
                     opt.block("数据加载中，请稍后...",'#content-main')
                     target.attr('src', url).on("load",function () {
                         setTimeout(function(){
@@ -235,7 +243,7 @@
     //设置菜单监听事件
     menu.prototype._setUpListeners = function () {
         var that = this;
-        $(ClassName.class).children(ClassName.treeview).each(function (i) {
+        $(ClassName.classType).children(ClassName.treeview).each(function (i) {
             if($(this).find('ul').length > 0){
                 $(this).find('ul').children('li').each(function () {
                     $(this).on('click',function (event) {
@@ -286,10 +294,8 @@ $(function () {
                     if (!$(this).hasClass('layui-this')) {
                         window.opt.navToTab($(this).attr("lay-id"));
                     }
-                    //
                     var target = $('iframe[data-id="' + $(this).attr("lay-id") + '"]');
                     var url = target.attr('src');
-                    target.attr('src', url).ready();
                     window.opt.block('数据加载中，请稍后...','#content-main');
                     target.attr('src', url).on("load",function () {
                         setTimeout(function(){
@@ -492,7 +498,7 @@ $(function () {
 
     // 系统锁屏
     $('#lockOs').on('click', function () {
-        window.location.href  = baseURL + "/Account/Lock?" + Math.random();
+        window.location.href  = baseURL + "Account/Lock?" + Math.random();
         return;
     });
 

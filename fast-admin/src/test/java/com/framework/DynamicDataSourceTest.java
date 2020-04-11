@@ -2,7 +2,7 @@ package com.framework;
 
 
 import com.framework.service.DataSourceTestService;
-import com.fast.framework.sys.entity.SysUserEntity;
+import com.j2eefast.framework.sys.entity.SysUserEntity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;

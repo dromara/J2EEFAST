@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<artifactId>fast</artifactId>
-		<groupId>com.fast</groupId>
+		<groupId>com.j2eefast</groupId>
 		<version>3.2.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -29,7 +29,7 @@
 
 		<!-- 无引用 核心项目-->
 		<dependency>
-			<groupId>com.fast</groupId>
+			<groupId>com.j2eefast</groupId>
 			<artifactId>fast-web</artifactId>
 		</dependency>
 		
@@ -72,7 +72,7 @@
 						<addClasspath>true</addClasspath>
 						<classpathPrefix>lib</classpathPrefix>
 						<!-- 程序启动入口 -->
-						<mainClass>com.fast.FastApplication</mainClass>
+						<mainClass>com.j2eefast.FastApplication</mainClass>
 					</manifest>
 					<manifestEntries>
 						<Class-Path>./</Class-Path>
@@ -97,7 +97,7 @@
 				</excludes>
 			</configuration>
 		</plugin>
-		<!-- 打ZIP包
+		<!-- 需要打成完整gz包放开注解
 		<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>

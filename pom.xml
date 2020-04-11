@@ -3,7 +3,7 @@
     <!-- Maven模块版本 -->
     <modelVersion>4.0.0</modelVersion>
     <!-- 整个系统的名称 -->
-    <groupId>com.fast</groupId>
+    <groupId>com.j2eefast</groupId>
     <!-- 子模块名称 -->
     <artifactId>fast</artifactId>
     <!-- 依赖项的版本 -->
@@ -322,33 +322,33 @@
 
             <!-- 系统模块 -->
             <dependency>
-                <groupId>com.fast</groupId>
+                <groupId>com.j2eefast</groupId>
                 <artifactId>fast-system</artifactId>
                 <version>${fast.version}</version>
             </dependency>
 
 
             <dependency>
-                <groupId>com.fast</groupId>
+                <groupId>com.j2eefast</groupId>
                 <artifactId>fast-framework</artifactId>
                 <version>${fast.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.fast</groupId>
+                <groupId>com.j2eefast</groupId>
                 <artifactId>fast-generator</artifactId>
                 <version>${fast.version}</version>
             </dependency>
 
 
 			<dependency>
-                <groupId>com.fast</groupId>
+                <groupId>com.j2eefast</groupId>
                 <artifactId>fast-web</artifactId>
                 <version>${fast.version}</version>
             </dependency>
             
             <dependency>
-                <groupId>com.fast</groupId>
+                <groupId>com.j2eefast</groupId>
                 <artifactId>fast-common</artifactId>
                 <version>3.3.0</version>
             </dependency>

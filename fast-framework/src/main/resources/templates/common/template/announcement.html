@@ -1,5 +1,5 @@
 <#include "/common/include.html">
-<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@pageTheme mark="true">
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8" />
@@ -47,11 +47,28 @@ span{display:block;font-size:12px;line-height:12px;}
     </div>
 </div>
 <hr>
-${noticeContent}
+<iframe id="frame-content" width="100%" scrolling="no" src="/fast/statics/notice/${htmlNo}" frameborder="0"></iframe>
 <hr>
 <div style="width:100%;text-align: right;font-size: 12px;">
     发布人: ${createBy}
 </div>
 </body>
+<script>
+
+    /* iframe自适应会用到 */
+    function calcPageHeight(doc) {
+        var cHeight = Math.max(doc.body.clientHeight, doc.documentElement.clientHeight);
+        var sHeight = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+        var height = Math.max(cHeight, sHeight);
+        return height;
+    }
+
+    var ifr = document.getElementById('frame-content');
+    ifr.onload = function () {
+        var iDoc = ifr.contentDocument || ifr.document || ifr.contentWindow;
+        var height = calcPageHeight(iDoc);
+        ifr.style.height = height + 'px';
+    }
+</script>
 </html>
 </@pageTheme>

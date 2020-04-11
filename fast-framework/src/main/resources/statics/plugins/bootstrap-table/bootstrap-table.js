@@ -1549,10 +1549,19 @@
             dataType: this.options.dataType,
             success: function (y) {
                 /**TODO:2020-03-09 新加的代码,处理页码错误问题开始*/
-                if(u.options.pagination &&(y.code==='00000') && (y.page.totalCount>0) && (y.page.list.length === 0)){//总记录数大于0,但当前页记录数为0,则此时页码超过了最大页码误
-                    u.options.pageNumber = Math.ceil(y.page.totalCount/u.options.pageSize);//最后一页(总页数)
-                    u.initServer();
-                    return;
+                // if(y.page.totalCount){
+                //     if(u.options.pagination &&(y.code==='00000') && (y.page.totalCount>0) && (y.page.list.length === 0)){//总记录数大于0,但当前页记录数为0,则此时页码超过了最大页码误
+                //         u.options.pageNumber = Math.ceil(y.page.totalCount/u.options.pageSize);//最后一页(总页数)
+                //         u.initServer();
+                //         return;
+                //     }
+                // }
+                if(y.data.totalCount){
+                    if(u.options.pagination &&(y.code==='00000') && (y.data.totalCount>0) && (y.data.list.length === 0)){//总记录数大于0,但当前页记录数为0,则此时页码超过了最大页码误
+                        u.options.pageNumber = Math.ceil(y.page.totalCount/u.options.pageSize);//最后一页(总页数)
+                        u.initServer();
+                        return;
+                    }
                 }
                 y = q(u.options, u.options.responseHandler, [y], y);
                 u.load(y);

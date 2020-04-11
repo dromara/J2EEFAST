@@ -1,5 +1,5 @@
 <#include "/common/include.html">
-<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@pageTheme mark="true">
 <!DOCTYPE html>
 <html  lang="zh">
 <head>
@@ -17,7 +17,7 @@
 	<#-- Theme style -->
 	<link rel="stylesheet" href="${ctxStatic}/statics/css/AdminLTE.min.css?V=${config.getDvVersion()}">
 	<link rel="stylesheet" href="${ctxStatic}/statics/css/style.css?V=${config.getDvVersion()}">
-    <link rel="stylesheet" href="${ctxStatic}/statics/js/lixin/css/fast-ui.css?V=${config.getDvVersion()}"/>
+    <link rel="stylesheet" href="${ctxStatic}/statics/js/fast-ui.css?V=${config.getDvVersion()}"/>
     <style type="text/css">
 		.list-unstyled{margin:10px;}
 		.full-opacity-hover{opacity:1;filter:alpha(opacity=1);border:1px solid #fff}

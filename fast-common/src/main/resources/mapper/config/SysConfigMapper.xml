@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.j2eefast.common.config.mapper.SysConfigMapper">
+
+    <!-- 根据key，更新value -->
+    <update id="updateValueByKey" parameterType="map">
+		update sys_config set param_value = #{paramValue} where param_key = #{paramKey}
+	</update>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id AS "id", param_name AS "paramName", param_value AS "paramValue", param_key AS "paramKey",del_flag AS "delFlag", config_type AS "configType", remark AS "remark", create_time AS "createTime", create_by AS "createBy", update_time AS "updateTime", create_by AS "updateBy"
+    </sql>
+
+    <!-- 根据key，查询value -->
+    <select id="queryByKey" resultType="com.j2eefast.common.config.entity.SysConfigEntity" parameterType="string">
+		select
+		<include refid="Base_Column_List"/>
+		from sys_config where param_key = #{paramKey}
+	</select>
+
+</mapper>

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fast.framework.sys.mapper.SysModuleMapper">
+<mapper namespace="com.j2eefast.framework.sys.mapper.SysModuleMapper">
     
     <resultMap type="SysModuleEntity" id="SysModuleResult">
         <result property="id"    column="id"    />
@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, module_code, module_name, description, main_class_name, icon, current_version, upgrade_info, status, create_by, del_flag , create_time, update_by, update_time, remark from sys_module
     </sql>
 
-    <select id="selectSysModuleByRoleId" resultType="SysModuleEntity">
+    <select id="findModuleByRoleIds" resultType="com.j2eefast.framework.sys.entity.SysModuleEntity">
 		SELECT u.id, u.module_code, u.module_name, u.icon FROM sys_module u  LEFT JOIN sys_role_module ur ON ur.module_code = u.module_code WHERE
 		u.del_flag = 0 and
         ur.role_id in
@@ -34,6 +34,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			 #{id}
 		</foreach>
 	</select>
+
+    <select id="findModules" resultType="com.j2eefast.framework.sys.entity.SysModuleEntity">
+        SELECT u.id, u.module_code, u.module_name, u.icon FROM sys_module u  WHERE
+        u.del_flag = 0 and u.status = 0
+    </select>
 	
 	 <update id="setStatus">
 		update sys_module set status = #{status} where id =
@@ -41,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 
 
-<!--     <update id="updateSysModule" parameterType="com.fast.framework.sys.entity.SysModuleEntity">
+<!--     <update id="updateSysModule" parameterType="com.j2eefast.framework.sys.entity.SysModuleEntity">
         update sys_module
         <trim prefix="SET" suffixOverrides=",">
             <if test="moduleCode != null  and moduleCode != ''">module_code = #{moduleCode},</if>

@@ -1,0 +1,666 @@
+/* csshint-disable */
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    min-height: 800px;
+    background-color: #F6F8FB;
+    font-family: "Microsoft Yahei", "Hiragino Sans GB", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-repeat: repeat-y;
+    background-size: 25% 100%;
+    background-position: 100% 0;
+}
+
+@media only screen
+    and (max-width: 1530px) {
+        body {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAABCAYAAABkOJMpAAAAAXNSR0IArs4c6QAAABpJREFUOBFjVMn49J9hFIyGwGgIjIbAEAgBAK6uAn+8Yc3TAAAAAElFTkSuQmCC);
+        }
+    }
+@media only screen
+    and (max-width: 1600px) {
+        body {
+            min-width: 1200px;
+        }
+        .main {
+            height: 800px;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALYAAAABCAYAAABzP1TJAAAAAXNSR0IArs4c6QAAABVJREFUKBVjVMn49J9hFIyGwDALAQAUSgJ/8gWSigAAAABJRU5ErkJggg==);
+        }
+        .main,
+        .main header .container,
+        footer,
+        #root {
+            width: 930px;
+        }
+        #brand {
+            width: 566px;
+        }
+        #login {
+            width: 364px;
+        }
+    }
+
+@media only screen
+    and (min-width: 1530px)
+    and (max-width: 1600px) {
+        body {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAV4AAAABCAYAAACWhMaMAAAAAXNSR0IArs4c6QAAABxJREFUOBFjVMn49J9hFIyGwGgIjIbAaAjQLQQAogQCfx+J7hkAAAAASUVORK5CYII=);
+        }
+    }
+
+@media only screen
+    and (min-width: 1600px)
+    and (max-width: 1920px) {
+        body {
+            min-width: 1600px;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAABCAYAAADw8vieAAAAAXNSR0IArs4c6QAAAB9JREFUOBFjVMn49J9hFIyGwGgIjIbAaAiMhgCJIQAAlVoCf/hhMCAAAAAASUVORK5CYII=);
+        }
+        .main {
+            height: 800px;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANIAAAABCAYAAACrM/DDAAAAAXNSR0IArs4c6QAAABdJREFUKBVjVMn49J9hFIyGwGgIUBQCACvpAn8WA1gYAAAAAElFTkSuQmCC);
+        }
+        .main,
+        .main header .container,
+        footer,
+        #root {
+            width: 1150px;
+        }
+        #brand {
+            width: 730px;
+        }
+        #login {
+            width: 420px;
+        }
+    }
+
+@media only screen
+    and (min-width: 1920px) {
+        body {
+            min-width: 1920px;
+            background-size: 30% 100%;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlMAAAABCAYAAAD6mCs9AAAAAXNSR0IArs4c6QAAACZJREFUSA1jVMn49J9hFIyGwGgIjIbAaAiMhsBoCIyGwGgIkBUCADDGAn+LX8bjAAAAAElFTkSuQmCC);
+        }
+        .main {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANIAAAABCAYAAACrM/DDAAAAAXNSR0IArs4c6QAAABdJREFUKBVjVMn49J9hFIyGwGgIUBQCACvpAn8WA1gYAAAAAElFTkSuQmCC);
+        }
+        .main,
+        .main header .container,
+        footer,
+        #root {
+            width: 1150px;
+        }
+        #brand {
+            width: 730px;
+        }
+        #login {
+            width: 420px;
+        }
+    }
+
+a {
+    text-decoration: none;
+    color: #108CEE;
+}
+h2 {
+    text-align: left;
+    color: #191C3D;
+    font-size: 30px;
+    margin: 32px 0;
+    font-weight: normal;
+}
+h3 {
+    text-align: left;
+    color: #191C3D;
+    font-size: 16px;
+    opacity: 0.6;
+    margin: 0;
+    font-weight: normal;
+    line-height: 30px;
+}
+.main {
+    position: relative;
+    height: 100%;
+    margin: 0 auto;
+    background-repeat: repeat-y;
+    background-position: top right;
+}
+
+.main header {
+    width: 100%;
+    height: 20px;
+    padding: 70px 0;
+    position: relative;
+    background: none;
+}
+.main header .container {
+    height: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
+.main header .decoration {
+    display: inline-block;
+    width: 166px;
+    height: 178px;
+    background: url(https://bce.bdstatic.com/login/decoration1@2x.png) no-repeat 0 0;
+    background-size: 166px 178px;
+    position: absolute;
+    top: 0;
+    left: -195px;
+}
+.main header .logo {
+    border: none;
+}
+
+.main header .container a {
+    font-size: 14px;
+    color: #fff;
+}
+
+.main header .container .right {
+    float: right;
+}
+
+footer {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+    text-align: left;
+    padding: 50px 0;
+    line-height: 24px;
+    font-size: 12px;
+    color: rgba(46, 51, 65, 0.66);
+    display: block;
+}
+
+footer a {
+    color: rgba(46, 51, 65, 0.66);
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+#root {
+    height: 436px;
+    margin: 0 auto;
+    position: relative;
+}
+
+#root .decoration {
+    display: inline-block;
+    width: 125px;
+    height: 42px;
+    background: url(https://bce.bdstatic.com/login/decoration2@2x.png) no-repeat 0 0;
+    background-size: 125px 42px;
+    position: absolute;
+    right: 143px;
+    bottom: -80px;
+}
+
+@media only screen
+    and (max-width: 1600px) {
+        #root .decoration {
+            right: 110px;
+        }
+    }
+
+#root .layout {
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+#brand {
+    vertical-align: top;
+    text-align: left;
+    height: 420px;
+}
+
+#brand h2 {
+    font-family: PingFangSC-Medium;
+    font-size: 30px;
+    color: #2E3341;
+    line-height: 36px;
+}
+
+#brand h3 {
+    opacity: 0.6;
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: #2E3341;
+    line-height: 30px;
+    margin-right: 20px;
+}
+
+#brand h3 span {
+    font-family: DINAlternate-Bold;
+    font-size: 16px;
+    color: #00151D;
+    line-height: 30px;
+}
+
+#brand p {
+    margin: 0;
+}
+
+#brand p.hr {
+    margin: 30px 0;
+    border-top: 1px solid rgba(216, 216, 216, 0.5);
+    width: 366px;
+}
+
+#login {
+    height: 492px;
+    position: relative;
+    top: -30px;
+    overflow: hidden;
+    background: #FFF;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 10px 20px 0px rgba(0, 0, 0, .05);
+    -moz-box-shadow: 0 10px 20px 0px rgba(0, 0, 0, .05);
+    box-shadow: 0 10px 20px 0px rgba(0, 0, 0, .05);
+}
+
+#login .login {
+    margin: 0 auto;
+    box-shadow: none;
+    width: 300px;
+}
+
+
+@media only screen
+    and (max-device-width: 640px)
+    and (-webkit-min-device-pixel-ratio: 2) {
+        body,
+        .main,
+        footer {
+            min-width: 360px;
+            width: auto;
+        }
+
+        body,
+        .main {
+            background-image: none;
+        }
+
+        .main header {
+            padding: 20px 0;
+        }
+        .main header .container a {
+            color: #333;
+        }
+
+        #login {
+            width: 375px;
+            top: 0;
+        }
+
+        footer {
+            margin: 0 auto;
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+        }
+
+        #root,
+        .main header .container {
+            width: auto;
+        }
+        .main header .logo {
+            margin-left: 10px;
+            margin-top: 0;
+        }
+        .main header .container .right {
+            margin-right: 10px;
+            margin-top: 0;
+        }
+        #brand {
+            display: none;
+        }
+
+        .main header .decoration,
+        #root .decoration {
+            display: none;
+        }
+
+        table {
+            margin: 30px auto;
+        }
+    }
+
+#change-login {
+    height: 94px;
+    font-size: 20px;
+    text-align: center;
+    border-bottom: 1px solid #ececec;
+}
+
+#change-login > div {
+    position: static;
+    padding: 45px 0 12px;
+}
+
+#change-login a.select::after {
+    content: " ";
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: #2468F2;
+    margin-top: 12px;
+}
+
+#login #common-login #change-login a {
+    display: inline-block;
+    width: 300px;
+    height: 36px;
+    border-right: none;
+    position: relative;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: #191C3D;
+    line-height: 36px;
+}
+
+#login #common-login #change-login a.select {
+    color: #2468f2;
+}
+
+#change-login,
+#TANGRAM__PSP_4__sms,
+#TANGRAM__PSP_4__smsSubmitWrapper,
+#TANGRAM__PSP_4__submitWrapper,
+#TANGRAM__PSP_4__memberPassWrapper,
+#login .login-action,
+#login #common-login form {
+    padding: 0;
+    background-color: #fff;
+}
+#TANGRAM__PSP_4__smsSubmitWrapper > .tang-pass-sms-agreement,
+#TANGRAM__PSP_4__smsSubmitWrapper > a {
+    font-size: 12px;
+    margin: 12px 0 8px 0;
+    display: inline-block;
+}
+
+#login a#TANGRAM__PSP_4__sms_btn_back,
+#login a#TANGRAM__PSP_4__smsSwitchWrapper {
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+}
+#login a#TANGRAM__PSP_4__smsSwitchWrapper {
+    bottom: 6px;
+    font-size: 12px;
+}
+#TANGRAM__PSP_4__qrcode {
+    height: 223px;
+    text-align: center;
+    overflow: hidden;
+}
+
+#login .login-action {
+    border-top: none;
+    padding-top: 0;
+}
+#login .login-action .submit {
+    margin-top: 0;
+    width: 300px;
+}
+
+#login .login-action .other {
+    margin-top: 20px;
+}
+
+#login #common-login a {
+    color: #2468f2;
+}
+
+#login #common-login .js-change-token,
+#login #common-login .pass-change-verifyCode {
+    color: #666;
+    text-decoration: none;
+}
+
+#login #common-login form,
+#login .tang-pass-login {
+    margin-top: 0;
+}
+#login #common-login #uc-login {
+    margin-top: 30px;
+}
+
+#login #uc-login .fl > span {
+    display: none;
+}
+
+#login .login-action .submit,
+#login .pass-button-submit {
+    display: block;
+    background: #2468F2;
+    background-image: -webkit-linear-gradient(top, #2468f2, #2468f2);
+    border: none;
+    margin-top: 0;
+    font-size: 14px;
+    color: #fff;
+    width: 300px;
+    box-shadow: none;
+    border-radius: 20px;
+    line-height: 40px;
+    width: 300px;
+}
+
+.tang-pass-sms-tip,
+.tang-pass-sms-title,
+.pass-clearbtn-smsVerifyCode,
+#login .tang-pass-qrcode-ullist,
+#login .pass-form-logo,
+#login .login-shadow,
+#login .watermark,
+#login .uc-common-login-small .login-info .account span,
+#login .uc-common-login-small .login-info .password span,
+#login .uc-common-login-small .error span,
+#TANGRAM__PSP_4__userNameLabel,
+#TANGRAM__PSP_4__passwordLabel,
+#change-login a > span {
+    display: none !important;
+}
+
+#login .uc-common-login-small .login-info .account,
+#login .uc-common-login-small .login-info .password,
+#login .uc-common-login-small .pass-form-item-userName,
+#login .uc-common-login-small .pass-form-item-password {
+    height: 38px;
+    width: 300px;
+}
+
+#login #ucsl-password-edit,
+#login .uc-common-login-small .login-info .account input,
+#login .uc-common-login-small .login-info .password input,
+#login .uc-common-login-small .login-info .account .safe-input,
+#login .uc-common-login-small .login-info .password .safe-input,
+#login .uc-common-login-small .login-info .token input,
+#login .uc-common-login-small .pass-text-input-smsPhone,
+#login .uc-common-login-small .pass-text-input-smsVerifyCode,
+#login .uc-common-login-small .pass-form-item-userName input,
+#login .uc-common-login-small .pass-form-item-password input {
+    box-sizing: border-box;
+    height: 36px !important;
+    width: 100% !important;
+}
+
+#login .uc-common-login-small .pass-text-input-smsPhone,
+#login .uc-common-login-small .pass-text-input,
+#login .uc-common-login-small .pass-text-input-smsVerifyCode,
+#login #ucsl-password-edit,
+#login #uc-common-account,
+#login #uc-common-token {
+    padding: 4px 20px !important;
+}
+
+#login .uc-common-login-small .pass-text-input {
+    outline: none;
+}
+
+#login .uc-common-login-small .pass-form-item-submit .pass-fgtpwd {
+    margin-top: 20px;
+}
+
+#login .uc-common-login-small .pass-text-input-smsVerifyCode,
+#login .uc-common-login-small .pass-text-input-smsPhone {
+    border: 1px solid #bdc7d3;
+    font-size: 12px;
+}
+#login .uc-common-login-small .pass-text-input-smsVerifyCode {
+    width: 150px !important;
+}
+
+#login #uc-common-token {
+    width: 125px !important;
+}
+
+#login .uc-common-login-small .login-info .password .safe-input {
+    margin-top: 0;
+    margin-left: 0;
+}
+
+#login .uc-common-login-small .pass-form-item-verifyCode img,
+#login .uc-common-login-small .login-info .token img {
+    margin-top: 5px;
+    border: none;
+}
+
+#login .login-info,
+#login .login-action {
+    padding: 0;
+}
+
+#login .pass-form-item-smsPhone,
+#login .pass-form-item-smsVerifyCode,
+#login .pass-form-item-userName,
+#login .pass-form-item-password,
+#login .pass-form-item-verifyCode {
+    margin: 0 0 20px 0;
+    border: 1px solid #D6D6D6;
+}
+#login .pass-form-item-smsPhone,
+#login .pass-form-item-smsVerifyCode,
+#login .pass-form-item-verifyCode {
+    border: none;
+}
+
+#login .uc-common-login-small .pass-form-item-verifyCode .pass-text-input-verifyCode {
+    height: 36px;
+    width: 125px;
+    box-sizing: border-box;
+}
+#login .uc-common-login-small .error {
+    height: 20px;
+    line-height: 20px;
+}
+#login .uc-common-login-small .pass-generalErrorWrapper {
+    position: static;
+    min-height: 30px;
+    width: 100%;
+    line-height: 30px;
+}
+#login .uc-register,
+#login .pass-reglink {
+    border-right: none;
+    font-size: 12px;
+}
+
+#brand img {
+    display: inline;
+    border: none;
+}
+
+#login .tip-wrap p {
+    padding-top: 27px;
+    font-size: 12px;
+    opacity: 0.5;
+    font-family: PingFangSC-Regular;
+    color: #191C3D;
+    line-height: 24px;
+}
+
+#login .tip-wrap p.uc-tip {
+    padding-top: 27px;
+}
+
+.uc-common-login .pass-item-time-timing,
+.uc-common-login .pass-item-timer {
+    background: #fff;
+    border: none;
+    outline: none;
+    color: #2e7ecd;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+#pass-phoenix-login {
+    display: none;
+}
+#login .tang-pass-qrcode-content {
+    margin-top: 10px;
+}
+.tang-pass-qrcode-img {
+    width: 160px;
+    height: 160px;
+    margin: 5px 0;
+}
+#login .tang-pass-qrcode-title {
+    font-size: 12px;
+    margin-top: 5px;
+}
+#login .tang-pass-qrcode-title span {
+    color: #2e7ecd;
+    font-weight: bold;
+}
+#TANGRAM__PSP_4__qrcodeContent .tang-pass-qrcode-info {
+    font-size: 12px;
+    margin-top: -5px;
+}
+#login .tang-pass-pop-login {
+    position: absolute;
+    z-index: 22;
+    right: 0;
+    bottom: 15px;
+}
+#login .tang-pass-pop-login .tang-pass-pop-login-change {
+    width: 44px;
+    height: 44px;
+    position: absolute;
+    right: 0;
+    bottom: -15px;
+    cursor: pointer;
+    background: url(https://passport.baidu.com/passApi/img/pass_login_icons_7c6e14d.png) no-repeat 0 0;
+    z-index: 21;
+}
+#login .tang-pass-pop-login .tang-pass-pop-qrcodeLogin {
+    background-position: -44px -86px;
+}
+#login .tang-pass-pop-login .tang-pass-pop-normalLogin {
+    background-position: 0 -86px;
+}
+
+
+
+.en-main h2 {
+    font-size: 38px;
+    margin: 70px 0 25px 0;
+}
+
+.en-main h3 {
+    font-size: 18px;
+}
+
+.en-main #band {
+    font-family: DINAlternate-Bold;
+}
+#login .tang-pass-footerBar .pass-link {
+    color: #2468f2;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline;
+}

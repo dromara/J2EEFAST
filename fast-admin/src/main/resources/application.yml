@@ -17,9 +17,9 @@ server:
         enabled: true
         mime-types: 'application/javascript,text/css,application/json,application/xml,text/html,text/xml,text/plain'
 spring:
-    # 正式环境  Dev|测试环境 Test
+    # 环境 Dev|Test|Prod
     profiles:
-        active: Test
+        active: Dev
     servlet:
         multipart:   #设置上传文件大小
             max-file-size: 200MB  #单个文件的大小
@@ -28,6 +28,7 @@ spring:
     freemarker:
         suffix: .html
         request-context-attribute: request
+        #cache: false
     # 资源信息
     messages:
         # 国际化资源文件路径
@@ -59,8 +60,9 @@ shiro:
 mybatis-plus:
     mapper-locations: classpath*:mapper/**/*.xml
     global-config:
+        banner: false
         #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
-        id-type: 0
+        id-type: ASSIGN_ID
         #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
         field-strategy: 2
         #驼峰下划线转换
@@ -82,7 +84,5 @@ mybatis-plus:
         call-setters-on-nulls: true
 #日志
 logging:
-    level: info
-    level.com.fast: info
     path: logs/
     file: fast.log

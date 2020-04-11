@@ -5,7 +5,7 @@ import com.lixinos.common.core.utils.PageUtils;
 import com.lixinos.common.core.utils.R;
 import com.lixinos.common.enums.BusinessType;
 import com.lixinos.framework.annotation.SysLog;
-import com.lixinos.framework.utils.AbstractController;
+import com.lixinos.framework.utils.BaseController;
 import com.lixinos.framework.annotation.RepeatSubmit;
 import com.lixinos.common.validator.ValidatorUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -36,7 +36,7 @@ import com.lixinos.common.core.domain.Ztree;
  */
 @Controller
 @RequestMapping("/${moduleName}/${businessName}")
-public class ${ClassName}Controller extends AbstractController
+public class ${ClassName}Controller extends BaseController
 {
     private String prefix = "modules/${moduleName}/${businessName}";
 

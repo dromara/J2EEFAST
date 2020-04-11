@@ -188,7 +188,7 @@
             var status = $("input[id='status']").is(':checked') == true ? "0" : "1";
             var moduleCodes = opt.common.getCheckboxValue("moduleCodes");
             data.push({"name": "status", "value": status});
-            data.push({"name": "menuIdList", "value": menuIds});
+            data.push({"name": "menuIds", "value": menuIds});
             data.push({"name": "moduleCodes", "value": moduleCodes});
             opt.operate.save(baseURL+'sys/role/edit',data);
         }

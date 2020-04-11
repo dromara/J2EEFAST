@@ -206,7 +206,6 @@ function SM4() {
         if ((ctx.isPadding) && (ctx.mode == this.SM4_ENCRYPT)){
             input = this.padding(input, this.SM4_ENCRYPT);
         }
-        console.log("input:"+input + " ctx.sk" + ctx.sk);
         var i=0;
         var length = input.length;
         var bous = new Array();
@@ -358,6 +357,7 @@ function SM4Util(key) {
         }
         return bytes;
     }
+
 
      HexStr2Bytes = function (str)
     {

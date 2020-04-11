@@ -1,7 +1,7 @@
 package com.framework;
 
-import com.fast.common.core.utils.RedisUtil;
-import com.fast.framework.sys.entity.SysUserEntity;
+import com.j2eefast.common.core.utils.RedisUtil;
+import com.j2eefast.framework.sys.entity.SysUserEntity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;

@@ -7,7 +7,7 @@
             <h2>FastOS管理框架</h2>
             <p>
                 FastOS 是一个 Java EE 企业级快速开发平台，基于经典技术组合（Spring Boot、Spring MVC、Apache Shiro、MyBatis、freemarker、Bootstrap、AdminLTE）采用经典开发模式，让初学者能够更快的入门并投入到团队开发中去。
-                在线代码生成功能，包括核心模块如：组织机构、角色用户、菜单及按钮授权、数据权限、系统参数、内容管理、license认证等。采用松耦合设计；界面无刷新，一键换肤；众多账号安全设置，密码策略；在线定时任务配置；支持集群，支持SAAS；支持多数据源；支持读写分离、分库分表.
+                在线代码生成功能，包括核心模块如：组织机构、角色用户、菜单及按钮授权、数据权限、系统参数、内容管理、license认证等。采用松耦合设计；界面无刷新，一键换肤,一键国际化；众多账号安全设置，密码策略；在线定时任务配置；支持集群，支持SAAS；支持多数据源；支持读写分离、分库分表.
             </p>
             <p>
                 <b>当前版本：</b><span class="label label-warning">v${config.getVersion()}</span>
@@ -42,10 +42,40 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h5 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.3</a><code class="pull-right">2020.03.28</code>
+                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.4</a><code class="pull-right">2020.04.11</code>
                                         </h5>
                                     </div>
                                     <div id="v41" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>1. 新增百度ueditor富文本编辑器更换之前编辑器</li>
+                                                <li>2. 增强ueditor 新增在线删除功能,修改ueditor 完全适配fastos,页面引入直接使用</li>
+                                                <li>3. 增加上传图片添加水印</li>
+                                                <li>4. 修改公告展示页面，改用iframe引入确保页面所见即所得</li>
+                                                <li>5. 修复授权角色选中值丢失情况</li>
+                                                <li>6. 修复表格初始化选中，获取选中行值丢失问题</li>
+                                                <li>7.修复TAB栏菜单刷新/TAB切换刷新问题</li>
+                                                <li>8.修复定时任务功能cron工具 不能显示最近执行时间，查询列表新增下次执行时间字段</li>
+                                                <li>9.新增3套登陆页面风格,可以再后台配置默认风格</li>
+                                                <li>10.整合Spring注解Redis缓存,解决Redis故障或者不可用情况任然可以执行方法获取参数</li>
+                                                <li>11.兼容不配置Redis缓存数据库项目也可以运行</li>
+                                                <li>12.解决初次登陆显示问题</li>
+                                                <li>13.登陆页面主页面增加页面压缩减低易读性，提高安全性。此功能可以全局开启</li>
+                                                <li>14.完善国际化字段</li>
+                                                <li>15.去掉Dao包,简化代码</li>
+                                                <li>16.调整包名统一规范</li>
+                                                <li>17. 优化代码，修复若干细节</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h5 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.3</a><code class="pull-right">2020.03.28</code>
+                                        </h5>
+                                    </div>
+                                    <div id="v41" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ol>
                                                 <li>1. fastjson升级1.2.67 阻止漏洞</li>
@@ -122,7 +152,7 @@
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你可能在本系统中看到众多优秀开源项目的影子，因为她本身集成了众多优秀的开源项目精华功能，在这种环境中成长的，但是她目前还有很多缺点，
                             希望大神们嘴下留情。如果你也喜欢开源、喜欢本项目,作者欢迎您的加入,FASTOS会因为您的加入而变的更加完善与丰富!
                         </p>
-                        <p class="mt10"><i class="fa fa-send-o"></i> ：如果本项目对你有帮助<ins><a href="https://gitee.com/zhouhuanOGP/J2EEFAST" target="_blank">请点击Star收藏</a></ins>(<a href="javascript:show()">点击查看</a>),本项目会长期维护,若你在使用中有<u>任何问题或建议</u>欢迎在<del><a href="https://gitee.com/zhouhuanOGP/J2EEFAST/issues" target="_blank">码云issue提交问题</a></del>作者会第一时间处理，让我们一起完善FASTOS
+                        <p class="mt10"><i class="fa fa-send-o"></i> ：如果本项目对你有帮助<ins><a href="https://gitee.com/zhouhuanOGP/J2EEFAST" target="_blank">请点击Star收藏</a></ins>(<a href="javascript:show()">点击查看</a>),<strong>本项目会长期维护</strong>,若你在使用中有<u>任何问题或建议</u>欢迎在<del><a href="https://gitee.com/zhouhuanOGP/J2EEFAST/issues" target="_blank">码云issue提交问题</a></del>作者会第一时间处理，让我们一起完善FASTOS
                         </p>
                         <p class="mt5"><i class="fa fa-book"></i> 关于文档：<s>因目前项目初期,暂还没时间整理,后期会整理.</s>
                         </p>
@@ -149,146 +179,144 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-3">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <span class="label label-success pull-right">月</span>
-                    <h5>收入</h5>
-                </div>
-                <div class="ibox-content">
-                    <h1 class="no-margins">40 886,200</h1>
-                    <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
-                    </div>
-                    <small>总收入</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <span class="label label-info pull-right">全年</span>
-                    <h5>订单</h5>
-                </div>
-                <div class="ibox-content">
-                    <h1 class="no-margins">275,800</h1>
-                    <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
-                    </div>
-                    <small>新订单</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <span class="label label-primary pull-right">今天</span>
-                    <h5>访客</h5>
-                </div>
-                <div class="ibox-content">
-                    <h1 class="no-margins">106,120</h1>
-                    <div class="stat-percent font-bold text-navy">44% <i class="fa fa-level-up"></i>
-                    </div>
-                    <small>新访客</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <span class="label label-danger pull-right">最近一个月</span>
-                    <h5>活跃用户</h5>
-                </div>
-                <div class="ibox-content">
-                    <h1 class="no-margins">80,600</h1>
-                    <div class="stat-percent font-bold text-danger">38% <i class="fa fa-level-down"></i>
-                    </div>
-                    <small>12月</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>用户项目列表</h5>
-                    <div class="ibox-tools">
-                        <a class="collapse-link">
-                            <i class="fa fa-chevron-up"></i>
-                        </a>
-                        <a class="close-link">
-                            <i class="fa fa-times"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="ibox-content">
-                    <table class="table table-hover no-margins">
-                        <thead>
-                        <tr>
-                            <th>状态</th>
-                            <th>日期</th>
-                            <th>用户</th>
-                            <th>值</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td><small>进行中...</small>
-                            </td>
-                            <td><i class="fa fa-clock-o"></i> 11:20</td>
-                            <td>青衣5858</td>
-                            <td class="text-navy"> <i class="fa fa-level-up"></i> 24%</td>
-                        </tr>
-                        <tr>
-                            <td><span class="label label-warning">已取消</span>
-                            </td>
-                            <td><i class="fa fa-clock-o"></i> 10:40</td>
-                            <td>徐子崴</td>
-                            <td class="text-navy"> <i class="fa fa-level-up"></i> 66%</td>
-                        </tr>
-                        <tr>
-                            <td><small>进行中...</small>
-                            </td>
-                            <td><i class="fa fa-clock-o"></i> 01:30</td>
-                            <td>姜岚昕</td>
-                            <td class="text-navy"> <i class="fa fa-level-up"></i> 54%</td>
-                        </tr>
-                        <tr>
-                            <td><small>进行中...</small>
-                            </td>
-                            <td><i class="fa fa-clock-o"></i> 02:20</td>
-                            <td>武汉大兵哥</td>
-                            <td class="text-navy"> <i class="fa fa-level-up"></i> 12%</td>
-                        </tr>
-                        <tr>
-                            <td><small>进行中...</small>
-                            </td>
-                            <td><i class="fa fa-clock-o"></i> 09:40</td>
-                            <td>荆莹儿</td>
-                            <td class="text-navy"> <i class="fa fa-level-up"></i> 22%</td>
-                        </tr>
-                        <tr>
-                            <td><span class="label label-primary">已完成</span>
-                            </td>
-                            <td><i class="fa fa-clock-o"></i> 04:10</td>
-                            <td>栾某某</td>
-                            <td class="text-navy"> <i class="fa fa-level-up"></i> 66%</td>
-                        </tr>
-                        <tr>
-                            <td><small>进行中...</small>
-                            </td>
-                            <td><i class="fa fa-clock-o"></i> 12:08</td>
-                            <td>范范范二妮</td>
-                            <td class="text-navy"> <i class="fa fa-level-up"></i> 23%</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+<#--    <div class="row">-->
+<#--        <div class="col-sm-3">-->
+<#--            <div class="ibox float-e-margins">-->
+<#--                <div class="ibox-title">-->
+<#--                    <span class="label label-success pull-right">月</span>-->
+<#--                    <h5>收入</h5>-->
+<#--                </div>-->
+<#--                <div class="ibox-content">-->
+<#--                    <h1 class="no-margins">40 886,200</h1>-->
+<#--                    <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>-->
+<#--                    </div>-->
+<#--                    <small>总收入</small>-->
+<#--                </div>-->
+<#--            </div>-->
+<#--        </div>-->
+<#--        <div class="col-sm-3">-->
+<#--            <div class="ibox float-e-margins">-->
+<#--                <div class="ibox-title">-->
+<#--                    <span class="label label-info pull-right">全年</span>-->
+<#--                    <h5>订单</h5>-->
+<#--                </div>-->
+<#--                <div class="ibox-content">-->
+<#--                    <h1 class="no-margins">275,800</h1>-->
+<#--                    <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>-->
+<#--                    </div>-->
+<#--                    <small>新订单</small>-->
+<#--                </div>-->
+<#--            </div>-->
+<#--        </div>-->
+<#--        <div class="col-sm-3">-->
+<#--            <div class="ibox float-e-margins">-->
+<#--                <div class="ibox-title">-->
+<#--                    <span class="label label-primary pull-right">今天</span>-->
+<#--                    <h5>访客</h5>-->
+<#--                </div>-->
+<#--                <div class="ibox-content">-->
+<#--                    <h1 class="no-margins">106,120</h1>-->
+<#--                    <div class="stat-percent font-bold text-navy">44% <i class="fa fa-level-up"></i>-->
+<#--                    </div>-->
+<#--                    <small>新访客</small>-->
+<#--                </div>-->
+<#--            </div>-->
+<#--        </div>-->
+<#--        <div class="col-sm-3">-->
+<#--            <div class="ibox float-e-margins">-->
+<#--                <div class="ibox-title">-->
+<#--                    <span class="label label-danger pull-right">最近一个月</span>-->
+<#--                    <h5>活跃用户</h5>-->
+<#--                </div>-->
+<#--                <div class="ibox-content">-->
+<#--                    <h1 class="no-margins">80,600</h1>-->
+<#--                    <div class="stat-percent font-bold text-danger">38% <i class="fa fa-level-down"></i>-->
+<#--                    </div>-->
+<#--                    <small>12月</small>-->
+<#--                </div>-->
+<#--            </div>-->
+<#--        </div>-->
+<#--    </div>-->
+<#--    <div class="row">-->
+<#--        <div class="col-sm-12">-->
+<#--            <div class="ibox float-e-margins">-->
+<#--                <div class="ibox-title">-->
+<#--                    <h5>用户项目列表</h5>-->
+<#--                    <div class="ibox-tools">-->
+<#--                        <a class="collapse-link">-->
+<#--                            <i class="fa fa-chevron-up"></i>-->
+<#--                        </a>-->
+<#--                        <a class="close-link">-->
+<#--                            <i class="fa fa-times"></i>-->
+<#--                        </a>-->
+<#--                    </div>-->
+<#--                </div>-->
+<#--                <div class="ibox-content">-->
+<#--                    <table class="table table-hover no-margins">-->
+<#--                        <thead>-->
+<#--                        <tr>-->
+<#--                            <th>状态</th>-->
+<#--                            <th>日期</th>-->
+<#--                            <th>用户</th>-->
+<#--                            <th>值</th>-->
+<#--                        </tr>-->
+<#--                        </thead>-->
+<#--                        <tbody>-->
+<#--                        <tr>-->
+<#--                            <td><small>进行中...</small>-->
+<#--                            </td>-->
+<#--                            <td><i class="fa fa-clock-o"></i> 11:20</td>-->
+<#--                            <td>青衣5858</td>-->
+<#--                            <td class="text-navy"> <i class="fa fa-level-up"></i> 24%</td>-->
+<#--                        </tr>-->
+<#--                        <tr>-->
+<#--                            <td><span class="label label-warning">已取消</span>-->
+<#--                            </td>-->
+<#--                            <td><i class="fa fa-clock-o"></i> 10:40</td>-->
+<#--                            <td>徐子崴</td>-->
+<#--                            <td class="text-navy"> <i class="fa fa-level-up"></i> 66%</td>-->
+<#--                        </tr>-->
+<#--                        <tr>-->
+<#--                            <td><small>进行中...</small>-->
+<#--                            </td>-->
+<#--                            <td><i class="fa fa-clock-o"></i> 01:30</td>-->
+<#--                            <td>姜岚昕</td>-->
+<#--                            <td class="text-navy"> <i class="fa fa-level-up"></i> 54%</td>-->
+<#--                        </tr>-->
+<#--                        <tr>-->
+<#--                            <td><small>进行中...</small>-->
+<#--                            </td>-->
+<#--                            <td><i class="fa fa-clock-o"></i> 02:20</td>-->
+<#--                            <td>武汉大兵哥</td>-->
+<#--                            <td class="text-navy"> <i class="fa fa-level-up"></i> 12%</td>-->
+<#--                        </tr>-->
+<#--                        <tr>-->
+<#--                            <td><small>进行中...</small>-->
+<#--                            </td>-->
+<#--                            <td><i class="fa fa-clock-o"></i> 09:40</td>-->
+<#--                            <td>荆莹儿</td>-->
+<#--                            <td class="text-navy"> <i class="fa fa-level-up"></i> 22%</td>-->
+<#--                        </tr>-->
+<#--                        <tr>-->
+<#--                            <td><span class="label label-primary">已完成</span>-->
+<#--                            </td>-->
+<#--                            <td><i class="fa fa-clock-o"></i> 04:10</td>-->
+<#--                            <td>栾某某</td>-->
+<#--                            <td class="text-navy"> <i class="fa fa-level-up"></i> 66%</td>-->
+<#--                        </tr>-->
+<#--                        <tr>-->
+<#--                            <td><small>进行中...</small>-->
+<#--                            </td>-->
+<#--                            <td><i class="fa fa-clock-o"></i> 12:08</td>-->
+<#--                            <td>范范范二妮</td>-->
+<#--                            <td class="text-navy"> <i class="fa fa-level-up"></i> 23%</td>-->
+<#--                        </tr>-->
+<#--                        </tbody>-->
+<#--                    </table>-->
+<#--                </div>-->
+<#--            </div>-->
+<#--        </div>-->
+<#--    </div>-->
 </div>
 <@footer>
 <script type="text/javascript" src="${ctxStatic}/statics/plugins/flot/jquery.flot.js?V=${config.getDvVersion()}"></script>

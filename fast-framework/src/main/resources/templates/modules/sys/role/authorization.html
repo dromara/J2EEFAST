@@ -115,11 +115,6 @@
                 focusCleanup: true
             });
 
-            /*窗口打开执行*/
-            /*    function onLoadSuccess (obj) {
-
-                }*/
-
             /*提交*/
             function submitHandler(index, layero){
                 if (opt.validate.form()) {
@@ -130,7 +125,7 @@
                     var data = opt.form.dataUp(options);
                     var menuIds = $.tree.getCheckedNodes();
                     var moduleCodes = opt.common.getCheckboxValue("moduleCodes");
-                    data.push({"name": "menuIdList", "value": menuIds});
+                    data.push({"name": "menuIds", "value": menuIds});
                     data.push({"name": "moduleCodes", "value": moduleCodes});
                     opt.operate.save(baseURL+'sys/role/authorization',data);
                 }

@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.fast.framework.log.mapper.SysLoginInfoMapper">
+<mapper namespace="com.j2eefast.framework.log.mapper.SysLoginInfoMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+         id as 'id', username as 'username',ipaddr as 'ipaddr', login_location as 'loginLocation', browser as 'browser', os as 'os',
+         mobile as 'mobile', status as 'status', msg as 'msg', login_time as 'loginTime', comp_id as 'compId'
+    </sql>
 
 	<update id="cleanLog">
         truncate table sys_login_infor
     </update>
+
+    <select id="findFirstLoginInfo"  resultType="com.j2eefast.framework.log.entity.SysLoginInfoEntity">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_login_infor
+        where username = #{username}  AND STATUS = '00000' ORDER BY login_time DESC LIMIT 1;
+    </select>
+
 </mapper>

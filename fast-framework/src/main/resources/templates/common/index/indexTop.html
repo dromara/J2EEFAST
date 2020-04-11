@@ -14,7 +14,7 @@
             <ul class="nav navbar-nav" id="topMenu">
                 <#if modules?? && (modules?size > 0)>
                     <#list modules as c>
-                        <li class="treeview"><a href="javascript:" class="addTabPage" title="${c.moduleName}" data-code="${c.moduleCode}"><i class="fa-fw ${c.icon}"></i> <span><@ctx.i18n text = "${c.moduleName}"/></span></a></li>
+                            <li class="treeview"><a href="javascript:" class="addTabPage" title="${c['moduleName']}" data-code="${c['moduleCode']}"><i class="fa-fw ${c['icon']}"></i> <span><@ctx.i18n text = "${c['moduleName']}"/></span></a></li>
                     </#list>
                 </#if>
             </ul>
@@ -123,7 +123,7 @@
                             <p>
                             <h4><@ctx.i18n text = "上次登陆时间"/> :
                                 <#if user.loginTime?exists>
-                                    ${user.loginTime?string('yyyy-dd-MM HH:mm:ss')}
+                                    ${user.loginTime?string('yyyy-MM-dd HH:mm:ss')}
                                 </#if>
                                 </h4>
                             <small><@ctx.i18n text = "上次登陆地点"/>:${user.loginLocation?default("/")}</small>

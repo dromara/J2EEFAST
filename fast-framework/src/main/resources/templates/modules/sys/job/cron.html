@@ -1,3 +1,5 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="true">
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,6 +33,7 @@
     </style>
     <script src="${ctxStatic}/statics/plugins/cron/jquery-1.12.4.min.js?V=${config.getDvVersion()}"></script>
     <script src="${ctxStatic}/statics/plugins/cron/cron.min.js?V=${config.getDvVersion()}"></script>
+    <script> var baseURL = "${ctxStatic}/"</script>
 </head>
 <body style="margin:0">
     <div class="easyui-layout" style="width:830px;height:515px; border: 1px rgb(202, 196, 196) solid;
@@ -541,3 +544,4 @@
     </div>
 </body>
 </html>
+</@pageTheme>

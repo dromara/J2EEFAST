@@ -16,10 +16,10 @@
                             <#list menu.children as m>
                                 <li>
                                     <#if m.type == 1>
-                                        <a href="javascript:;" data-url="${m.url}" data-module="${key}" data-target="${m.target?default("")}" data-id="${m.mId}" title="<@ctx.i18n text = "${m.name}" />">
+                                        <a href="javascript:;" data-url="${m.url}" data-module="${key}" data-target="${m.target?default("")}" data-id="${m.MId}" title="<@ctx.i18n text = "${m.name}" />">
                                             <#if m.icon??><i class="${m.icon}" data-icon="${m.icon}"></i></#if>
                                             <span><@ctx.i18n text = "${m.name}" /></span>
-                                            <#if m.mNew><span class="pull-right-container"><small data-index="_new" class="label pull-right bg-red"><@ctx.i18n text = "新" /></small></span></#if>
+                                            <#if m.MNew><span class="pull-right-container"><small data-index="_new" class="label pull-right bg-red"><@ctx.i18n text = "新" /></small></span></#if>
                                         </a>
                                     </#if>
                                 </li>

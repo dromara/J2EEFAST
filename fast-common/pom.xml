@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.fast</groupId>
+    <groupId>com.j2eefast</groupId>
     <artifactId>fast</artifactId>
     <version>3.2.0</version>
   </parent>
@@ -141,6 +141,13 @@
               <groupId>com.github.ulisesbocchio</groupId>
               <artifactId>jasypt-spring-boot-starter</artifactId>
               <version>3.0.2</version>
+          </dependency>
+
+          <!-- 缩略图工具  -->
+          <dependency>
+              <groupId>net.coobird</groupId>
+              <artifactId>thumbnailator</artifactId>
+              <version>0.4.8</version>
           </dependency>
 
   </dependencies>

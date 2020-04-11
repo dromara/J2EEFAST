@@ -1,0 +1,118 @@
+fast:
+    db:
+        #开启多源配置 true, 如果为false 则会获取默认 default 配置数据库
+        muti-datasource-open: false
+        #多数据源名称列表，多个用逗号隔开， 使用方法：@DataSource(name="db1")
+        datasourceNames: db1#,db2,db3
+    redis:
+        #是否开启redis 内存数据库 <*推荐使用*>
+        enabled: true
+    #是否演示模式
+    demoMode:
+        enabled: false
+        #配置拦截规则
+        post: 'edit,del,remove,clean,updateAvatar,updateUser,resetPwd,updatePass,genCode,uploadLic,add,uploadFile'
+        get: 'del,remove,clean,dirTreeData'
+        urlPatterns: '/sys/*,/tool/*'
+    #是否开启HTTPS false 则以server:port
+    ssl:
+        enabled: true
+    #配置文件yml文件中敏感数据加密key /*注意 数据加密安全性其实是相对的,什么加密如果私钥或者key泄露都是无用,这个世界上没有一种加密方法是绝对安全的。
+    #这种加密方法只能做到：防君子不防小人*/
+    #此参数可以配置可以不配置,如果不配置则自动获取系统key,或者使用环境变量方式储存，使用启动命令方式,建议不配置key 让系统自己生成 因为系统是生成key是根居机器码,只有这台机器才能解密
+    #需要加密的参数 DES{} 包裹 或者 SM4{} 包裹
+    encrypt:
+        key:
+    # 防止XSS攻击
+    xss:
+        # 过滤开关
+        enabled: true
+        # 排除链接（多个用逗号分隔）
+        excludes: /sys/notice/*
+        # 匹配链接
+        urlPatterns: /sys/*,/tool/*
+########################License认证相关#####################
+#License相关配置
+license:
+    #主题
+    subject: fastOS
+    #公钥别称
+    publicAlias: j2eefastCert
+    #访问公钥的密码
+    storePass: j2eefast.com
+    #license位置 如果不是绝对地址 则会找项目资源路径
+    licensePath: license/license.lic
+    #公钥位置 如果不是绝对地址 则会找项目资源路径
+    publicKeysStorePath: license/publicCerts.keystore
+
+    ######生成许可证书信息 *此信息应当绝对保密 正式项目应该分离单独存放用于生成许证书*  你可以屏蔽###########
+    #私钥库别名
+    privateAlias:
+    #私钥库密码
+    keyPass:
+    #私钥库路径
+    privateKeysStorePath:
+########################License认证相关#####################
+
+spring:
+    datasource:
+        #默认(主)数据库配置
+        default:
+            driverClassName: com.mysql.cj.jdbc.Driver
+            url:
+            username:
+            password:
+            filters: wall,mergeStat
+        ###############从数据库配置
+        db1:
+            driverClassName:
+            #从数据库是否开启
+            enabled: false
+            url:
+            username:
+            password:
+            filters:
+#        db2:
+#            driverClassName:
+#            #从数据库是否开启
+#            enabled: false
+#            url:
+#            username:
+#            password:
+#            filters:
+#        db3:
+#            driverClassName:
+#            #从数据库是否开启
+#            enabled: false
+#            url:
+#            username:
+#            password:
+#            filters:
+    #redis数据库服务器
+    redis:
+        database: 10
+        host:
+        port:
+        password:        # 密码
+        timeout: 6000ms  # 连接超时时长（毫秒）
+        jedis:
+            pool:
+                max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
+                max-wait: -1ms      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+                max-idle: 10      # 连接池中的最大空闲连接
+                min-idle: 5       # 连接池中的最小空闲连接
+
+mybatis-plus:
+    #实体扫描，多个package用逗号或者分号分隔
+    type-aliases-package: com.j2eefast.*.*.entity
+    #打印sql语句,调试用
+    #configuration:
+    #   log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+http:
+    #port: 8200 #web端口
+    port: 80 #web端口
+server:
+    name: '##################Fast云系统OS[生产环境]##############'
+    projectName: 'FAST云系统[生产环境]'
+    #port: 8080 #HTTPS端口
+    port: 443 #HTTPS端口

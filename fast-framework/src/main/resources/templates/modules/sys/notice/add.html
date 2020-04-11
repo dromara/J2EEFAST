@@ -1,7 +1,7 @@
 <#include "/common/include.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
     <@header title="新增公告">
-        <@cssLibs.summernote_css/>
+        <#--<@cssLibs.summernote_css/>-->
     </@header>
     <@addorEdit fromId="form-notice-add">
         <div class="alert alert-dismissible callout callout-info animated bounceInDown">
@@ -82,7 +82,8 @@
                 <div class="form-group">
                     <div class="col-sm-12">
                         <input id="noticeContent" name="noticeContent" type="hidden">
-                        <div class="summernote"></div>
+                        <#--<div class="summernote"></div>-->
+                        <script id="noticeContentUE" type="text/plain" style="width:100%;height:300px;"></script>
                     </div>
                 </div>
             </div>
@@ -95,48 +96,82 @@
             <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
         </div>
     </div>
-    <@footer>
-        <@jsLibs.summernote_js/>
+<@footer>
+        <#--<@jsLibs.summernote_js/>-->
+<@jsLibs.ueditor_js/>
         <script>
             var prefix = baseURL + "sys/notice";
 
-            $('.summernote').summernote({
-                placeholder: '请输入公告内容',
-                height : 192,
-                lang : 'zh-CN',
-                followingToolbar: false,
-                callbacks: {
-                    onImageUpload: function (files, editor, $editable) {
-                        sendFile(files, editor, $editable);
+            var remarksUE;
+            $(function() {
+                remarksUE = UE.getEditor('noticeContentUE', {
+                    maximumWords: 10000,
+                    readonly: false, initialFrameHeight: 200,
+                });
+                // 更新编辑器内容  remarksUE.updateContent();
+                remarksUE.updateContent = function(){
+                    if (!remarksUE.hasContents()){
+                        $('#noticeContent').val("").change();
+                    }else{
+                        var html = remarksUE.getAllHtml().replace('<!--HTML-->','');
+                        $('#noticeContent').val("<!--HTML-->" + html).change();
                     }
-                }
-            });
-
-            // 上传文件
-            function sendFile(files, obj) {
-                var data = new FormData();
-                data.append("file", files[0]);
-                $.ajax({
-                    type: "POST",
-                    url: prefix + "/uploadFile",
-                    data: data,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    success: function(result) {
-                        if (result.code == opt.variable.web_status.SUCCESS) {
-                            console.log(result.url+ result.fileName);
-                            $('.summernote').summernote('insertImage', result.url+result.fileName);
-                        } else {
-                            opt.modal.error(result.msg);
-                        }
-                    },
-                    error: function(error) {
-                        opt.modal.error("图片上传失败。");
+                    if (typeof window.webuploaderRefresh == 'function'){
+                        window.webuploaderRefresh();
+                    }
+                };
+                // 编辑器加载完成事件
+                remarksUE.ready(function(){
+                    remarksUE.addListener('contentchange', function(){
+                        remarksUE.updateContent();
+                    });
+                    if (typeof window.webuploaderRefresh == 'function'){
+                        window.webuploaderRefresh();
                     }
                 });
-            }
+            });
+
+            $('#noticeContent').parents('form').submit(function(){
+                remarksUE.updateContent();
+            });
+
+            // $('.summernote').summernote({
+            //     placeholder: '请输入公告内容',
+            //     height : 192,
+            //     lang : 'zh-CN',
+            //     followingToolbar: false,
+            //     callbacks: {
+            //         onImageUpload: function (files, editor, $editable) {
+            //             sendFile(files, editor, $editable);
+            //         }
+            //     }
+            // });
+            //
+            // // 上传文件
+            // function sendFile(files, obj) {
+            //     var data = new FormData();
+            //     data.append("file", files[0]);
+            //     $.ajax({
+            //         type: "POST",
+            //         url: prefix + "/uploadFile",
+            //         data: data,
+            //         cache: false,
+            //         contentType: false,
+            //         processData: false,
+            //         dataType: 'json',
+            //         success: function(result) {
+            //             if (result.code == opt.variable.web_status.SUCCESS) {
+            //                 console.log(result.url+ result.fileName);
+            //                 $('.summernote').summernote('insertImage', result.url+result.fileName);
+            //             } else {
+            //                 opt.modal.error(result.msg);
+            //             }
+            //         },
+            //         error: function(error) {
+            //             opt.modal.error("图片上传失败。");
+            //         }
+            //     });
+            // }
 
             $("#form-notice-add").validate({
                 onkeyup: false,
@@ -178,8 +213,8 @@
                     // var status = $("input[id='status']").is(':checked') == true ? 0 :1;
                     // data.push({"name": "status", "value": status});
                     // data.push({"name": "roleIdList", "value": postIds});
-                    var sHTML = $('.summernote').summernote('code');
-                    $("#noticeContent").val(sHTML);
+                    $("#noticeContent").val(UE.getEditor('noticeContentUE').getAllHtml());
+                    //console.log(UE.getEditor('noticeContentUE').getContent());
                     opt.operate.saveTab(prefix + "/add", $('#form-notice-add').serialize());
                 }
             }

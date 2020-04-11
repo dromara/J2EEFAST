@@ -1,0 +1,310 @@
+<#include "/common/include.html">
+<@pageTheme mark="true">
+<!DOCTYPE html>
+<html>
+<head>
+  <#import "/common/springctx.ftl" as ctx>
+  <meta charset="utf-8">
+  <meta name="keywords" content="J2eeFastOs"/><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>登录 - FastOS J2eefast.com</title>
+    <link href="${ctxStatic}/statics/img/favicon.ico" rel="shortcut icon">
+  <#--Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <#-- Bootstrap 3.3.7 -->
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/bootstrap.min.css?V=${config.getDvVersion()}">
+  <#-- Font Awesome -->
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/font-awesome.min.css?V=${config.getDvVersion()}">
+  <#-- Ionicons -->
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/Ionicons/css/ionicons.min.css?V=${config.getDvVersion()}">
+  <#--animate 样式-->
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/animate.css?V=${config.getDvVersion()}"/>
+  <#-- Theme style -->
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/AdminLTE.min.css?V=${config.getDvVersion()}">
+  <#-- iCheck -->
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/iCheck/all.css?V=${config.getDvVersion()}">
+  <#-- jQuery toast 提示框  -->
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/jquery.toast.min.css?V=${config.getDvVersion()}">
+
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/index.css?V=${config.getDvVersion()}">
+  <link rel="stylesheet" href="${ctxStatic}/statics/css/style.css?V=${config.getDvVersion()}">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <!-- Google Font-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"> 
+  <#-- Vue单页面刷新闪烁标签{{}}问题解决-->
+  <style>[v-cloak]{display:none !important;}</style>
+</head>
+<body class="hold-transition login-page">
+<#include "/common/notice.html">
+<#include "/common/upgrade.html"><!-- 如果客户浏览器版本过低，则显示浏览器升级提示-->
+<div class="login-box animated fadeInLeft" id="app" v-cloak>
+  <div class="login-logo">
+    <a href="#">${config.getTitle()}<small>V${config.getVersion()}</small></a>
+  </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body">
+      <p class="login-box-msg"><@ctx.i18n text = "欢迎登录"/></p>
+      <div class="form-group has-feedback">
+        <input type="text" class="form-control" id="username" v-model="username" placeholder="<@ctx.i18n text = "账号/邮箱/手机号码"/>">
+        <span class="glyphicon glyphicon-user form-control-feedback "></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" id="password" class="form-control"  v-model="password" placeholder="<@ctx.i18n text = "密码"/>">
+        <span class="glyphicon glyphicon-lock form-control-feedback" title="<@ctx.i18n text = "登录密码,鼠标按下显示密码"/>"
+              data-toggle="tooltip" data-placement="bottom" onmousedown="$('#password').attr('type','text')" onmouseup="$('#password').attr('type','password')"></span>
+      </div>
+      <div  v-if="loadcode" class="form-group has-feedback">
+        <input type="text" class="form-control"  v-model="captcha" placeholder="<@ctx.i18n text = "验证码"/>">
+        <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+      </div>
+      <div v-if="loadcode"  class="form-group has-feedback">
+        <img alt="<@ctx.i18n text = "如果看不清楚，请单击图片刷新!"/>" class="img-rounded" :src="src" @click="refreshCode">
+        &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" @click="refreshCode"><@ctx.i18n text = "点击刷新"/></a>
+      </div>
+      <div class="form-group row">
+        <div class="col-xs-6">
+          <div class="checkbox icheck">
+              <label title="<@ctx.i18n text = "公共场所慎用,下次登录免输账号"/>" data-toggle="tooltip" data-placement="bottom">
+                <input type="checkbox" name="rememberUserCode" data-style="square-blue" /><@ctx.i18n text = "记住账号"/>
+              </label>
+          </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-xs-6">
+<#--            屏蔽记住我-->
+            <div class="checkbox icheck hide">
+                <label>
+                    <input type="checkbox" name="rememberme" v-model="rememberme" data-style="square-blue"> <@ctx.i18n text = "免登录"/>
+                </label>
+            </div>
+        </div>
+        <!-- /.col -->
+      </div>
+      <div class="form-group  row">
+          <div class="col-xs-12">
+              <button type="button" class="btn btn-primary btn-block btn-flat" @click="login" data-loading="正在验证登录，请稍后..."><@ctx.i18n text = "登 录"/></button>
+          </div>
+      </div>
+       <div class="row">
+		  <div class="col-xs-12">
+					<div class="dropdown pull-right">
+						<a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+							<i class="fa fa-language"></i>&nbsp;<@ctx.i18n text = "中文(简体)"/>
+						</a>
+						<ul class="dropdown-menu">
+                            <li class="mt5"></li>
+                            <#list dict.getType('sys_lang_type')>
+                                <#items as d>
+                                    <#if d.status =='0' >
+                                        <li><a href="${ctxStatic}/login?_lang=${d.dictValue}&view=${loginView}">${d.dictLabel}</a></li>
+                                    </#if>
+                                </#items>
+                            </#list>
+                            <li class="mt5"></li>
+						</ul>
+					</div>
+				</div>
+		</div>
+  </div>
+  <!-- /.login-box-body -->
+</div>
+<!-- /.login-box -->
+<div class="help-block text-center">
+<#-- Enter your password to retrieve your session -->
+</div>
+<#--<div class="login-footer">-->
+<#--    Copyright &copy; 2018-${config.getCopyrightYear()} ${config.getCompany()}<br>-->
+<#--    <div class="login-beian">-->
+<#--&lt;#&ndash;        <img src="${ctxStatic}/statics/img/batb.png"/><a class="text-black" target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011202012286">沪公网安备 31011202012286号</a>&nbsp;&nbsp;&ndash;&gt;-->
+<#--        <a href="http://www.beian.miit.gov.cn/" class="text-black" target="_blank">${config.getIPC()}</a></div>-->
+<#--</div>-->
+<div class="login-footer">
+    <span class="footer-item">
+      Copyright &copy; 2018-${config.getCopyrightYear()} ${config.getCompany()}
+    </span>
+    <span class="footer-item">
+        <a href="https://gitee.com/zhouhuanOGP/J2EEFAST/wikis">帮助文档</a>
+    </span>
+    <#list dict.getType('sys_login_view')>
+        <#items as d>
+            <#if d.status =='0' >
+                <span class="footer-item">
+                    <a href="${ctxStatic}/login?view=${d.dictValue}">${d.dictLabel}</a>
+                </span>
+            </#if>
+        </#items>
+    </#list>
+</div>
+<div class="login-footer">
+        <span class="footer-item">
+            <a href="http://www.beian.miit.gov.cn/" class="text-black" target="_blank">${config.getIPC()}</a>
+        </span>
+</div>
+<#--jQuery 3 -->
+<script src="${ctxStatic}/statics/libs/jquery.min.js?V=${config.getDvVersion()}"></script>
+<#-- Bootstrap 3.3.7 -->
+<script src="${ctxStatic}/statics/libs/bootstrap.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/libs/SM4.js?V=${config.getDvVersion()}"></script>
+<#-- iCheck -->
+<script src="${ctxStatic}/statics/libs/icheck.min.js?V=${config.getDvVersion()}"></script>
+<#-- 全局遮罩-->
+<script src="${ctxStatic}/statics/plugins/blockUI/jquery.blockUI.js?V=${config.getDvVersion()}"></script>
+<#-- jQuery toast 提示框  -->
+<script src="${ctxStatic}/statics/libs/jquery.toast.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/libs/jquery.slimscroll.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/libs/fastclick.min.js?V=${config.getDvVersion()}"></script>
+<#--<script src="${ctxStatic}/statics/libs/app.js?V=${config.getDvVersion()}"></script>-->
+<script src="${ctxStatic}/statics/libs/vue.min.js?V=${config.getDvVersion()}"></script>
+<script>var ctx = "${ctxStatic}/", _secretKey = "${_secretKey}";</script>
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            username: '',
+            password: '',
+            captcha: '',
+            /*errorMsg: '',*/
+            rememberme : false,
+            loadcode : false,
+            src: 'captcha.gif'
+        },
+        beforeCreate: function(){
+            if(self != top){
+                top.location.href = self.location.href;
+            }
+        },
+        methods: {
+            refreshCode: function(){ /*刷新验证码*/
+                this.src = ctx+"captcha.gif?t=" + $.now();
+            },
+            _onkeydown : function(e){
+                var that = this;
+                if(e && e.keyCode==13) { /* enter 键 */
+                    that.login();
+                }
+            },
+            login: function (event) {
+                if(this.getCookie("_secretKey") == ""){
+                    location.reload();
+                    return;
+                }
+                var s4=new SM4Util(this.getCookie("_secretKey"));
+                $(window).block({ message: '<div class="loaderbox"><div class="loading-activity"></div> '
+                        + '<@ctx.i18n text = "数据正在认证,请稍后..."/>' + '</div>' });
+                $.ajax({
+                    type: "POST",
+                    url: ctx+"login",
+                    data: {"username":s4.encryptData_ECB(vm.username),
+                        "password":s4.encryptData_ECB(vm.password),
+                        "captcha":vm.captcha,
+                        "rememberMe":vm.rememberme},
+                    dataType: "json",
+                    success: function(result){
+                        /*登录成功*/
+                        if(result.code == 0){
+                            /*获取登陆前用户是否勾选记住账号*/
+                            if($("input[name='rememberUserCode']").is(':checked')){
+                                window.localStorage.setItem('rememberUserCode',vm.username);
+                            }else{
+                                window.localStorage.setItem('rememberUserCode',"");
+                            };
+                            setTimeout(
+                                function () {
+                                   location.href ='index';
+                                }
+                                , 100);
+                        }else if(result.code == '50004' || result.code == '50006'){
+                            $(window).unblock();
+                            vm.loadcode = true;
+                            vm.errrInfo(result.msg);
+                            vm.captcha = '';
+                            vm.password = '';
+                            vm.refreshCode();
+                        }
+                        else{
+                            $(window).unblock();
+                            vm.errrInfo(result.msg);
+                            vm.captcha = '';
+                            vm.password = '';
+                            vm.refreshCode();
+                        }
+                    }
+                });
+            },
+            errrInfo : function(text){
+                $.toast({
+                    heading: '<@ctx.i18n text = "警告"/>',
+                    text: text,
+                    hideAfter:3000,
+                    position: {
+                        right: 8,
+                        bottom: 4
+                    },
+                    textAlign: 'left',
+                    showHideTransition: 'slide',
+                    allowToastClose: true,
+                    loader: true,
+                    /*stack: 5,*/
+                    icon: 'error'
+                })
+            },
+            getCookie:function(c_name){
+                if (document.cookie.length>0){
+                    c_start=document.cookie.indexOf(c_name + "=");
+                    if (c_start!=-1){
+                        c_start=c_start + c_name.length+1;
+                        c_end=document.cookie.indexOf(";",c_start);
+                        if (c_end==-1) {
+                            c_end=document.cookie.length
+                        };
+                        return unescape(document.cookie.substring(c_start,c_end))
+                    }
+                };
+                return _secretKey;
+            }
+        },
+        mounted :function(){
+            var that = this;
+
+            if(window.localStorage.getItem('rememberUserCode') && window.localStorage.getItem('rememberUserCode') != ""){
+                $("input[name='rememberUserCode']").iCheck('check');
+                this.username = window.localStorage.getItem('rememberUserCode');
+            }else{
+                $("input[name='rememberUserCode']").iCheck('uncheck');
+            }
+
+            /*绑定记住我样式*/
+            $("input[type=checkbox]").each(function () {
+                $(this).iCheck({
+                    checkboxClass: "icheckbox_" + ($(this).data("style") || "square-blue"),
+                    radioClass: "iradio_" + ($(this).data("style") || "square-blue")
+                }).on('ifChanged', function(event){
+                    if($(this).attr("name") == "rememberme"){
+                        if($(this).is(':checked')){
+                            vm.rememberme = true;
+                        }else{
+                            vm.rememberme = false;
+                        }
+                    }
+                });
+            });
+
+            /*设置tooltip*/
+            $('[data-toggle="tooltip"]').each(function () {
+                $(this).tooltip();
+            });
+
+            /*获取页面键盘事件*/
+            window.document.onkeydown = that._onkeydown;
+        }
+    });
+</script>
+</body>
+</html>
+</@pageTheme>

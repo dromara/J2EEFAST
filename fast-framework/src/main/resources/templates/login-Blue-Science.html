@@ -1,0 +1,322 @@
+<#include "/common/include.html">
+<@pageTheme mark="true">
+<!DOCTYPE html>
+<html>
+<head>
+    <#import "/common/springctx.ftl" as ctx>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>登录 - FastOS J2eefast.com</title>
+    <link href="${ctxStatic}/statics/img/favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <#-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/bootstrap.min.css?V=${config.getDvVersion()}">
+    <#-- Font Awesome -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/font-awesome.min.css?V=${config.getDvVersion()}">
+    <#-- Ionicons -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/Ionicons/css/ionicons.min.css?V=${config.getDvVersion()}">
+    <#-- Theme style -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/AdminLTE.min.css?V=${config.getDvVersion()}">
+    <#-- iCheck -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/iCheck/all.css?V=${config.getDvVersion()}">
+    <#--animate 样式-->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/animate.css?V=${config.getDvVersion()}"/>
+    <#-- jQuery toast 提示框  -->
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/jquery.toast.min.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/style.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/index.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" type="text/css" href="${ctxStatic}/statics/css/baidu/n.css">
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/baidu/index_baidu.css">
+    <link rel="stylesheet" href="${ctxStatic}/statics/css/baidu/passport.css">
+    <style>
+        .checkbox{
+            margin-bottom: 20px !important;
+        }
+        .dropdown-menu>li>a {
+            color: #777 !important;
+        }
+    </style>
+</head>
+<body>
+<#include "/common/notice.html">
+<#include "/common/upgrade.html"><!-- 如果客户浏览器版本过低，则显示浏览器升级提示-->
+<div class="main" id="app" v-cloak>
+    <header>
+        <i class="decoration"></i>
+        <div class="container">
+            <a href="#" style="color: #0a0a0a">
+                当前版本: <small>V${config.getVersion()}</small>
+            </a>
+            <div class="right">
+                <div class="dropdown pull-right">
+                    <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
+                        <i class="fa fa-language"></i>&nbsp;<@ctx.i18n text = "中文(简体)"/>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="mt5"></li>
+                        <#list dict.getType('sys_lang_type')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <li><a href="${ctxStatic}/login?_lang=${d.dictValue}&view=${loginView}">${d.dictLabel}</a></li>
+                                </#if>
+                            </#items>
+                        </#list>
+                        <li class="mt5"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div id="root" class="animated fadeInLeft">
+        <i class="decoration"></i>
+        <table cellpadding="0" cellspacing="0">
+            <tbody><tr>
+                <td id="brand">
+                    <div>
+                        <h2>${config.getTitle()}</h2>
+                        <h3>
+<#--                            全面、落地的 <span>AI</span><br>-->
+                            FastOS 是一个 Java EE 企业级快速开发平台，基于经典技术组合（Spring Boot、Spring MVC、Apache Shiro、MyBatis-Plus、Freemarker、Bootstrap、AdminLTE）采用经典开发模式，让初学者能够更快的入门并投入到团队开发中去。 在线代码生成功能，包括核心模块如：组织机构、角色用户、菜单及按钮授权、数据权限、系统参数、内容管理、license认证等。采用松耦合设计；界面无刷新，一键换肤；众多账号安全设置，密码策略；在线定时任务配置；支持多数据源；支持读写分离、分库分表.
+                        </h3>
+                        <p class="hr"></p>
+                        <#--推广-->
+                        <p>
+                            <a id="campaign" style="" href="https://cloud.tencent.com/act/cps/redirect?redirect=1054&cps_key=364adb8c140f09acbca26d455a0036e6&from=console">
+                                <img width="366px" height="100px" src="${ctxStatic}/statics/img/txms.jpg">
+                            </a>
+                        </p>
+                    </div>
+                </td>
+                <td>
+                    <div id="login" class="login-box uc-common-login">
+                        <div id="common-login" class="login uc-common-login-small">
+                            <div class="login-shadow"></div>
+                            <span class="watermark"></span>
+                            <div id="change-login" class="change-login">
+                                <div>
+                                    <a href="javascript:void(0);" class="passport-account select"><@ctx.i18n text = "欢迎登录"/></a>
+<#--                                    <a id="choose-uc-login" href="javascript:void(0);">云账号<span></span></a>-->
+                                </div>
+                            </div>
+                            <div id="passport-login">
+                                <div id="passport-login-normal" class="tang-pass-login">
+                                    <form id="TANGRAM__PSP_4__form" class="pass-form pass-form-normal" action="${ctxStatic}/login" method="POST" autocomplete="off">
+                                        <p class="pass-form-logo">用户名密码登录</p>
+                                        <p id="TANGRAM__PSP_4__errorWrapper" class="pass-generalErrorWrapper">
+                                            <span id="TANGRAM__PSP_4__error" class="pass-generalError pass-generalError-error"></span>
+                                        </p>
+                                            <p id="TANGRAM__PSP_4__userNameWrapper" class="pass-form-item pass-form-item-userName">
+                                                <input type="text" class="pass-text-input pass-text-input-userName" id="username" v-model="username" placeholder="<@ctx.i18n text = "账号/邮箱/手机号码"/>">
+                                            </p>
+                                        <p id="TANGRAM__PSP_4__passwordWrapper" class="pass-form-item pass-form-item-password">
+                                            <input type="password" class="pass-text-input pass-text-input-password" id="password" v-model="password" placeholder="<@ctx.i18n text = "密码"/>">
+                                        </p>
+                                        <p id="TANGRAM__PSP_4__verifyCodeImgWrapper" class="pass-form-item pass-form-item-verifyCode" v-if="loadcode">
+                                            <input id="TANGRAM__PSP_4__verifyCode" type="text" class="pass-text-input pass-text-input-verifyCode" maxlength="4"  v-model="captcha" placeholder="<@ctx.i18n text = "验证码"/>">
+                                            <span class="pass-verifyCodeImgParent"><img id="TANGRAM__PSP_4__verifyCodeImg" class="pass-verifyCode" :src="src" @click="refreshCode">
+                                            </span>
+                                            <a id="TANGRAM__PSP_4__verifyCodeChange" href="javascript:;" @click="refreshCode" class="pass-change-verifyCode"><@ctx.i18n text = "点击刷新"/></a>
+                                        </p>
+                                        <p id="TANGRAM__PSP_4__memberPassWrapper" class="pass-form-item pass-form-item-memberPass">
+                                                <div class="checkbox icheck">
+                                                    <label title="<@ctx.i18n text = "公共场所慎用,下次登录免输账号"/>" data-toggle="tooltip" data-placement="bottom">
+                                                        <input type="checkbox" name="rememberUserCode" data-style="minimal-grey" />&nbsp;<@ctx.i18n text = "记住账号"/>
+                                                    </label>
+                                                </div>
+                                        </p>
+                                        <p id="TANGRAM__PSP_4__submitWrapper" class="pass-form-item pass-form-item-submit">
+                                            <input  type="button" class="pass-button pass-button-submit" @click="login" data-loading="正在验证登录，请稍后..." value="<@ctx.i18n text = "登 录"/>">
+<#--                                            <a class="pass-reglink pass-link" href="#" target="_blank" id="passport-reg">立即注册</a>-->
+<#--                                            <a class="pass-fgtpwd pass-link" href="#" target="_blank">忘记密码</a>-->
+<#--                                            <a class="pass-sms-btn pass-link" title="短信快捷登录" data-type="sms" id="TANGRAM__PSP_4__smsSwitchWrapper">短信快捷登录</a>-->
+                                        </p>
+                                    </form>
+                                </div>
+                            <div class="tip-wrap">
+                                <p><strong>温馨提示：</strong><br>密码若错3次以上,才会需要提交验证码。</p>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <footer>
+        Copyright &copy; 2018-${config.getCopyrightYear()} ${config.getCompany()} |
+        <a href="http://www.beian.miit.gov.cn/" class="text-black" target="_blank">${config.getIPC()}</a>
+        <br>
+        <a href="https://gitee.com/zhouhuanOGP/J2EEFAST/wikis">帮助文档</a> |
+        <#list dict.getType('sys_login_view')>
+            <#items as d>
+                <#if d.status =='0' >
+                    <a href="${ctxStatic}/login?view=${d.dictValue}">${d.dictLabel}</a> |
+                </#if>
+            </#items>
+        </#list>
+    </footer>
+</div>
+</body>
+<#--jQuery 3 -->
+<script src="${ctxStatic}/statics/libs/jquery.min.js?V=${config.getDvVersion()}"></script>
+<#-- Bootstrap 3.3.7 -->
+<script src="${ctxStatic}/statics/libs/bootstrap.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/libs/SM4.js?V=${config.getDvVersion()}"></script>
+<#-- iCheck -->
+<script src="${ctxStatic}/statics/libs/icheck.min.js?V=${config.getDvVersion()}"></script>
+<#-- 全局遮罩-->
+<script src="${ctxStatic}/statics/plugins/blockUI/jquery.blockUI.js?V=${config.getDvVersion()}"></script>
+<#-- jQuery toast 提示框  -->
+<script src="${ctxStatic}/statics/libs/jquery.toast.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/libs/jquery.slimscroll.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/statics/libs/fastclick.min.js?V=${config.getDvVersion()}"></script>
+<#--<script src="${ctxStatic}/statics/libs/app.js?V=${config.getDvVersion()}"></script>-->
+<script src="${ctxStatic}/statics/libs/vue.min.js?V=${config.getDvVersion()}"></script>
+<script>var ctx = "${ctxStatic}/", _secretKey = "${_secretKey}";</script>
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            username: '',
+            password: '',
+            captcha: '',
+            /*errorMsg: '',*/
+            rememberme : false,
+            loadcode : false,
+            src: 'captcha.gif'
+        },
+        beforeCreate: function(){
+            if(self != top){
+                top.location.href = self.location.href;
+            }
+        },
+        methods: {
+            refreshCode: function(){ /*刷新验证码*/
+                this.src = ctx+"captcha.gif?t=" + $.now();
+            },
+            _onkeydown : function(e){
+                var that = this;
+                if(e && e.keyCode==13) { /* enter 键 */
+                    that.login();
+                }
+            },
+            login: function (event) {
+                if(this.getCookie("_secretKey") == ""){
+                    location.reload();
+                    return;
+                }
+                var s4=new SM4Util(this.getCookie("_secretKey"));
+                $(window).block({ message: '<div class="loaderbox"><div class="loading-activity"></div> '
+                        + '<@ctx.i18n text = "数据正在认证,请稍后..."/>' + '</div>' });
+                $.ajax({
+                    type: "POST",
+                    url: ctx+"login",
+                    data: {"username":s4.encryptData_ECB(vm.username),
+                        "password":s4.encryptData_ECB(vm.password),
+                        "captcha":vm.captcha,
+                        "rememberMe":vm.rememberme},
+                    dataType: "json",
+                    success: function(result){
+                        /*登录成功*/
+                        if(result.code == 0){
+                            /*获取登陆前用户是否勾选记住账号*/
+                            if($("input[name='rememberUserCode']").is(':checked')){
+                                window.localStorage.setItem('rememberUserCode',vm.username);
+                            }else{
+                                window.localStorage.setItem('rememberUserCode',"");
+                            };
+                            setTimeout(
+                                function () {
+                                    location.href ='index';
+                                }
+                                , 100);
+                        }else if(result.code == '50004' || result.code == '50006'){
+                            $(window).unblock();
+                            vm.loadcode = true;
+                            vm.errrInfo(result.msg);
+                            vm.captcha = '';
+                            vm.password = '';
+                            vm.refreshCode();
+                        }
+                        else{
+                            $(window).unblock();
+                            vm.errrInfo(result.msg);
+                            vm.captcha = '';
+                            vm.password = '';
+                            vm.refreshCode();
+                        }
+                    }
+                });
+            },
+            errrInfo : function(text){
+                $.toast({
+                    heading: '<@ctx.i18n text = "警告"/>',
+                    text: text,
+                    hideAfter:3000,
+                    position: {
+                        right: 8,
+                        bottom: 4
+                    },
+                    textAlign: 'left',
+                    showHideTransition: 'slide',
+                    allowToastClose: true,
+                    loader: true,
+                    /*stack: 5,*/
+                    icon: 'error'
+                })
+            },
+            getCookie:function(c_name){
+                if (document.cookie.length>0){
+                    c_start=document.cookie.indexOf(c_name + "=");
+                    if (c_start!=-1){
+                        c_start=c_start + c_name.length+1;
+                        c_end=document.cookie.indexOf(";",c_start);
+                        if (c_end==-1) {
+                            c_end=document.cookie.length
+                        };
+                        return unescape(document.cookie.substring(c_start,c_end))
+                    }
+                };
+                return _secretKey;
+            }
+        },
+        mounted :function(){
+            var that = this;
+
+            if(window.localStorage.getItem('rememberUserCode') && window.localStorage.getItem('rememberUserCode') != ""){
+                $("input[name='rememberUserCode']").iCheck('check');
+                this.username = window.localStorage.getItem('rememberUserCode');
+            }else{
+                $("input[name='rememberUserCode']").iCheck('uncheck');
+            }
+
+            /*绑定记住我样式*/
+            $("input[type=checkbox]").each(function () {
+                $(this).iCheck({
+                    checkboxClass: "icheckbox_" + ($(this).data("style") || "square-blue"),
+                    radioClass: "iradio_" + ($(this).data("style") || "square-blue")
+                }).on('ifChanged', function(event){
+                    if($(this).attr("name") == "rememberme"){
+                        if($(this).is(':checked')){
+                            vm.rememberme = true;
+                        }else{
+                            vm.rememberme = false;
+                        }
+                    }
+                });
+            });
+
+            /*设置tooltip*/
+            $('[data-toggle="tooltip"]').each(function () {
+                $(this).tooltip();
+            });
+
+            /*获取页面键盘事件*/
+            window.document.onkeydown = that._onkeydown;
+        }
+    });
+</script>
+</html>
+</@pageTheme>

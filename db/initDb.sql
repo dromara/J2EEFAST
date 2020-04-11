@@ -23,6 +23,7 @@ MySQL - 5.7.24 : Database - fastdb
 *********************************************************************
 */
 
+
 /*!40101 SET NAMES utf8 */;
 
 /*!40101 SET SQL_MODE=''*/;
@@ -465,22 +466,6 @@ CREATE TABLE `sys_job_log` (
   KEY `job_id` (`job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='定时任务日志';
 
-/*Table structure for table `sys_log` */
-
-DROP TABLE IF EXISTS `sys_log`;
-
-CREATE TABLE `sys_log` (
-  `id` bigint(20) NOT NULL COMMENT '主键',
-  `username` varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '用户名',
-  `operation` varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '用户操作',
-  `method` varchar(200) CHARACTER SET utf8 DEFAULT NULL COMMENT '请求方法',
-  `params` varchar(5000) CHARACTER SET utf8 DEFAULT NULL COMMENT '请求参数',
-  `time` bigint(20) NOT NULL COMMENT '执行时长(毫秒)',
-  `ip` varchar(64) CHARACTER SET utf8 DEFAULT NULL COMMENT 'IP地址',
-  `create_date` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统日志';
-
 /*Table structure for table `sys_login_infor` */
 
 DROP TABLE IF EXISTS `sys_login_infor`;
@@ -624,13 +609,14 @@ CREATE TABLE `sys_role` (
   `dept_id` bigint(20) DEFAULT NULL COMMENT '部门ID[暂停使用]',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `role_key` varchar(100) COLLATE utf8mb4_bin DEFAULT '' COMMENT '角色权限字符串',
+  `data_scope` char(1) COLLATE utf8mb4_bin DEFAULT '1' COMMENT '权限范围 1=所有数据权限,2=自定义数据权限,3=本部门数据权限,4=本部门及以下数据权限',
   `role_sort` int(4) DEFAULT NULL COMMENT '显示顺序',
   `del_flag` char(1) COLLATE utf8mb4_bin DEFAULT '0' COMMENT '删除标志（0代表存在 1代表删除）',
+  `status` char(1) COLLATE utf8mb4_bin DEFAULT '0' COMMENT '角色状态（0正常 1停用）',
   `create_by` varchar(64) COLLATE utf8mb4_bin DEFAULT '' COMMENT '创建者',
   `update_by` varchar(64) COLLATE utf8mb4_bin DEFAULT '' COMMENT '更新者',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '备注',
-  `status` char(1) COLLATE utf8mb4_bin DEFAULT '0' COMMENT '角色状态（0正常 1停用）',
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色';
 
@@ -680,6 +666,7 @@ CREATE TABLE `sys_user` (
   `email` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '邮箱',
   `mobile` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '手机号',
   `status` char(1) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '状态  1：禁用   0：正常',
+  `del_flag` char(1) COLLATE utf8mb4_bin DEFAULT '0' COMMENT '是否删除',
   `pwd_security_level` char(1) COLLATE utf8mb4_bin DEFAULT '0' COMMENT '密码安全级别（0初始 1很弱 2弱 3安全 4很安全）',
   `pwd_update_date` datetime DEFAULT NULL COMMENT '密码最后更新时间',
   `comp_id` bigint(20) DEFAULT NULL COMMENT '公司ID',

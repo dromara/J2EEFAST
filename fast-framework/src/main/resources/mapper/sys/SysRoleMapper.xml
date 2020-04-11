@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.j2eefast.framework.sys.mapper.SysRoleMapper">
+
+    <sql id="selectRoleVo">
+		select r.role_id, r.role_name, r.role_key, r.role_sort, r.status, r.del_flag, r.create_time, r.remark
+        from sys_role r
+	</sql>
+
+    <sql id="selectRoleContactVo">
+        select distinct r.role_id, r.role_name, r.role_key,
+            r.status, r.del_flag, r.create_time, r.remark
+        from sys_role r
+	        left join sys_user_role ur on ur.role_id = r.role_id
+	        left join sys_user u on u.user_id = ur.user_id
+	        left join sys_dept d on u.dept_id = d.dept_id
+    </sql>
+
+    <select id="getRolesByUserId" parameterType="Long" resultType="com.j2eefast.framework.sys.entity.SysRoleEntity">
+        <include refid="selectRoleContactVo"/>
+        WHERE r.del_flag = '0' and r.status = '0' and ur.user_id = #{userId}
+    </select>
+
+    <select id="checkRoleNameUnique" parameterType="String" resultType="com.j2eefast.framework.sys.entity.SysRoleEntity">
+        <include refid="selectRoleVo"/>
+        where r.del_flag = '0' and r.role_name=#{roleName}
+    </select>
+
+    <select id="checkRoleKeyUnique" parameterType="String" resultType="com.j2eefast.framework.sys.entity.SysRoleEntity">
+        <include refid="selectRoleVo"/>
+        where r.del_flag = '0' and r.role_key=#{roleKey}
+    </select>
+
+    <select id="findPage" resultType="com.j2eefast.framework.sys.entity.SysRoleEntity">
+        <include refid="selectRoleContactVo"/>
+        WHERE r.del_flag = '0'
+        <if test="roleName != null and roleName != ''">
+            AND r.role_name like concat('%', #{roleName}, '%')
+        </if>
+        <if test = "roleKey !=null and roleKey!=''">
+            AND r.role_key like concat('%', #{roleKey}, '%')
+        </if>
+        <if test = "sql_filter !=null and sql_filter!=''">
+            and ${sql_filter}
+        </if>
+    </select>
+
+    <select id="findRoleByIds" parameterType="Long" resultType="com.j2eefast.framework.sys.entity.SysRoleEntity">
+        <include refid="selectRoleContactVo"/>
+        where r.del_flag = '0' and
+        ur.role_id in
+        <foreach collection="array" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </select>
+
+
+<!--    <select id="selectRoleById" parameterType="Long" resultType="com.j2eefast.framework.sys.entity.SysRoleEntity">
+        <include refid="selectRoleContactVo"/>
+        where r.del_flag = '0' and
+        ur.role_id in
+        <foreach collection="array" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </select>-->
+
+</mapper>

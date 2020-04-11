@@ -4,7 +4,7 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.fast</groupId>
+		<groupId>com.j2eefast</groupId>
 		<artifactId>fast</artifactId>
 		<version>3.2.0</version>
 	</parent>
@@ -15,7 +15,7 @@
 	</description>
 	<dependencies>
 		<dependency>
-			<groupId>com.fast</groupId>
+			<groupId>com.j2eefast</groupId>
 			<artifactId>fast-framework</artifactId>
 		</dependency>
 		<!--velocity代码生成使用模板 -->

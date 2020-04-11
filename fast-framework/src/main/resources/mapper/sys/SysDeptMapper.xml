@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.j2eefast.framework.sys.mapper.SysDeptMapper">
+	
+	<select id="findDetpIdList" resultType="long">
+		select dept_id from sys_dept where parent_id = #{parentId}
+	</select>
+
+	<sql id="selectDeptVo">
+        SELECT d.dept_id, d.parent_id, d.name, d.order_num,d.status,d.type,d.create_time,
+		(SELECT NAME FROM sys_dept WHERE dept_id = d.parent_id and del_flag = '0') parent_name
+		FROM sys_dept d
+    </sql>
+
+	<select id="findDeptById" parameterType="Long" resultType="com.j2eefast.framework.sys.entity.SysDeptEntity">
+		<include refid="selectDeptVo"/>
+		where  d.del_flag = '0' and d.dept_id = #{deptId}
+	</select>
+
+	<select id="findByDeptNameId" resultType="com.j2eefast.framework.sys.entity.SysDeptEntity">
+		select u.dept_id,s.name,s.type,s.status,s.parent_id from sys_comp_dept u
+		LEFT JOIN sys_dept s ON u.dept_id =s.dept_id  WHERE s.del_flag = 0 and u.comp_id = #{compId}
+		<!-- 数据范围过滤 -->
+		<if test = "sql_file !=null and sql_file!=''">
+			and ${sql_file}
+		</if>
+	</select>
+
+
+	<select id="findDeptList" resultType="com.j2eefast.framework.sys.entity.SysDeptEntity">
+		<include refid="selectDeptVo"/>
+		where 1 = 1 and d.del_flag = '0'
+		<if test="name != null and name != ''">
+			AND d.name like concat('%', #{name}, '%')
+		</if>
+		<if test="type != null and type != ''">
+			AND d.type = #{type}
+		</if>
+		<!-- 数据范围过滤 -->
+		<if test = "sql_file !=null and sql_file!=''">
+			and ${sql_file}
+		</if>
+		order by d.parent_id, d.order_num
+	</select>
+
+
+
+</mapper>

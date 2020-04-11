@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.fast</groupId>
+    <groupId>com.j2eefast</groupId>
     <artifactId>fast</artifactId>
     <version>3.2.0</version>
   </parent>
@@ -17,7 +17,7 @@
   </properties>
   <dependencies>
 		<dependency>
-			<groupId>com.fast</groupId>
+			<groupId>com.j2eefast</groupId>
 			<artifactId>fast-system</artifactId>
 		</dependency>
   </dependencies>

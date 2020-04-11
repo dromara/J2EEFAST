@@ -1,5 +1,5 @@
 <#include "/common/include.html">
-<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@pageTheme mark="true">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +28,7 @@
 <#--  layui-->
 <link rel="stylesheet" href="${ctxStatic}/statics/plugins/layui/css/layui.css?V=${config.getDvVersion()}"/>
 <link rel="stylesheet" href="${ctxStatic}/statics/css/style.css?V=${config.getDvVersion()}">
-<link rel="stylesheet" href="${ctxStatic}/statics/js/lixin/css/fast-ui.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/statics/js/fast-ui.css?V=${config.getDvVersion()}"/>
 <!---->
 <link rel="stylesheet" href="${ctxStatic}/statics/css/index.css?V=${config.getDvVersion()}"/>
 <!-- jQuery toast 提示框  -->
@@ -50,7 +50,7 @@
 	/*}*/
 </style>
 </head>
-<script>var baseURL = "${ctxStatic}" , _username = "<@shiro.principal property="username"/>"
+<script>var baseURL = "${ctxStatic}/" , _username = "<@shiro.principal property="username"/>",_lang = "${config.getSysLang()}"
 			, _unlock="${_unlock?default("0")}" , LockScreen = ${config.getKey('SYS_LOCK_SCEREEN')}</script>
 <body class="fixed hold-transition ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')} sidebar-mini">
 <#include "/common/notice.html">
@@ -114,15 +114,11 @@
 	</form>
 </div>
 </div>
-<img id="verifySn" style="display: none;" src="${ctxStatic}/statics/img/verifySn.png" width="100%" height="100%" alt="机器码与注册码">
-
 <!-- ./wrapper -->
+<script src="${ctxStatic}/statics/libs/jquery.i18n.properties.js?V=${config.getDvVersion()}"></script>
 <#-- Bootstrap 3.3.7 -->
 <script src="${ctxStatic}/statics/libs/bootstrap.min.js?V=${config.getDvVersion()}"></script>
 <script src="${ctxStatic}/statics/libs/jquery.contextMenu.min.js?V=${config.getDvVersion()}"></script>
-<#--
-<script src="${ctxStatic}/statics/libs/demo.js?V=${config.getDvVersion()}"></script>-->
-<script src="${ctxStatic}/statics/libs/jquery.i18n.properties.js?V=${config.getDvVersion()}"></script>
 <#-- jquery-validate 表单验证插件 -->
 <script src="${ctxStatic}/statics/plugins/validate/jquery.validate.min.js?V=${config.getDvVersion()}"></script>
 <script src="${ctxStatic}/statics/plugins/validate/jquery.validate.extend.js?V=${config.getDvVersion()}"></script>
@@ -136,12 +132,11 @@
 <!-- jQuery toast 提示框  -->
 <script src="${ctxStatic}/statics/libs/jquery.toast.min.js?V=${config.getDvVersion()}"></script>
 <!-- 全屏显示-->
-<script type="text/javascript" src="${ctxStatic}/statics/js/lixin/fastJS.js?V=${config.getDvVersion()}"></script>
-<#--<script type="text/javascript" src="${ctxStatic}/statics/js/index.min.js?V=${config.getDvVersion()}"></script>-->
-<script type="text/javascript" src="${ctxStatic}/statics/js/index.js?V=${config.getDvVersion()}"></script>
+<#--<script type="text/javascript" src="${ctxStatic}/statics/js/fastJS.js?V=${config.getDvVersion()}"></script>-->
+<script type="text/javascript" src="${ctxStatic}/statics/js/fastJS.min.js?V=${config.getDvVersion()}"></script>
+<#--<script type="text/javascript" src="${ctxStatic}/statics/js/index.js?V=${config.getDvVersion()}"></script>-->
+<script type="text/javascript" src="${ctxStatic}/statics/js/index.min.js?V=${config.getDvVersion()}"></script>
 <script type="text/javascript" src="${ctxStatic}/statics/plugins/fullscreen/jquery.fullscreen.js?V=${config.getDvVersion()}"></script>
-<#-- AdminLTE App -->
-<#--<script src="${ctxStatic}/statics/libs/app.js?V=${config.getDvVersion()}"></script>-->
 </body>
 </html>
 </@pageTheme>

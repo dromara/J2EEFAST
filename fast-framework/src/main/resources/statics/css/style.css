@@ -370,11 +370,28 @@ em{
     margin-top: 0px;
     padding-top: 7%;
 }
-.login-footer{
-    position: fixed;
-    bottom: 15%;
-    width: 100%;
-    text-align: center;
+/*.login-footer{*/
+/*    !*position: fixed;*!*/
+/*    !*bottom: 15%;*!*/
+/*    !*width: 100%;*!*/
+/*    !*text-align: center;*!*/
+/*    margin-top: 50px;*/
+/*    text-align: center;*/
+/*}*/
+
+@media (min-width: 768px) {
+    .login-footer {
+        margin: 2% auto;
+        width: 600px;
+        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Liberation Sans", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti", SimHei, SimSun, "WenQuanYi Zen Hei Sharp", sans-serif;
+        font-size: 13px;
+        line-height: 1.33;
+    }
+
+    .footer-item{
+       margin-left: 8px;
+    }
 }
 
 .login-beian{

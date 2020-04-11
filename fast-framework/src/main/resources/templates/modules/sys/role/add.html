@@ -165,29 +165,8 @@
 			data.push({"name": "moduleCodes", "value": moduleCodes});
 			data.push({"name": "status", "value": status});
 			data.push({"name": "remark", "value": remark});
-			data.push({"name": "menuIdList", "value": menuIds});
-			$.ajax({
-				cache : true,
-				type : "POST",
-				url : baseURL + "sys/role/add",
-				// data : {
-				// 	"roleName": roleName,
-				// 	"roleKey": roleKey,
-				// 	"roleSort": roleSort,
-				// 	// "moduleCodes":moduleCodes,
-				// 	"status": status,
-				// 	"remark": remark,
-				// 	"menuIdList": menuIds
-				// },
-				data:data,
-				async : false,
-				error : function(request) {
-					opt.modal.alertError("系统错误");
-				},
-				success : function(data) {
-					$.operate.successCallback(data);
-				}
-			});
+			data.push({"name": "menuIds", "value": menuIds});
+			opt.operate.save(baseURL + "sys/role/add",data);
 		}
 	</script>
 </@footer>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.j2eefast.framework.sys.mapper.SysUserDeptMapper">
+
+	<select id="findListByUserId" resultType = "com.j2eefast.framework.sys.entity.SysUserDeptEntity">
+		select u.dept_id, s.name as name from sys_user_dept AS u LEFT JOIN sys_dept AS s ON u.`dept_id` = s.`dept_id` WHERE u.user_id  = #{userId}
+	</select>
+
+	<select id="findDeptIdList" resultType="long">
+		select dept_id from sys_user_dept  where user_id = #{userId}
+	</select>
+
+	<select id="findUserIdList" resultType="long">
+		select user_id from sys_user_dept  where user_id = #{deptId}
+	</select>
+</mapper>
