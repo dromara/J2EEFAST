@@ -29,6 +29,13 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity> {
                                  @Param("sql_filter") String sql_filter);
 
 
+    List<SysUserEntity> findList(@Param("username") String username,
+                                 @Param("status") String status,
+                                 @Param("mobile") String mobile,
+                                 @Param("email") String email,
+                                 @Param("compId") String compId,
+                                 @Param("sql_filter") String sql_filter);
+
     /**
      *通过角色ID查询所有用户
      * @return

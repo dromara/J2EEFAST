@@ -1,0 +1,70 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="流程图">
+    <@cssLibs.bpm_css/>
+</@header>
+<div class="box-body" style="padding:10px 20px 0 20px;">
+    <div class="row">
+        <div class="col-xs-12 text-center">
+            <div>说明 : &nbsp;
+                <span style="color:#017501"><i class="fa fa-square"></i> 已完成</span> &nbsp;
+                <span style="color:#e90606"><i class="fa fa-square"></i> 进行中</span> &nbsp;
+                <span style="color:#585858"><i class="fa fa-square"></i> 未执行</span> &nbsp;
+            </div>
+            <div id="navigationTree" data-text-main-process="流程跟踪"></div>
+            <div id="bpmnModel" data-model-id="${id}" data-history-id="${id}"
+                 data-process-definition-id="" data-model-type="runtime"
+                 style="overflow:auto;"></div>
+        </div>
+    </div>
+    <h4 class="form-header h4 mb0"><@ctx.i18n text = "流程信息"/></h4>
+    <div class="row">
+        <div class="col-xs-12 text-center table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<@footer>
+<@jsLibs.bpm_js/>
+<script>
+    var prefix = baseURL + 'bpm/task';
+    var options = {
+        url: prefix + "/comment",
+        queryParams: queryParams,
+        showSearch: false,
+        showRefresh: false,
+        showToggle: false,
+        showColumns: false,
+        clickToSelect: true,
+        pagination:false,
+        responseHandler:loadSuccess,
+        columns: [
+                    {title: '<@ctx.i18n text = "序号"/>', width: 5, align: "center", formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);
+                    }},
+                    {field : 'taskName',title : '<@ctx.i18n text = "任务名称"/>'},
+                    {field : 'startTime',width: 150,title : '<@ctx.i18n text = "开始时间"/>'},
+                    {field : 'endTime',width: 150,title : '<@ctx.i18n text = "完成时间"/>'},
+                    {field : 'consuming',title : '<@ctx.i18n text = "任务耗时"/>',formatter: function (value, row, index) {
+                            return value == 0? "/": value;
+                    }},
+                    {field : 'userName',title : '<@ctx.i18n text = "处理人"/>'},
+                    {field : 'typeName',title : '<@ctx.i18n text = "类型"/>'},
+                    {field : 'fullMsg',title : '<@ctx.i18n text = "审批意见"/>'}
+        ]
+    };
+
+    $.table.init(options);
+
+    function loadSuccess(res){
+        window.modelData = res.data.list;
+    }
+
+    function queryParams(params) {
+        var search = $.table.queryParams(params);
+        search.processInstanceId = "${id}";
+        return search;
+    }
+</script>
+</@footer>
+</@pageTheme>

@@ -5,6 +5,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.IdUtil;
 import com.j2eefast.common.core.business.annotaion.BussinessLog;
+import com.j2eefast.common.core.constants.ConfigConstant;
 import com.j2eefast.common.core.controller.BaseController;
 import com.j2eefast.common.core.enums.BusinessType;
 import com.j2eefast.common.core.utils.*;
@@ -40,7 +41,7 @@ import java.util.Map;
  *
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2019-03-26 11:02
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Controller
@@ -123,6 +124,8 @@ public class SysNoticeController extends BaseController {
 //            data.put("noticeContent",sysNotice.getNoticeContent());
             data.put("createBy", UserUtils.getLoginName());
             data.put("htmlNo",uuid + "1");
+            String path = getHttpServletRequest().getContextPath();
+            data.put(ConfigConstant.CTX_STATIC,path);
             data.put("noticeLevel",sysNotice.getNoticeLevel());
             data.put("startTime",sysNotice.getStartTime());
 
@@ -180,6 +183,8 @@ public class SysNoticeController extends BaseController {
             Map<String, Object> data = new HashMap<>();
             data.put("noticeTitle",sysNotice.getNoticeTitle());
             data.put("noticeContent",sysNotice.getNoticeContent());
+            String path = getHttpServletRequest().getContextPath();
+            data.put(ConfigConstant.CTX_STATIC,path);
             data.put("htmlNo",sysNotice.getHtmlNo() + "1");
             data.put("createBy",UserUtils.getLoginName());
             data.put("noticeLevel",sysNotice.getNoticeLevel());

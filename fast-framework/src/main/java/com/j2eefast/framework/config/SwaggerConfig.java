@@ -13,7 +13,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * Swagger配置
+ * Swagger配置 /fast/swagger-ui.html 或者 fast/doc.html
  */
 @Configuration
 @EnableSwagger2
@@ -25,13 +25,13 @@ public class SwaggerConfig {
 				// 加了ApiOperation注解的类，生成接口文档
 				.apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
 				// 包下的类，生成接口文档
-				// .apis(RequestHandlerSelectors.basePackage("com.framework.modules.job.controller"))
+				.apis(RequestHandlerSelectors.basePackage("com.j2eefast.flowable.ui"))
 				.paths(PathSelectors.any()).build();
 	}
 
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder().title("FASTOS").description("FASTOS文档")
-				.termsOfServiceUrl("http://www.j2eefast.com").version("3.2.0").build();
+				.termsOfServiceUrl("http://www.j2eefast.com").version("2.0.5").build();
 	}
 
 }

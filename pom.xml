@@ -11,10 +11,14 @@
     <!-- 打包类型，可取值：jar,war等等，这个配置用于package的phase，具体可以参见package运行的时候启动的plugin，后面有机会我们会讲述如何配置打包的插件 -->
     <packaging>pom</packaging>
 
-    <name>FASTOS 云系统</name>
+    <name>J2eeFast</name>
     <url>http://www.j2eefast.com</url>
-    <description>FASTOS云系统</description>
-
+    <description>J2eeFast</description>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.5.RELEASE</version>
+    </parent>
     <!-- 用户可以在maven中定义一些属性，然后在其他地方用${xxx}进行引用 -->
     <properties>
         <fast.version>3.2.0</fast.version>
@@ -24,7 +28,7 @@
         <junit.version>4.12</junit.version>
         <shiro.version>1.4.2</shiro.version>
         <jedis.version>2.9.0</jedis.version>
-        <druid.version>1.1.10</druid.version>
+<!--        <druid.version>1.1.21</druid.version>-->
         <mysql.version>8.0.11</mysql.version> 
         <mybatisplus.version>3.3.1.tmp</mybatisplus.version>
         <mybatisplus.spring.boot.version>3.3.1.tmp</mybatisplus.spring.boot.version>
@@ -48,19 +52,20 @@
         <hutool.version>5.2.1</hutool.version>
         <spring-cloud.version>Finchley.SR2</spring-cloud.version>
         <lombok.versin>1.18.4</lombok.versin>
+        <oracle.version>11.2.0.3</oracle.version>
     </properties>
     <!-- 依赖声明 -->
     <dependencyManagement>
         <!--项目引入插件所需要的额外依赖-->
         <dependencies>
-            <!-- SpringBoot的依赖配置-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.2.5.RELEASE</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+<!--            &lt;!&ndash; SpringBoot的依赖配置&ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-dependencies</artifactId>-->
+<!--                <version>2.2.5.RELEASE</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
             
             <!--spring cloud-->
             <dependency>
@@ -141,20 +146,13 @@
             </dependency>
 
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-starter</artifactId>
-                <version>${druid.version}</version>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>${oracle.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus</artifactId>
-                <version>${mybatisplus.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <!-- <artifactId>mybatisplus-spring-boot-starter</artifactId> -->
                <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatisplus.spring.boot.version}</version>
             </dependency>
@@ -261,7 +259,7 @@
                 <version>${commons.beanutils.version}</version>
             </dependency>
 
-            <!-- 获取系统信息 -->
+            <!-- 跨平台的系统及硬件信息库 -->
             <dependency>
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
@@ -346,7 +344,13 @@
                 <artifactId>fast-web</artifactId>
                 <version>${fast.version}</version>
             </dependency>
-            
+
+            <dependency>
+                <groupId>com.j2eefast</groupId>
+                <artifactId>fast-flowable</artifactId>
+                <version>${fast.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.j2eefast</groupId>
                 <artifactId>fast-common</artifactId>
@@ -363,7 +367,8 @@
         <module>fast-generator</module><!-- 代码生成器模块 -->
         <module>fast-system</module> <!-- 后台系统模块 -->
         <module>fast-framework</module><!-- 核心框架 -->
-    	<module>fast-web</module> <!-- 实际项目子模块 -->
+    	<module>fast-web</module>
+        <module>fast-flowable</module>
   </modules>
 
     <build>

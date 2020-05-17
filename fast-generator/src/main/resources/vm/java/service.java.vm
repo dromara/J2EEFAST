@@ -1,60 +1,99 @@
 package ${packageName}.service;
 
-import com.baomidou.mybatisplus.service.IService;
-import ${packageName}.entity.${ClassName}Entity;
-import com.lixinos.common.core.utils.PageUtils;
-import java.util.List;
-import java.util.Map;
 
+import ${packageName}.entity.${ClassName}Entity;
+import ${packageName}.mapper.${ClassName}Mapper;
+import com.j2eefast.common.core.page.Query;
+import com.j2eefast.common.core.utils.PageUtil;
+import com.j2eefast.common.core.utils.ToolUtil;
+import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import javax.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Map;
+import java.util.Arrays;
 /**
  *
- * @ClassName: ${functionName}
- * @Package: ${packageName}
- * @Description: ${functionName}Service接口
+ * ${functionName}Service接口
  * @author: ${author}
- * @time ${datetime}
- 
- * /----------------------------/
- * /---><---/
- * /----------------------------/
+ * @date ${datetime}
  */
-public interface ${ClassName}Service extends IService<${ClassName}Entity> {
+@Service
+public class ${ClassName}Service extends ServiceImpl<${ClassName}Mapper,${ClassName}Entity> {
 
-    /**
-     * @Description: 查询表list分页
-     * @param: 页面参数
-     * @auther: ${author} 自动生成
-     * @date: 2020/1/7 10:31
+	@Resource
+	private ${ClassName}Mapper ${className}Mapper;
+
+	/**
+	 * 页面分页查询
      */
-    PageUtils queryPage(Map<String, Object> params);
+	public PageUtil findPage(Map<String, Object> params) {
+		QueryWrapper<${ClassName}Entity> r = new QueryWrapper<${ClassName}Entity>();
+#foreach($column in $columns)
+    #set($queryType=$column.queryType)## 查询方式（EQ等于、NE不等于、GT大于、LT小于、LIKE模糊、BETWEEN范围）
+    #set($javaField=$column.javaField)## JAVA字段名
+    #set($javaType=$column.javaType) ## JAVA类型
+    #set($columnName=$column.columnName) ## 列名称
+    #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+    #if($column.query)
+    ##if($javaType == 'String' )
+        String $javaField = (String) params.get("$javaField");
+    ##else
+        #if($column.queryType == "EQ")
+        r.eq(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
+        #elseif($column.queryType == "NE")
+        r.ne(ToolUtil.isNotEmpty($javaField), "$columnName"e, $javaField);
+        #elseif($column.queryType == "GT")
+        r.gt(ToolUtil.isNotEmpty($javaField),"$columnName", $javaField);
+        #elseif($column.queryType == "LT")
+        r.lt(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
+        #elseif($column.queryType == "LIKE")
+        r.like(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
+        ##                    #elseif($column.queryType == "BETWEEN")
+        ##                        r.between(StrUtil.isNotNull($javaField), $columnName, $javaField))
+        #end
 
-    /**
-     * @Description: 批量删除
-     * @auther: ${author} 自动生成
-     * @date: ${datetime}
+    #end
+#end
+		Page<${ClassName}Entity> page = this.baseMapper.selectPage(new Query<${ClassName}Entity>(params).getPage(), r);
+		return new PageUtil(page);
+    }
+
+	/**
+     * 批量删除
      */
-    int deleteBatch(${pkColumn.javaType}[] ids);
+	@Transactional(rollbackFor = Exception.class)
+	public boolean delete${ClassName}ByIds(${pkColumn.javaType}[] ids) {
+		return this.removeByIds(Arrays.asList(ids));
+	}
 
-    /**
-     * 单个删除${functionName}
-     *
-     * @param ${pkColumn.javaField} ${functionName}ID
-     * @return 结果
+	/**
+     * 单个删除
      */
-    int delete${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField});
+	public boolean delete${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField}) {
+		return this.removeById(${pkColumn.javaField});
+	}
 
-    /**
-     * 修改${functionName}
-     *
-     * @param ${ClassName}Entity ${functionName}
-     * @return 结果
+	/**
+     * 保存
      */
-    int update${ClassName}(${ClassName}Entity ${className});
+	public boolean save${ClassName}(${ClassName}Entity ${className}){
+        return this.save(${className});
+    }
 
+	/**
+     * 修改根居ID
+     */
+	public boolean update${ClassName}ById(${ClassName}Entity ${className}) {
+		return this.updateById(${className});
+	}
 
-    boolean insert${ClassName}(${ClassName}Entity ${className});
-
-
-    ${ClassName}Entity select${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField});
-
+	/**
+     * 根居ID获取对象
+     */
+	public ${ClassName}Entity get${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField}){
+		return this.getById(${pkColumn.javaField});
+	}
 }

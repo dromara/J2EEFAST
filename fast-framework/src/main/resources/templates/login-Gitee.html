@@ -5,28 +5,29 @@
 <head>
 <#import "/common/springctx.ftl" as ctx>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>登录 - FastOS J2eefast.com</title>
-    <link href="${ctxStatic}/statics/img/favicon.ico" rel="shortcut icon">
+    <title>登录 - J2eeFAST J2eefast.com</title>
+    <link href="${ctxStatic}/static/img/favicon.ico" rel="shortcut icon">
+    <meta name="keywords" content="PoweredByJ2eeFast"/><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="authenticity_token" name="csrf-param">
     <#-- Bootstrap 3.3.7 -->
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/bootstrap.min.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/bootstrap.min.css?V=${config.getDvVersion()}">
     <#-- Font Awesome -->
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/font-awesome.min.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/font-awesome.min.css?V=${config.getDvVersion()}">
     <#-- Ionicons -->
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/Ionicons/css/ionicons.min.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/Ionicons/css/ionicons.min.css?V=${config.getDvVersion()}">
     <#-- Theme style -->
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/AdminLTE.min.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/AdminLTE.min.css?V=${config.getDvVersion()}">
     <#--animate 样式-->
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/animate.css?V=${config.getDvVersion()}"/>
+    <link rel="stylesheet" href="${ctxStatic}/static/css/animate.css?V=${config.getDvVersion()}"/>
     <#-- jQuery toast 提示框  -->
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/jquery.toast.min.css?V=${config.getDvVersion()}">
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/style.css?V=${config.getDvVersion()}">
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/index.css?V=${config.getDvVersion()}">
-    <link href="${ctxStatic}/statics/css/gitee/gitee.css" media="screen" rel="stylesheet">
-    <link href="${ctxStatic}/statics/css/gitee/semantic.css" rel="stylesheet">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/jquery.toast.min.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/style.min.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/index.css?V=${config.getDvVersion()}">
+    <link href="${ctxStatic}/static/css/gitee/gitee.css" media="screen" rel="stylesheet">
+    <link href="${ctxStatic}/static/css/gitee/semantic.css" rel="stylesheet">
     <#-- iCheck -->
-    <link rel="stylesheet" href="${ctxStatic}/statics/css/iCheck/all.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/iCheck/all.css?V=${config.getDvVersion()}">
     <style>[v-cloak]{display:none !important;} .checkbox label{ padding-left: 0px}
         .ui.error.message, .ui.attached.error.message {
             -webkit-box-shadow: 0px 0px 0px 1px #e0b4b4 inset, 0px 0px 0px 0px rgba(0,0,0,0);
@@ -71,7 +72,7 @@
                                     <span class="session-sidebox-comments__position">V${config.getVersion()}</span>
                                 </div>
                                 <div class="session-sidebox-comments__content">
-                                    FastOS 是一个 Java EE 企业级快速开发平台，基于经典技术组合（Spring Boot、Spring MVC、Apache Shiro、MyBatis-Plus、Freemarker、Bootstrap、AdminLTE）采用经典开发模式，让初学者能够更快的入门并投入到团队开发中去。 在线代码生成功能，包括核心模块如：组织机构、角色用户、菜单及按钮授权、数据权限、系统参数、内容管理、license认证等。采用松耦合设计；界面无刷新，一键换肤；众多账号安全设置，密码策略；在线定时任务配置；支持多数据源；支持读写分离、分库分表.
+                                    J2eeFAST 是一个 Java EE 企业级快速开发平台，基于经典技术组合（Spring Boot、Spring MVC、Apache Shiro、MyBatis-Plus、Freemarker、Bootstrap、AdminLTE）采用经典开发模式，让初学者能够更快的入门并投入到团队开发中去。 在线代码生成功能，包括核心模块如：组织机构、角色用户、菜单及按钮授权、数据权限、系统参数、内容管理、license认证,BPM工作流等。采用松耦合设计；界面无刷新，一键换肤；众多账号安全设置，密码策略；在线定时任务配置；支持多数据源；支持读写分离、分库分表.
                                 </div>
                             </div>
                         </div>
@@ -214,21 +215,21 @@
     </div>
 </div>
 <#--jQuery 3 -->
-<script src="${ctxStatic}/statics/libs/jquery.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/jquery.min.js?V=${config.getDvVersion()}"></script>
 <#-- Bootstrap 3.3.7 -->
-<script src="${ctxStatic}/statics/libs/bootstrap.min.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/statics/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/statics/libs/SM4.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/bootstrap.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/SM4.min.js?V=${config.getDvVersion()}"></script>
 <#-- iCheck -->
-<script src="${ctxStatic}/statics/libs/icheck.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/icheck.min.js?V=${config.getDvVersion()}"></script>
 <#-- 全局遮罩-->
-<script src="${ctxStatic}/statics/plugins/blockUI/jquery.blockUI.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/blockUI/jquery.blockUI.js?V=${config.getDvVersion()}"></script>
 <#-- jQuery toast 提示框  -->
-<script src="${ctxStatic}/statics/libs/jquery.toast.min.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/statics/libs/jquery.slimscroll.min.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/statics/libs/fastclick.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/jquery.toast.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/jquery.slimscroll.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/fastclick.min.js?V=${config.getDvVersion()}"></script>
 <#--<script src="${ctxStatic}/statics/libs/app.js?V=${config.getDvVersion()}"></script>-->
-<script src="${ctxStatic}/statics/libs/vue.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/vue.min.js?V=${config.getDvVersion()}"></script>
 <script>var ctx = "${ctxStatic}/", _secretKey = "${_secretKey}";</script>
 <script>
     var vm = new Vue({

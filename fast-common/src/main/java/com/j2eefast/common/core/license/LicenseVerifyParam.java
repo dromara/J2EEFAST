@@ -6,7 +6,7 @@ import lombok.Data;
  * <p>License校验类需要的参数</p>
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2020-03-16 17:00
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Data

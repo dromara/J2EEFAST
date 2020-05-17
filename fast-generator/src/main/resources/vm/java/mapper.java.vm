@@ -1,0 +1,22 @@
+package ${packageName}.mapper;
+
+import ${packageName}.entity.${ClassName}Entity;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+/**
+ *
+ * ${tableName}DAO接口
+ * @author: ${author}
+ * @date ${datetime}
+ */
+public interface ${ClassName}Mapper extends BaseMapper<${ClassName}Entity> {
+    #*
+	/**
+     * 批量删除${functionName}
+     * 
+     * @param ids 需要删除的数据ID
+     * @return 结果
+     */
+    int delete${ClassName}ByIds(${pkColumn.javaType}[] ids);
+    *#
+}

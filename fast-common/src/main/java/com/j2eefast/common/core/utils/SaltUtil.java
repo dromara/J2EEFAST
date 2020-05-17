@@ -8,7 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
  *
  * @author: zhouzhou
  * @date: 2019-04-01 21:56
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class SaltUtil {

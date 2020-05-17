@@ -31,16 +31,17 @@ public class SysCompDeptService extends ServiceImpl<SysCompDeptMapper,SysCompDep
 		}
 
 		// 保存公司与地区对应关系
-		List<SysCompDeptEntity> list = new ArrayList<>(deptIdList.size());
+//		List<SysCompDeptEntity> list = new ArrayList<>(deptIdList.size());
 		for (Long deptId : deptIdList) {
 			SysCompDeptEntity compDeptEntity = new SysCompDeptEntity();
 			compDeptEntity.setCompId(compId);
 			compDeptEntity.setDeptId(deptId);
-			list.add(compDeptEntity);
+//			list.add(compDeptEntity);
+			this.save(compDeptEntity);
 		}
 
 		// 批量插入
-		this.saveBatch(list);
+//		this.saveBatch(list);
 	}
 
 	/**

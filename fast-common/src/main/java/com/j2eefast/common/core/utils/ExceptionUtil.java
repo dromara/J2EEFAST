@@ -10,7 +10,7 @@ import java.io.StringWriter;
  *
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2019-03-26 17:59
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class ExceptionUtil {

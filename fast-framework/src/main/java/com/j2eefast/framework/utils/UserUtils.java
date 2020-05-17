@@ -1,10 +1,7 @@
 package com.j2eefast.framework.utils;
 
-import cn.hutool.crypto.SecureUtil;
 import com.j2eefast.common.core.base.entity.LoginUserEntity;
 import com.j2eefast.framework.shiro.realm.UserRealm;
-import com.j2eefast.framework.sys.service.SysUserDeptService;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -15,10 +12,6 @@ import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import com.j2eefast.common.core.exception.RxcException;
 import com.j2eefast.common.core.utils.ToolUtil;
-import com.j2eefast.framework.sys.entity.SysUserEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * 
@@ -93,6 +86,15 @@ public class UserUtils {
 	 */
 	public static Long getUserId() {
 		return getUserInfo().getId();
+	}
+
+	public static String getUserIdToStr() {
+		return String.valueOf(getUserInfo().getId());
+	}
+
+
+	public static boolean isSupAdmin(){
+		return  hasRole(Constant.SU_ADMIN);
 	}
 
 	/**

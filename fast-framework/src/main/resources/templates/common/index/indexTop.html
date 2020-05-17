@@ -37,6 +37,10 @@
                             $("#leftMenu-" + code).removeClass('hide');
                         }
                     });
+                    /*设置菜单新*/
+                    setTimeout(function(){
+                        $('.navbar-nav [data-code="bpm"]').append('<span data-index="_new" class="label label-danger"><@ctx.i18n text = "新"/></span>');
+                    },2000);
                 })
             </script>
         </div>
@@ -59,6 +63,14 @@
                        title="<@ctx.i18n text = "锁屏"/>" class="dropdown-toggle">
                         <i class="fa fa-lock"></i>
                         <@ctx.i18n text = "锁屏"/>
+                    </a>
+                </li>
+                <li class="dropdown messages-menu">
+                    <a href="#" id="sticky" data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="<@ctx.i18n text = "便签"/>" class="dropdown-toggle">
+                        <i class="fa fa-tags"></i>
+                        <@ctx.i18n text = "便签"/>
                         <span data-index="_new" class="label label-danger"><@ctx.i18n text = "新"/></span>
                     </a>
                 </li>
@@ -111,14 +123,14 @@
                 <!-- User Account: style can be found in dropdown.less -->
                 <li class="dropdown user user-menu">
                     <a href="javascript:void(0);" class="dropdown-toggle">
-                        <img src="${ctxStatic}<#if user.avatar?? && user.avatar!="">${user.avatar}<#else>/statics/img/user2-160x160.jpg</#if>"
+                        <img src="${ctxStatic}<#if user.avatar?? && user.avatar!="">${user.avatar}<#else>/static/img/user2-160x160.jpg</#if>"
                              class="user-image" alt="User Image">
                         <span class="hidden-xs">${user.name}</span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- 头像图片User image -->
                         <li class="user-header">
-                            <img src="${ctxStatic}<#if user.avatar?? && user.avatar!="">${user.avatar}<#else>/statics/img/user2-160x160.jpg</#if>"
+                            <img src="${ctxStatic}<#if user.avatar?? && user.avatar!="">${user.avatar}<#else>/static/img/user2-160x160.jpg</#if>"
                                  class="img-circle" alt="User Image">
                             <p>
                             <h4><@ctx.i18n text = "上次登陆时间"/> :
@@ -146,10 +158,10 @@
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-left">
-                                <a id="updatePassword" href="javascript:void(0);" class="btn btn-default btn-flat"><@ctx.i18n text = "修改密码"/></a>
+                                <a id="updatePassword" href="javascript:void(0);" class="btn btn-default btn-flat"><i class="fa icon-lock-open"></i> <@ctx.i18n text = "修改密码"/></a>
                             </div>
                             <div class="pull-right">
-                                <a click-id="logout" href="javascript:void(0);" class="btn btn-default btn-flat"><@ctx.i18n text = "退出"/></a>
+                                <a click-id="logout" href="javascript:void(0);" class="btn btn-default btn-flat"><i class="fa icon-power"></i> <@ctx.i18n text = "退出"/></a>
                             </div>
                         </li>
                     </ul>
@@ -163,3 +175,130 @@
         </div>
     </nav>
 </header>
+<script id="noteTemp" type="text/template">//<!--
+<div class="note-wrapper"></div>
+<div class="note-empty" style="display: block;">
+	<i class="layui-icon layui-icon-face-surprised"></i>
+	<p>便签中的内容会存储在本地,这样即便你关掉了浏览器,在下次打开时,依然会读取到上一次的记录。是个非常小巧实用的本地备忘录</p>
+</div>
+<div class="btn-circle" id="noteAddBtn" title="<@ctx.i18n text = "添加便签"/>" style="position: absolute;">
+	<i class="layui-icon layui-icon-add-1"></i>
+</div>
+<script>
+		/* 便签列表*/
+		var dataList = [];
+        var $noteWrapper = $('.note-wrapper');
+        /* 渲染列表 */
+        function renderList() {
+        	console.log("NOTE_LIST:"+opt.storage.get("NOTE_LIST"));
+            $noteWrapper.empty();
+            try {
+            	 if(opt.common.isNotEmpty(opt.storage.get("NOTE_LIST"))){
+            		 dataList = JSON.parse(opt.storage.get("NOTE_LIST"));
+            	 }
+            } catch (a) {
+                dataList = [];
+            }
+            if (opt.common.isEmpty(dataList)) dataList = [];
+            for (var i = 0; i < dataList.length; i++) {
+                var item = dataList[i];
+                $noteWrapper.prepend([
+                    '<div class="note-item" data-id="', item.id, '">',
+                    '   <div class="note-item-content">', opt.common.escape(item.content), '</div>',
+                    '   <div class="note-item-time">', item.time, '</div>',
+                    '   <i class="layui-icon layui-icon-close-fill note-item-del"></i>',
+                    '</div>'
+                ].join(''));
+            }
+            if(dataList.length === 0){
+            	$('.note-empty').css('display', 'block');
+            	$noteWrapper.css('display', 'none');
+            }else{
+            	$('.note-empty').css('display', 'none');
+            	$noteWrapper.css('display', 'block');
+            }
+            /* 点击修改 */
+            $('.note-item').click(function () {
+                var index = parseInt($(this).attr('data-id'));
+                showNote(dataList[index]);
+            });
+            /* 点击删除 */
+            $('.note-item-del').click(function (e) {
+                var id = parseInt($(this).parent().attr('data-id'));
+                opt.modal.confirm('确认删除吗?',function (index) {
+                    opt.selfLayer.close(index);
+                    dataList.splice(id, 1);
+                    for (var i = 0; i < dataList.length; i++) dataList[i].id = i;
+                    putDataList();
+                    renderList();
+                });
+                e.stopPropagation();
+            });
+        }
+
+        renderList();
+
+        /* 添加 */
+        $('#noteAddBtn').click(function () {
+            showNote();
+        });
+
+        /* 显示编辑弹窗 */
+        function showNote(data) {
+            var id = data ? data.id : undefined, content = data ? data.content : '';
+            opt.layer.open({
+                id: 'layer-note-edit',
+                title: '<i class="fa fa-sticky-note"></i> '+ "<@ctx.i18n text = "便签"/>",
+                type: 1,
+                skin:'layui-layer-note',
+				shade: 0.1,
+                offset: '90px',
+                area: 'auto',
+                scrollbar: false,
+                shadeClose: true,
+                content: '<textarea id="stikyText" placeholder="记笔记...">'+content+'</textarea>',
+                success: function (layero, index) {
+                	/*重写关闭图标*/
+               		$(layero).find('.layui-layer-setwin').html('<i class="layui-icon layui-layer-close layui-layer-close1" close="">ဆ</i>');
+               		$(layero).css('height','');
+				    $(layero).css('width','');
+                    $('#stikyText').change(function () {
+                        content = $(this).val();
+                    });
+                },
+                end: function () {
+                    if (id !== undefined) {
+                        if (!content) {
+                            dataList.splice(id, 1);
+                            for (var i = 0; i < dataList.length; i++) dataList[i].id = i;
+                        } else if (content !== dataList[id].content) {
+                            dataList[id].content = content;
+                            dataList[id].time = opt.common.toDateString(new Date(), 'yyyy-MM-dd HH:mm');
+                        }
+                    } else if (content) {
+                        dataList.push({
+                            id: dataList.length,
+                            content: content,
+                            time: opt.common.toDateString(new Date(), 'yyyy-MM-dd HH:mm')
+                        });
+                    }
+                    putDataList();
+                    renderList();
+                },
+               /* 处理便签拉伸 */
+			   resizing: function(layero){
+				 $(layero).find('#stikyText').height($(layero).height()-66);
+				 $(layero).find('#stikyText').width($(layero).width()-43);
+				 $(layero).css('height','');
+				 $(layero).css('width','');
+			   }
+            });
+        }
+
+        /* 更新本地缓存 */
+        function putDataList() {
+            opt.storage.set('NOTE_LIST',JSON.stringify(dataList));
+        }
+</script>
+//-->
+</script>

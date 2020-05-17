@@ -132,17 +132,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select table_name, table_comment, create_time, update_time from information_schema.tables
 		where table_schema = (select database())
 		AND table_name NOT LIKE 'qrtz_%' AND table_name NOT LIKE 'gen_%'
-		AND table_name NOT IN (select table_name from gen_table)
+		AND table_name NOT IN (select table_name from gen_table where db_type = 'DEFAULT')
 	</select>
 
 
 	<select id="findSlaveDbTableList" resultMap="GenTableResult">
 		select table_name, table_comment, create_time, update_time from information_schema.tables
 		where table_schema = (select database())
+		AND table_name NOT LIKE 'act_%'
 	</select>
 
 	<select id="findDbNotTableList" resultMap="GenTableResult">
-		select table_name from gen_table where db_type = 1;
+		select table_name from gen_table where db_type = #{dbType};
 	</select>
 
 
@@ -150,7 +151,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select table_name, table_comment, create_time, update_time from information_schema.tables
 		where table_schema = (select database())
 		AND table_name NOT LIKE 'qrtz_%' AND table_name NOT LIKE 'gen_%'
-		AND table_name NOT IN (select table_name from gen_table)
+		AND table_name NOT IN (select table_name from gen_table where db_type = 'DEFAULT')
 		<if test="tableName != null and tableName != ''">
 			AND table_name like concat('%', #{tableName}, '%')
 		</if>
@@ -162,6 +163,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectNotDbTablePage" parameterType="GenTableEntity" resultMap="GenTableResult">
 		select table_name, table_comment, create_time, update_time from information_schema.tables
 		where table_schema = (select database())
+		AND table_name NOT LIKE 'act_%'
 		<if test="tableName != null and tableName != ''">
 			AND table_name like concat('%', #{tableName}, '%')
 		</if>

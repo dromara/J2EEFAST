@@ -12,11 +12,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * @ProjectName: fast
- * @Package: com.j2eefast.framework.utils
- * @ClassName: DictConfig
  * @Author: zhouzhou Emall:18774995071@163.com
- * @Description: 首创 html调用 Freemarker 实现字典读取
+ * @Description: html调用 Freemarker 实现字典读取
  * @Date: 2019/12/18 17:25
  * @Version: 1.0
  */

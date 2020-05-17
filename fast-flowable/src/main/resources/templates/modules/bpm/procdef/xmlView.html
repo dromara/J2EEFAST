@@ -1,0 +1,22 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="流程定义XML">
+<#include "/common/code.html"/>
+</@header>
+<body class="hold-transition box box-main sidebar-mini ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')}">
+<div class="wrapper">
+    <pre class="line-numbers">
+         <code class="language-xml">
+                ${depXml?html}
+         </code>
+     </pre>
+</div>
+<@footer>
+<@jsLibs.prism_js/>
+    <script>
+        function onLoadSuccess() {
+            opt.modal.msg("数据正在加载...请稍后");
+        }
+    </script>
+</@footer>
+</@pageTheme>

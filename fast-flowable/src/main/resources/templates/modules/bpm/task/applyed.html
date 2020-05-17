@@ -1,0 +1,107 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="已办任务">
+    </@header>
+    <@search fromId="form-form">
+        <div class="select-list">
+            <ul>
+                <li>
+                    <@ctx.i18n text = "实例名称"/>：
+                    <input type="text" name="userName"/>
+                </li>
+                <li>
+                    <@ctx.i18n text = "发起人"/>：
+                    <input type="text" name="leaveDays"/>
+                </li>
+                <li>
+                    状态：
+                    <select name="status">
+                        <option value="">所有</option>
+                    </select>
+                </li>
+                <li>
+                    <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;&nbsp;<@ctx.i18n text = "查询"/></a>
+                    <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+                </li>
+            </ul>
+        </div>
+    </@search>
+    <@table tableId="bootstrap-table">
+
+<#--        <@shiro.hasPermission name="bpm:processInstance:del">-->
+<#--            <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">-->
+<#--                <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>-->
+<#--            </a>-->
+<#--        </@shiro.hasPermission>-->
+
+    </@table>
+    <@footer>
+        <script>
+            var delFlag = "${permission.hasPermi("bpm:processInstance:del")}";
+            var leaveTypeDatas = ${dict.getDictListJson('sys_leave_type')};
+            var statusDatas = ${dict.getDictListJson('sys_bpm_status')};
+            var priorityDatas = ${dict.getDictListJson('sys_bpm_priority')};
+            var prefix = baseURL + "bpm/task";
+
+            $(function() {
+                var options = {
+                    url: prefix + "/applyed/list",
+                    showSearch: false,
+                    showRefresh: false,
+                    showToggle: false,
+                    showColumns: false,
+                    clickToSelect: true,
+                    uniqueId:    'id'                                   , /* 唯一ID */
+                    columns: [
+                        {title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);
+                        }},
+                        {field : 'taskName',title : '<@ctx.i18n text = "任务名称"/>'},
+                        {field : 'formName',title : '<@ctx.i18n text = "流程名称"/>'},
+                        {field : 'userName',title : '<@ctx.i18n text = "分配人员"/>'},
+                        {field : 'startTime',title : '<@ctx.i18n text = "开始时间"/>',width: 170},
+                        {field : 'endTime',title : '<@ctx.i18n text = "完成时间"/>',width: 170},
+                        {field : 'consuming',title : '<@ctx.i18n text = "处理耗时"/>'},
+                        {field : 'priority',title : '<@ctx.i18n text = "优先级"/>',formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(priorityDatas, value);}},
+                        {title:"<@ctx.i18n text = "操作"/>",class:'action',formatter: function(value, row, index) {
+                                var actions = [];
+                                actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "流程跟踪"/>" onclick="preview(\'' + row.processInstanceId + '\')"><i class="fa icon-picture"></i></a> ');
+                                actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "表单详情"/>" onclick="fromInfo(\''+row.businessKey+'\',\'' + row.prefixUrl +
+                                    '\',\'' + row.applyType + '\',\'' + row.processInstanceId + '\')"><i class="fa icon-note"></i></a> ');
+                                return actions.join('');
+                        }}
+                    ]
+                };
+                $.table.init(options);
+            });
+
+            /*预览*/
+            function preview(id) {
+                var options = {
+                    url: baseURL + "bpm/processInstance/preview/" + id,
+                    title: '<i class="fa icon-loop"></i> <@ctx.i18n text = "流程跟踪"/>',
+                    btn:['<i class="fa fa-close"></i> '+$.i18n.prop("取消")],
+                    width: $(top.window).width() - 300,
+                    height: $(top.window).height() - 200
+                };
+                opt.modal.openMainWin(options);
+            }
+
+            function fromInfo(id,prefixUrl,applyType,processInstanceId){
+                if(applyType == "0"){
+                    opt.modal.open('<i class="fa icon-note"></i> <@ctx.i18n text = "表单详情"/>',
+                        baseURL +prefixUrl +"/view?taskId="+processInstanceId+"&businessKey="+id);
+                }else if(applyType == "1"){
+                    opt.modal.openTab('<i class="fa icon-note"></i> <@ctx.i18n text = "表单详情"/>',
+                        baseURL +prefixUrl +"/view?taskId="+processInstanceId+"&businessKey="+id);
+                }
+            }
+
+            /*处理*/
+            function handle(taskId,businessKey){
+                opt.modal.openTab("办理任务",baseURL + "bpm/form/edit?taskId="+taskId+"&businessKey="+businessKey);
+            }
+        </script>
+    </@footer>
+</@pageTheme>

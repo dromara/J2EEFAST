@@ -1,0 +1,111 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="关联任务表单">
+</@header>
+<@addorEdit fromId="task-form-add">
+    <input name="processDefinitionKey" value="${bpmProcess.id}" type="hidden">
+    <input name="version" value="v${bpmProcess.version?string}" type="hidden">
+    <h4 class="form-header h4"><@ctx.i18n text = "基本信息"/></h4>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "流程名称"/>：</label>
+                <div class="col-sm-8">
+                    <input class="form-control"  value="${bpmProcess.name}" type="text"  readonly="true">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "流程类型"/>：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" value="${dict.getLabel('sys_bpm_category', bpmProcess.category)}" type="text" readonly="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "业务名称"/>：</label>
+                <div class="col-sm-8">
+                        <input name="fromName" class="form-control" type="text" required>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "流程定义Key"/>：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" name="modelKey" value="${bpmProcess.modelKey}" type="text" readonly="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "表单URL前缀"/>：</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="prefixUrl" type="text" required>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "申请表单形式"/>：</label>
+                <div class="col-sm-8">
+                    <select name="applyType" class="form-control">
+                        <#list dict.getType('sys_bpm_from_type')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                </#if>
+                            </#items>
+                        </#list>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "审批表单形式"/>：</label>
+                <div class="col-sm-8">
+                    <select name="approvalType" class="form-control">
+                        <#list dict.getType('sys_bpm_from_type')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                </#if>
+                            </#items>
+                        </#list>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</@addorEdit>
+<div class="hr-line-dashed"></div>
+<div class="row" style="text-align: center;" id="_addTab">
+    <button type="button" class="btn btn-sm btn-primary" onclick="opt.form.submit()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+    <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+</div>
+<@footer>
+    <script type="text/javascript">
+        var prefix = baseURL + "bpm/procdef";
+
+
+        $("#task-form-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if (opt.validate.form()) {
+                opt.operate.saveTab(prefix + "/taskfrom/add", $('#task-form-add').serialize());
+            }
+        }
+    </script>
+</@footer>
+</@pageTheme>

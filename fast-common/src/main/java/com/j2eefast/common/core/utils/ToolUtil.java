@@ -7,15 +7,16 @@ import java.util.regex.Pattern;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.system.SystemUtil;
+import cn.hutool.system.oshi.OshiUtil;
 import com.j2eefast.common.core.constants.ConfigConstant;
-import com.j2eefast.common.core.license.service.AbstractServerInfos;
-import com.j2eefast.common.core.license.service.LinuxServerInfos;
-import com.j2eefast.common.core.license.service.WindowsServerInfos;
+import com.j2eefast.common.core.crypto.EnctryptTools;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
+import oshi.hardware.NetworkIF;
 
 /**
  * 高频使用工具类
@@ -133,7 +134,11 @@ public class ToolUtil{
      */
     public static String message(String code, Object... args){
         MessageSource messageSource = SpringUtil.getBean(MessageSource.class);
-        return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+        try{
+			return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+		}catch (Exception e){
+        	return code;
+		}
     }
     
     /**
@@ -222,21 +227,39 @@ public class ToolUtil{
 		return fileName;
 	}
 
+	public static String encodingExcelFilename(String filename){
+		filename = UUID.randomUUID().toString() + "_" + filename + ".xlsx";
+		return filename;
+	}
+
+	/**
+	 * 通过Hutool工具类获取系统硬件信息
+	 * @throws Exception
+	 */
 	public static void  getFastServerInfos() throws Exception {
         if(ToolUtil.isEmpty(ConfigConstant.FAST_OS_SN)){
-            //操作系统类型
-            String osName = System.getProperty("os.name").toLowerCase();
-            AbstractServerInfos abstractServerInfos = null;
-
-            //根据不同操作系统类型选择不同的数据获取方法
-            if (osName.startsWith("windows")) {
-                abstractServerInfos = new WindowsServerInfos();
-            } else if (osName.startsWith("linux")) {
-                abstractServerInfos = new LinuxServerInfos();
-            }else{//其他服务器类型
-                abstractServerInfos = new LinuxServerInfos();
-            }
-            abstractServerInfos.getServerInfos();
+			NetworkIF[] netwoeks = OshiUtil.getHardware().getNetworkIFs();
+			String macAddress = "";
+			List<String> IpList = new ArrayList<>();
+			for(NetworkIF net: netwoeks){
+				macAddress+=net.getMacaddr();
+				String temp = StrUtil.join(",",net.getIPv4addr());
+				if(ToolUtil.isNotEmpty(temp)){
+					IpList.add(temp);
+				}
+			}
+			//序列号
+			String serialNumber = OshiUtil.getSystem().getSerialNumber();
+			//处理器ID
+			String processorID = OshiUtil.getProcessor().getProcessorID();
+			//组装 系统机器码 mac串+序列号+处理器ID+程序系统路径+系统名称+主机名+系统架构+环境版本号  -->机器码  可以自行增加硬件信息确保唯一性
+			String temp = macAddress + serialNumber + processorID
+					+ SystemUtil.getUserInfo().getCurrentDir() + SystemUtil.getOsInfo().getName() + SystemUtil.getHostInfo().getName() +
+					SystemUtil.getOsInfo().getArch() + SystemUtil.getJavaInfo().getVersion();
+			//再将机器码加密成16位字符串
+			ConfigConstant.FAST_OS_SN = EnctryptTools.SM4Mac(ConfigConstant.FAST_MAC_KEY,temp.getBytes());
+			ConfigConstant.KEY = EnctryptTools.SM4Mac(HexUtil.decodeHex(ConfigConstant.KEY),HexUtil.decodeHex(ConfigConstant.FAST_OS_SN));
+			ConfigConstant.FAST_IPS = IpList;
         }
     }
 
@@ -335,4 +358,31 @@ public class ToolUtil{
         }
         return webappPath;
     }
+
+	/**
+	 * 数组以某种分隔符拼装
+	 * @param value Long数值
+	 * @param s 分隔符
+	 * @return 拼装之后的字符串
+	 */
+    public static String conversion(Long[] value, String s){
+    	String src = "";
+    	for(Long l: value){
+			src += l+s;
+		}
+		return  src.substring(0,src.length()-s.length());
+	}
+
+	/**
+	 * 判断ResponseData 是否成功
+	 * @param responseData 返回页面数据
+	 * @return true 成功
+	 */
+	public static boolean isSuccess(ResponseData responseData){
+    	if(responseData.get("code").equals(ResponseData.DEFAULT_SUCCESS_CODE)){
+			return true;
+		}else{
+    		return false;
+		}
+	}
 }

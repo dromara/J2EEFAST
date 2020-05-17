@@ -1,0 +1,16 @@
+flowable:
+      common:
+              app:
+                  idm-url: http://192.168.1.127:8080/fast
+#flowable.common.app.idm-admin.user=admin
+#flowable.common.app.idm-admin.password=test
+#activiti font (windows font: 宋体  linux font: simsun)
+#工作流设置
+activiti:
+      isSynActivitiIndetity: false
+      diagram:
+              activityFontName: 宋体
+              labelFontName: 宋体
+              annotationFontName: 宋体
+#activiti外部表单根地址配置
+#activiti.form.server.url=

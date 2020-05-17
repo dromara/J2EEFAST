@@ -43,10 +43,7 @@ public class DruidProperties {
     private Boolean testOnBorrow 									   = true;
     private Boolean testOnReturn 									   = true;
     private Boolean poolPreparedStatements 							   = true;
-    /**
-     * 是否开启
-     */
-    private Boolean enabled											   = true;
+
     private Integer maxPoolPreparedStatementPerConnectionSize 		   = 20;
     private String  filters										       = "stat";
     private String  dataSourceName;
@@ -77,7 +74,6 @@ public class DruidProperties {
         dataSource.setTestWhileIdle(testWhileIdle);
         dataSource.setTestOnBorrow(testOnBorrow);
         dataSource.setTestOnReturn(testOnReturn);
-        dataSource.setEnable(enabled);
         // 打开PSCache，并且指定每个连接上PSCache的大小
         dataSource.setPoolPreparedStatements(poolPreparedStatements);
         dataSource.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
@@ -105,7 +101,6 @@ public class DruidProperties {
         properties.put("testOnBorrow", this.testOnBorrow);
         properties.put("testOnReturn", this.testOnReturn);
         properties.put("testWhileIdle", this.testWhileIdle);
-        properties.put(enabled, this.enabled);
         properties.put("timeBetweenEvictionRunsMillis", this.timeBetweenEvictionRunsMillis);
         properties.put("minEvictableIdleTimeMillis", this.minEvictableIdleTimeMillis);
         properties.put("filters", this.filters);

@@ -272,7 +272,7 @@ public class SysRoleController extends BaseController {
 		if(sysRoleService.checkRoleNameUnique(role)){
 			return success();
 		}
-		return success();
+		return error("已经存在!");
 	}
 
 	/**
@@ -284,7 +284,7 @@ public class SysRoleController extends BaseController {
 		if(sysRoleService.checkRoleKeyUnique(role)){
 			return success();
 		}
-		return success();
+		return error("已经存在!");
 	}
 
 	/**

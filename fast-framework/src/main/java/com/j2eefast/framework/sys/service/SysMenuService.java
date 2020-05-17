@@ -7,6 +7,7 @@ import java.util.Map;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -279,7 +280,7 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 		sb.append(menu.getName() + "&nbsp;&nbsp;["+menu.getModuleCodes()+"]");
 		if (permsFlag)
 		{
-			sb.append("<font color=\"#888\">&nbsp;&nbsp;&nbsp;" + menu.getPerms() + "</font>");
+			sb.append("<font color=\"#888\">&nbsp;&nbsp;&nbsp;" + StrUtil.nullToDefault(menu.getPerms(),"") + "</font>");
 		}
 		return sb.toString();
 	}

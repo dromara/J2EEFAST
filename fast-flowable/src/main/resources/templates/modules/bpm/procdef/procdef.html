@@ -1,0 +1,149 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="定义流程列表">
+    </@header>
+    <@search fromId="module-form">
+        <div class="select-list">
+            <ul>
+                <li>
+                    <@ctx.i18n text = "流程名称"/>：
+                    <input type="text" name="name"/>
+                </li>
+                <li>
+                    <@ctx.i18n text = "类型"/>：
+                    <select name="category" class="form-control">
+                        <option value=""><@ctx.i18n text = "所有"/></option>
+                        <#list dict.getType('sys_bpm_category')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <option value="${d.dictValue}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                </#if>
+                            </#items>
+                        </#list>
+                    </select>
+                </li>
+                <li>
+                    <@ctx.i18n text = "状态"/>：
+                    <select name="suspensionState" class="form-control">
+                        <option value=""><@ctx.i18n text = "所有"/></option>
+                        <#list dict.getType('sys_bpm_status')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <option value="${d.dictValue}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                </#if>
+                            </#items>
+                        </#list>
+                    </select>
+                </li>
+                <li>
+                    <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>  <@ctx.i18n text = "查询"/></a>
+                    <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i> <@ctx.i18n text = "重置"/></a>
+                </li>
+            </ul>
+        </div>
+    </@search>
+    <@table tableId="bootstrap-table">
+    </@table>
+    <@footer>
+        <script>
+            var statusDatas = ${dict.getDictListJson('sys_bpm_status')};
+            var categoryDatas = ${dict.getDictListJson('sys_bpm_category')};
+            var prefix = baseURL + "bpm/procdef";
+
+            $(function() {
+                var options = {
+                    url: prefix + "/list",
+                    showSearch: false,
+                    showRefresh: false,
+                    showToggle: false,
+                    showColumns: false,
+                    clickToSelect: true,
+                    sortName: "version",
+                    delUrl: prefix + "/del",
+                    uniqueId:    'id'                           , /* 唯一ID */
+                    columns: [
+                        {title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);}},
+                        {field : 'name',title : '<@ctx.i18n text = "流程名称"/>'},
+                        {field : 'modelKey',title : '<@ctx.i18n text = "流程KEY"/>'},
+                        {field : 'version',title : '<@ctx.i18n text = "流程版本"/>',sortable: true,formatter: function(value, row, index) {
+                            return "v"+ value;}},
+                        {field : 'category',title : '<@ctx.i18n text = "流程类型"/>',formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(categoryDatas, value);}},
+                        {field : 'suspensionState',title : '<@ctx.i18n text = "状态"/>',formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(statusDatas, value);}},
+                        {title:"<@ctx.i18n text = "操作"/>",align: 'left',width:180,class:'action',formatter: function(value, row, index) {
+                                var actions = [];
+                                actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "预览流程图"/>" onclick="preview(\'' + row.id + '\')"><i class="fa icon-picture"></i></a> ');
+                                actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "预览流程文件"/>" onclick="preXml(\'' + row.id + '\')"><i class="fa icon-book-open"></i></a> ');
+                                actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "下载流程文件"/>" onclick="xmlDownload(\'' + row.id + '\',\''+row.resourceName+'\')"><i class="fa icon-cloud-download"></i></a> ');
+                                if(row.suspensionState === 1){
+                                    actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "挂起流程定义"/>" onclick="disable(\'' + row.id + '\')"><i class="glyphicon glyphicon-ban-circle"></i></a> ');
+                                }else{
+                                    actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "激活流程定义"/>" onclick="enable(\'' + row.id + '\')"><i class="glyphicon glyphicon-ok-circle"></i></a> ');
+                                }
+                                actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "关联流程表单"/>" onclick="taskFrom(\'' + row.id + '\')"><i class="fa icon-organization"></i></a> ');
+                                actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="deleteDeployment(\'' + row.deploymentId + '\')"><i class="fa fa-trash-o"></i></a> ');
+                                return actions.join('');
+                        }}
+                    ]
+                };
+                $.table.init(options);
+            });
+
+            /* 挂起流程定义 */
+            function disable(id) {
+                opt.modal.confirm("确认要挂起流程定义吗？", function() {
+                    opt.operate.post(prefix + "/status", { "deploymentId": id, "status": 1 });
+                })
+            }
+
+            /* 激活流程定义 */
+            function enable(id) {
+                opt.modal.confirm("确认要激活流程定义吗?", function() {
+                    opt.operate.post(prefix + "/status", { "deploymentId": id, "status": 0 });
+                })
+            }
+            
+            function deleteDeployment(id) {
+                opt.modal.confirm("确认要删除流程定义吗?", function() {
+                    opt.operate.post(prefix + "/del", { "deploymentId": id});
+                })
+            }
+
+            function taskFrom(id){
+                opt.modal.openTab("关联表单",prefix + "/taskfrom/"+id);
+            }
+
+            /*预览*/
+            function preview(id) {
+                var options = {
+                    url: prefix + "/preview/" + id,
+                    title: '<i class="fa icon-picture"></i> <@ctx.i18n text = "流程图"/>',
+                    btn:['<i class="fa fa-close"></i> '+$.i18n.prop("取消")],
+                    width: $(top.window).width() - 300,
+                    height: $(top.window).height() - 400
+                };
+                opt.modal.openMainWin(options);
+            }
+
+            /*预览XML*/
+            function  preXml(id){
+                var options = {
+                    url: prefix + "/xml/" + id,
+                    title:'<i class="fa fa-file-code-o"></i> <@ctx.i18n text = "BPMN2.0流程文件"/>',
+                    btn:['<i class="fa fa-close"></i> '+$.i18n.prop("取消")],
+                };
+                opt.modal.openMainWin(options);
+            }
+
+            /*生成代码*/
+            function xmlDownload(id,name) {
+                opt.modal.confirm("确定要下载[" + name + "]流程文件吗?", function() {
+                    location.href = prefix + "/download/" + id;
+                    opt.modal.msg('执行成功,正在下载请稍后…');
+                })
+            }
+        </script>
+    </@footer>
+</@pageTheme>

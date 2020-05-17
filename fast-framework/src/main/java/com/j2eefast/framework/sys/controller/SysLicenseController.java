@@ -40,7 +40,7 @@ import java.util.List;
  * <p>产品许可信息控制器</p>
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2020-03-18 09:50
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Log4j

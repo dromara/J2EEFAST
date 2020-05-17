@@ -127,7 +127,7 @@ public class SysProfileController extends BaseController {
         if (password.equals(loginUser.getPassword())){
             return success();
         }
-        return success();
+        return error("不匹配!");
     }
 
 

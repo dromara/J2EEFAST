@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.j2eefast.flowable.bpm.mapper.IHisFlowableActinstMapper" >
+    <delete id="deleteHisActinstsByIds" parameterType="java.util.List">
+        delete from act_hi_actinst where ID_ in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="getActivityId" resultType="String">
+            SELECT t2.ACT_ID_  FROM `act_hi_comment` t1 LEFT JOIN `act_hi_actinst` t2 ON
+            t1.TASK_ID_ = t2.`TASK_ID_` WHERE t1.ACTION_ = 'AddComment'  AND t2.ACT_ID_ is not null and t1.USER_ID_ = #{userId} and t1.PROC_INST_ID_ = #{processInstanceId}
+    </select>
+</mapper>

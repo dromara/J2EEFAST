@@ -1,0 +1,78 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="发起流程列表">
+    </@header>
+    <@search fromId="form-form">
+        <div class="select-list">
+            <ul>
+                <li>
+                    <@ctx.i18n text = "表单名称"/>：
+                    <input type="text" name="fromName"/>
+                </li>
+                <li>
+                    <@ctx.i18n text = "流程Key"/>：
+                    <input type="text" name="modelKey"/>
+                </li>
+                <li>
+                    <@ctx.i18n text = "流程版本号"/>：
+                    <input type="text" name="version"/>
+                </li>
+                <li>
+                    <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;&nbsp;<@ctx.i18n text = "查询"/></a>
+                    <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+                </li>
+            </ul>
+        </div>
+    </@search>
+    <@table tableId="bootstrap-table">
+    </@table>
+    <@footer>
+        <script>
+            var prefix = baseURL + "bpm/process";
+            var statusDatas = ${dict.getDictListJson('sys_bpm_status')};
+            $(function() {
+                var options = {
+                    url: prefix + "/list",
+                    showSearch: false,
+                    showRefresh: false,
+                    showToggle: false,
+                    showColumns: false,
+                    clickToSelect: true,
+                    uniqueId:    'id'                                   , /* 唯一ID */
+                    columns: [
+                        {title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                                return $.table.serialNumber(index);}},
+                        {field : 'fromName',title : '<@ctx.i18n text = "填写表单名称"/>'},
+                        {field : 'modelKey',title : '<@ctx.i18n text = "流程Key"/>'},
+                        {field : 'version',title : '<@ctx.i18n text = "版本号"/>'},
+                        {field : 'suspensionState',title : '<@ctx.i18n text = "状态"/>',formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(statusDatas, value);}},
+                        {title:"<@ctx.i18n text = "操作"/>",class:'action',width:100,formatter: function(value, row, index) {
+                                var actions = [];
+                                if(row.suspensionState == "1"){
+                                    actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "发起申请"/>" onclick="apply(\''+row.id+'\',\'' + row.prefixUrl +
+                                        '\',\'' + row.applyType + '\')"><i class="fa icon-check"></i></a> ');
+                                }else{
+                                    actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "禁止发起任务"/>" onclick="disable()"><i class="glyphicon glyphicon-ban-circle"></i></a> ');
+                                }
+                                return actions.join('');
+                        }}
+                    ]
+                };
+                $.table.init(options);
+            });
+
+            function disable(){
+                opt.modal.warning("<@ctx.i18n text = "流程表单已被挂起,不能申请请联系管理员!"/>");
+            }
+            function apply(id,prefixUrl,applyType){
+                if(applyType == "0"){
+                    opt.modal.open('<i class="fa icon-note"></i> <@ctx.i18n text = "填写表单"/>',baseURL +prefixUrl +"/add/"+id);
+                }else if(applyType == "1"){
+                    opt.modal.openTab('<i class="fa icon-note"></i> <@ctx.i18n text = "填写表单"/>',baseURL +prefixUrl +"/add/"+id);
+                }
+            }
+
+        </script>
+    </@footer>
+</@pageTheme>

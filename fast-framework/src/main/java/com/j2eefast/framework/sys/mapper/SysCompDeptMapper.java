@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author: zhouzhou
  * @date: 2019-04-07 13:21
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public interface SysCompDeptMapper extends BaseMapper<SysCompDeptEntity> {

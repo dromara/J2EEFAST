@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.j2eefast.framework.utils.UserUtils;
 import com.j2eefast.generator.gen.config.GenConfig;
 import com.j2eefast.generator.gen.entity.GenTableColumnEntity;
@@ -68,12 +70,17 @@ public class VelocityUtils
         velocityContext.put("menuName", genTable.getMenuName());
         velocityContext.put("menuOrder", genTable.getMenuOrder());
         velocityContext.put("moduleCodes", genTable.getModuleCodes());
+
         velocityContext.put("menuIcon", genTable.getMenuIcon());
         velocityContext.put("menuTarget", genTable.getMenuTarget());
         velocityContext.put("createBy", UserUtils.getLoginName());
         velocityContext.put("updateBy", UserUtils.getLoginName());
         velocityContext.put("dbTypeTb", genTable.isDbTypeTb());
         velocityContext.put("importList", getImportList(genTable.getColumns()));
+        Sequence n =  new Sequence();
+        for(int i=0; i< 5; i++){
+            velocityContext.put("mId"+i, n.nextId());
+        }
         velocityContext.put("permissionPrefix", getPermissionPrefix(moduleName, businessName));
         velocityContext.put("columns", genTable.getColumns());
         velocityContext.put("table", genTable);
@@ -131,9 +138,9 @@ public class VelocityUtils
     {
         List<String> templates = new ArrayList<String>();
         templates.add("vm/java/entity.java.vm");
-        templates.add("vm/java/dao.java.vm");
+        templates.add("vm/java/mapper.java.vm");
         templates.add("vm/java/service.java.vm");
-        templates.add("vm/java/serviceImpl.java.vm");
+//        templates.add("vm/java/serviceImpl.java.vm");
         templates.add("vm/java/controller.java.vm");
         templates.add("vm/xml/mapper.xml.vm");
 
@@ -154,7 +161,6 @@ public class VelocityUtils
         {
             templates.add("vm/html/edit.html.vm");
         }
-
         templates.add("vm/sql/sql.vm");
         return templates;
     }
@@ -183,25 +189,25 @@ public class VelocityUtils
         {
             fileName = StrUtil.format("{}/entity/{}Entity.java", javaPath, className);
         }
-        else if (template.contains("dao.java.vm"))
+        else if (template.contains("mapper.java.vm"))
         {
-            fileName = StrUtil.format("{}/dao/{}Dao.java", javaPath, className);
+            fileName = StrUtil.format("{}/mapper/{}Mapper.java", javaPath, className);
         }
         else if (template.contains("service.java.vm"))
         {
             fileName = StrUtil.format("{}/service/{}Service.java", javaPath, className);
         }
-        else if (template.contains("serviceImpl.java.vm"))
-        {
-            fileName = StrUtil.format("{}/service/impl/{}ServiceImpl.java", javaPath, className);
-        }
+//        else if (template.contains("serviceImpl.java.vm"))
+//        {
+//            fileName = StrUtil.format("{}/service/impl/{}ServiceImpl.java", javaPath, className);
+//        }
         else if (template.contains("controller.java.vm"))
         {
             fileName = StrUtil.format("{}/controller/{}Controller.java", javaPath, className);
         }
         else if (template.contains("mapper.xml.vm"))
         {
-            fileName = StrUtil.format("{}/{}Dao.xml", mybatisPath, className);
+            fileName = StrUtil.format("{}/{}Mapper.xml", mybatisPath, className);
         }
         else if (template.contains("list.html.vm"))
         {

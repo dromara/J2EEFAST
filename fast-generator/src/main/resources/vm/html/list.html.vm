@@ -1,4 +1,3 @@
-<!--/****/ -->
 <<@>include "/common/include.html"/>
 ${pageTheme}
 <@header title="${functionName}列表">
@@ -114,7 +113,7 @@ ${pageTheme}
             delUrl: prefix + "/del",
             modalName: "${functionName}",
 #end
-            uniqueId:  #foreach($column in $columns) #if($column.pk && $column.increment) '${column.javaField}'#end #end, /* 唯一ID */
+            uniqueId:  #foreach($column in $columns) #if($column.pk) '${column.javaField}'#end #end, /* 唯一ID */
             columns: [{
                 title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
                     return $.table.serialNumber(index);

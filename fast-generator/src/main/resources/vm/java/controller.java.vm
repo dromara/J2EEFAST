@@ -1,13 +1,10 @@
 package ${packageName}.controller;
 
-import com.lixinos.common.core.convert.Convert;
-import com.lixinos.common.core.utils.PageUtils;
-import com.lixinos.common.core.utils.R;
-import com.lixinos.common.enums.BusinessType;
-import com.lixinos.framework.annotation.SysLog;
-import com.lixinos.framework.utils.BaseController;
-import com.lixinos.framework.annotation.RepeatSubmit;
-import com.lixinos.common.validator.ValidatorUtils;
+import com.j2eefast.common.core.business.annotaion.BussinessLog;
+import com.j2eefast.common.core.enums.BusinessType;
+import com.j2eefast.common.core.utils.*;
+import com.j2eefast.framework.annotation.RepeatSubmit;
+import com.j2eefast.common.core.controller.BaseController;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,25 +16,18 @@ import org.springframework.web.bind.annotation.*;
 import ${packageName}.entity.${ClassName}Entity;
 import ${packageName}.service.${ClassName}Service;
 #if($table.tree)
-import com.lixinos.common.core.domain.Ztree;
+import com.j2eefast.common.core.domain.Ztree;
 #end
 
 /**
- *
- * @ClassName: ${functionName}Controller
- * @Package: ${packageName}
- * @Description: ${tableName}
- * @author: ${author}
- * @time ${datetime}
- 
- * /----------------------------/
- * /---><---/
- * /----------------------------/
+ * ${functionName}页面控制器
+ * @author ${author}
+ * @date ${datetime}
  */
 @Controller
 @RequestMapping("/${moduleName}/${businessName}")
-public class ${ClassName}Controller extends BaseController
-{
+public class ${ClassName}Controller extends BaseController{
+
     private String prefix = "modules/${moduleName}/${businessName}";
 
     @Autowired
@@ -45,8 +35,7 @@ public class ${ClassName}Controller extends BaseController
 
     @RequiresPermissions("${permissionPrefix}:view")
     @GetMapping()
-    public String ${businessName}()
-    {
+    public String ${businessName}(){
         return prefix + "/${businessName}";
     }
 
@@ -55,22 +44,22 @@ public class ${ClassName}Controller extends BaseController
     @RequestMapping("/list")
     @RequiresPermissions("${permissionPrefix}:list")
     @ResponseBody
-    public R list(@RequestParam Map<String, Object> params) {
-        PageUtils page = ${className}Service.queryPage(params);
-        return R.ok().put("page", page);
+    public ResponseData list(@RequestParam Map<String, Object> params) {
+		PageUtil page = ${className}Service.findPage(params);
+		return success(page);
     }
     #end
+
 
     #if($table.tree)
     /**
      * 选择${functionName}树
      */
+	//TODO *注意* 树还有问题暂时不用-后期再处理
     #set($BusinessName=$businessName.substring(0,1).toUpperCase() + ${businessName.substring(1)})
     @GetMapping(value = { "/select${BusinessName}Tree/{${pkColumn.javaField}}", "/select${BusinessName}Tree/" })
-    public String select${BusinessName}Tree(@PathVariable(value = "${pkColumn.javaField}", required = false) Long ${pkColumn.javaField}, ModelMap mmap)
-    {
-        if (StringUtils.isNotNull(${pkColumn.javaField}))
-        {
+    public String select${BusinessName}Tree(@PathVariable(value = "${pkColumn.javaField}", required = false) Long ${pkColumn.javaField}, ModelMap mmap){
+        if (StringUtils.isNotNull(${pkColumn.javaField})){
             mmap.put("${className}", ${className}Service.select${ClassName}ById(${pkColumn.javaField}));
         }
         return prefix + "/tree";
@@ -81,8 +70,7 @@ public class ${ClassName}Controller extends BaseController
      */
     @GetMapping("/treeData")
     @ResponseBody
-    public List<Ztree> treeData()
-    {
+    public List<Ztree> treeData(){
         List<Ztree> ztrees = ${className}Service.select${ClassName}Tree();
         return ztrees;
     }
@@ -90,44 +78,35 @@ public class ${ClassName}Controller extends BaseController
 
     #if($table.crud || $table.c)
     #*新增*#
-    /**
-     * 新增参数配置
-     */
+
     @GetMapping("/add")
-    public String add()
-    {
+    public String add(){
         return prefix + "/add";
     }
 
     /**
-     * 新增保存${functionName}
+     * 新增
      */
     @RepeatSubmit
     @RequiresPermissions("${permissionPrefix}:add")
-    @SysLog(title = "${functionName}", businessType = BusinessType.INSERT)
+    @BussinessLog(title = "${functionName}", businessType = BusinessType.INSERT)
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
-    public R addSave(@Validated ${ClassName}Entity ${className})
-    {
+    public ResponseData add${ClassName}(@Validated ${ClassName}Entity ${className}){
         //校验参数
-        ValidatorUtils.validateEntity(${className});
-        ${className}.setCreateBy(getUser().getUsername());
-        ${className}.setCreateTime(new Date());
-        ${className}.setUpdateTime(new Date());
-        ${className}Service.insert${ClassName}(${className});
-        return R.ok();
+        ValidatorUtil.validateEntity(${className});
+        return ${className}Service.save${ClassName}(${className})? success(): error("新增失败!");
     }
     #end
 
     #if($table.crud || $table.u)
     /**
-     * 修改${functionName} 页面
+     * 修改
      */
     @RequiresPermissions("${permissionPrefix}:edit")
     @GetMapping("/edit/{${pkColumn.javaField}}")
-    public String edit(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}, ModelMap mmap)
-    {
-        ${ClassName}Entity ${className} = ${className}Service.select${ClassName}ById(${pkColumn.javaField});
+    public String edit(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}, ModelMap mmap){
+        ${ClassName}Entity ${className} = ${className}Service.get${ClassName}ById(${pkColumn.javaField});
         mmap.put("${className}", ${className});
         return prefix + "/edit";
     }
@@ -137,37 +116,27 @@ public class ${ClassName}Controller extends BaseController
      */
     @RepeatSubmit
     @RequiresPermissions("${permissionPrefix}:edit")
-    @SysLog(title = "${functionName}", businessType = BusinessType.UPDATE)
+    @BussinessLog(title = "${functionName}", businessType = BusinessType.UPDATE)
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ResponseBody
-    public R editSave(${ClassName}Entity ${className})
-    {
-        ValidatorUtils.validateEntity(${className});
-        ${className}.setUpdateBy(getLoginName());
-        ${className}Service.update${ClassName}(${className});
-        return R.ok();
+    public ResponseData edit${ClassName}(${ClassName}Entity ${className}){
+		ValidatorUtil.validateEntity(${className});
+        return ${className}Service.update${ClassName}ById(${className})? success(): error("修改失败!");
     }
     #end
 
-    #if($table.crud || $table.d || ($table.r && $table.rDel))
     #*删除*#
+    #if($table.crud || $table.d || ($table.r && $table.rDel))
     /**
-     * 删除${functionName}
+     * 删除
      */
     @RepeatSubmit
-    @SysLog(title = "${functionName}", businessType = BusinessType.DELETE)
+    @BussinessLog(title = "${functionName}", businessType = BusinessType.DELETE)
     @RequestMapping(value = "/del", method = RequestMethod.POST)
     @RequiresPermissions("${permissionPrefix}:del")
     @ResponseBody
-    public R delete(${pkColumn.javaType}[] ids) {
-
-##        List<SysConfigEntity> list= sysConfigService.selectList(new EntityWrapper<SysConfigEntity>().
-##                eq("config_type","Y").in("id",ids));
-##        if(StrUtil.isNotNull(list)){
-##            return R.error("删除参数失败，系统参数不能删除");
-##        }
-      ${className}Service.deleteBatch(ids);
-      return R.ok();
+    public ResponseData del(${pkColumn.javaType}[] ids) {
+      return ${className}Service.delete${ClassName}ByIds(ids)? success(): error("删除失败!");
     }
     #end
 

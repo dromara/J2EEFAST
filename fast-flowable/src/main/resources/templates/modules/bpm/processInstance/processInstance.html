@@ -1,0 +1,117 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="流程实例列表">
+    </@header>
+    <@search fromId="form-form">
+        <div class="select-list">
+            <ul>
+                <li>
+                    <@ctx.i18n text = "实例名称"/>：
+                    <input type="text" name="userName"/>
+                </li>
+                <li>
+                    <@ctx.i18n text = "发起人"/>：
+                    <input type="text" name="leaveDays"/>
+                </li>
+                <li>
+                    状态：
+                    <select name="status">
+                        <option value="">所有</option>
+                    </select>
+                </li>
+                <li>
+                    <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;&nbsp;<@ctx.i18n text = "查询"/></a>
+                    <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+                </li>
+            </ul>
+        </div>
+    </@search>
+    <@table tableId="bootstrap-table">
+    </@table>
+    <@footer>
+        <script>
+            var delFlag = "${permission.hasPermi("bpm:processInstance:del")}";
+            var insStatusDatas = ${dict.getDictListJson('sys_bpm_ins_status')};
+            var statusDatas = ${dict.getDictListJson('sys_bpm_status')};
+            var prefix = baseURL + "bpm/processInstance";
+
+            $(function() {
+                var options = {
+                    url: prefix + "/list",
+                    delUrl: prefix + "/del",
+                    showSearch: false,
+                    showRefresh: false,
+                    showToggle: false,
+                    showColumns: false,
+                    clickToSelect: true,
+                    uniqueId:    'id'                                   , /* 唯一ID */
+                    modalName:'流程实例',
+                    columns: [
+                        {title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);}},
+                        {field : 'formName',title : '<@ctx.i18n text = "流程名称"/>'},
+                        {field : 'starter',title : '<@ctx.i18n text = "发起人"/>'},
+                        {field : 'startTime',title : '<@ctx.i18n text = "发起时间"/>',width: 170},
+                        {field : 'endTime',title : '<@ctx.i18n text = "结束时间"/>',width: 170},
+                        {field : 'status',title : '<@ctx.i18n text = "流程状态"/>',formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(insStatusDatas, value);}},
+                        {field : 'suspensionState',title : '<@ctx.i18n text = "状态"/>',formatter: function(value, row, index) {
+                                return $.table.selectDictLabel(statusDatas, value);}},
+                        {title:"<@ctx.i18n text = "操作"/>",align: 'left',width:150, class:'action',formatter: function(value, row, index) {
+                                var actions = [];
+                                actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "流程跟踪"/>" onclick="preview(\'' + row.processInstanceId + '\')"><i class="fa icon-picture"></i></a> ');
+                                if(row.status != 0){
+                                    if(row.suspensionState === 1){
+                                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "挂起流程实例"/>" onclick="disable(\'' + row.processInstanceId + '\')"><i class="glyphicon glyphicon-ban-circle"></i></a> ');
+                                    }else{
+                                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "激活流程实例"/>" onclick="enable(\'' + row.processInstanceId + '\')"><i class="glyphicon glyphicon-ok-circle"></i></a> ');
+                                    }
+                                }
+                                actions.push('<a class="" href="javascript:void(0)" title="<@ctx.i18n text = "表单详情"/>" onclick="fromInfo(\''+row.businessKey+'\',\'' + row.prefixUrl +
+                                    '\',\'' + row.applyType + '\',\'' + row.processInstanceId + '\')"><i class="fa icon-note"></i></a> ');
+                                actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.processInstanceId + '\')"><i class="fa fa-trash-o"></i></a> ');
+                                return actions.join('');
+                        }}
+                    ]
+                };
+                $.table.init(options);
+            });
+
+            /* 挂起流程定义 */
+            function disable(id) {
+                opt.modal.confirm("确认要挂起流程实例吗？", function() {
+                    opt.operate.post(prefix + "/status", { "processInstanceId": id, "status": 1 });
+                })
+            }
+
+            /* 激活流程定义 */
+            function enable(id) {
+                opt.modal.confirm("确认要激活流程实例吗?", function() {
+                    opt.operate.post(prefix + "/status", { "processInstanceId": id, "status": 0 });
+                })
+            }
+
+            /*预览*/
+            function preview(id) {
+                var options = {
+                    url: prefix + "/preview/" + id,
+                    title: '<i class="fa icon-loop"></i> <@ctx.i18n text = "流程跟踪"/>',
+                    btn:['<i class="fa fa-close"></i> '+$.i18n.prop("取消")],
+                    width: $(top.window).width() - 300,
+                    height: $(top.window).height() - 200
+                };
+                opt.modal.openMainWin(options);
+            }
+
+            function fromInfo(id,prefixUrl,applyType,processInstanceId){
+                if(applyType == "0"){
+                    opt.modal.open('<i class="fa icon-note"></i> <@ctx.i18n text = "表单详情"/>',
+                        baseURL +prefixUrl +"/view?taskId="+processInstanceId+"&businessKey="+id);
+                }else if(applyType == "1"){
+                    opt.modal.openTab('<i class="fa icon-note"></i> <@ctx.i18n text = "表单详情"/>',
+                        baseURL +prefixUrl +"/view?taskId="+processInstanceId+"&businessKey="+id);
+                }
+            }
+        </script>
+    </@footer>
+</@pageTheme>

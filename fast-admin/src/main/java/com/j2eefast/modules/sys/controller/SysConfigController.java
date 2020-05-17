@@ -97,12 +97,10 @@ public class SysConfigController extends BaseController {
 	public ResponseData save(@Validated SysConfigEntity config) {
 
 		ValidatorUtil.validateEntity(config);
-		if (!sysConfigService.checkConfigKeyUnique(config))
-		{
+		if (!sysConfigService.checkConfigKeyUnique(config)){
 			return error("新增参数'" + config.getParamName() + "'失败，参数键名已存在");
 		}
-		sysConfigService.add(config);
-		return success();
+		return sysConfigService.add(config)?success():error("新增失败!");
 	}
 
 	/**
@@ -110,12 +108,8 @@ public class SysConfigController extends BaseController {
 	 */
 	@RequestMapping(value = "/checkConfigKeyUnique", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseData checkConfigKeyUnique(SysConfigEntity config)
-	{
-		if(sysConfigService.checkConfigKeyUnique(config)){
-			return success();
-		}
-		return success();
+	public ResponseData checkConfigKeyUnique(SysConfigEntity config){
+		return sysConfigService.checkConfigKeyUnique(config)?success():error("已经存在!");
 	}
 
 	/**
@@ -128,12 +122,10 @@ public class SysConfigController extends BaseController {
 	public ResponseData update(@Validated SysConfigEntity config) {
 
 		ValidatorUtil.validateEntity(config);
-		if (!sysConfigService.checkConfigKeyUnique(config))
-		{
+		if (!sysConfigService.checkConfigKeyUnique(config)) {
 			return error("修改参数'" + config.getParamName() + "'失败，参数键名已存在");
 		}
-		sysConfigService.update(config);
-		return success();
+		return sysConfigService.update(config)?success():error("修改失败!");
 	}
 
 	/**
@@ -149,8 +141,7 @@ public class SysConfigController extends BaseController {
 		if(ToolUtil.isNotEmpty(list)){
 			return error("删除参数失败，系统参数不能删除");
 		}
-		sysConfigService.deleteBatchByIds(ids);
-		return success();
+		return sysConfigService.deleteBatchByIds(ids)?success():error("删除失败!");
 	}
 
 }

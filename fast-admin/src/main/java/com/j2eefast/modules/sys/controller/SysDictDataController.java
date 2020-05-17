@@ -81,7 +81,7 @@ public class SysDictDataController extends BaseController {
             sysConfigRedis.saveOrUpdateDict(dict.getDictType(),list);
             return success();
         }else{
-            return success();
+            return error("新增失败!");
         }
     }
 
@@ -103,12 +103,11 @@ public class SysDictDataController extends BaseController {
     @RequiresPermissions("sys:dict:edit")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData editSave(@Validated SysDictDataEntity dict)
-    {
+    public ResponseData editSave(@Validated SysDictDataEntity dict) {
         if(sysDictDataService.updateDictData(dict)){
             return success();
         }else{
-            return success();
+            return error("修改失败!");
         }
     }
 
@@ -117,9 +116,7 @@ public class SysDictDataController extends BaseController {
     @RequiresPermissions("sys:dict:del")
     @RequestMapping(value = "/del", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData del(Long[] ids)
-    {
-        sysDictDataService.deleteBatchByIds(ids);
-        return success();
+    public ResponseData del(Long[] ids) {
+        return sysDictDataService.deleteBatchByIds(ids)?success():error("删除失败!");
     }
 }

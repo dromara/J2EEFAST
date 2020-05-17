@@ -7,7 +7,7 @@ import java.util.HashMap;
  *
  * @author: zhouzhou
  * @date: 2019-04-01 19:59
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class ResponseData extends HashMap<String, Object> {

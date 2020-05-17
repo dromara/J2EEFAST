@@ -83,7 +83,7 @@ public class SysDictTypeController extends BaseController {
         if(sysDictTypeSerive.checkDictTypeUnique(dictType)){
             return success();
         }
-        return success();
+        return error("已经存在!");
     }
 
     /**
@@ -102,7 +102,7 @@ public class SysDictTypeController extends BaseController {
         if(sysDictTypeSerive.save(dict)){
             return success();
         }else{
-            return success();
+            return error("新增失败!");
         }
     }
 

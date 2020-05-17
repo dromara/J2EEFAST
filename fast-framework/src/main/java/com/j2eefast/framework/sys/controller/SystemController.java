@@ -4,7 +4,6 @@ import com.j2eefast.common.core.base.entity.LoginUserEntity;
 import com.j2eefast.common.core.controller.BaseController;
 import com.j2eefast.framework.sys.constant.factory.ConstantFactory;
 import com.j2eefast.framework.sys.entity.SysMenuEntity;
-import com.j2eefast.framework.sys.entity.SysModuleEntity;
 import com.j2eefast.framework.sys.service.SysMenuService;
 import com.j2eefast.framework.sys.service.SysModuleService;
 import com.j2eefast.framework.utils.UserUtils;
@@ -24,7 +23,7 @@ import java.util.Map;
  *
  * @author: zhouzhou
  * @date: 2019-04-07 16:33
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Controller
@@ -40,7 +39,7 @@ public class SystemController extends BaseController {
 	 * @param mmap
 	 * @return
 	 */
-	@RequestMapping(value = { "/", "index" })
+	@RequestMapping(value = { "/", "index","index.html" })
 	public String index(ModelMap mmap) {
 		LoginUserEntity user = UserUtils.getUserInfo();
 		List<Map<String, Object>> modules = user.getModules();
@@ -62,13 +61,19 @@ public class SystemController extends BaseController {
 		return "skin";
 	}
 
+	//便签
+	@GetMapping("/sys/note")
+	public String note(ModelMap mmap){
+		return "note";
+	}
+
 	// 浏览器版本过低
 	@GetMapping("upbw/index")
 	public String upbw(ModelMap mmap){
 		return "modules/sys/upbw/index";
 	}
 
-	@GetMapping("statics/notice/{htmlNo}")
+	@GetMapping("static/notice/{htmlNo}")
 	public String statics(@PathVariable("htmlNo") String htmlNo){
 		return "modules/static/" + htmlNo;
 	}

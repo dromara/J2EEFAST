@@ -5,7 +5,7 @@ package com.j2eefast.framework.sys.constant.factory;
  *
  * @author: zhouzhou
  * @date: 2019-04-07 10:04
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 
@@ -27,7 +27,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,7 @@ import java.util.List;
  *
  * @author: zhouzhou
  * @date: 2019-04-02 13:13
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Component
@@ -76,7 +75,7 @@ public class ConstantFactory implements IConstantFactory {
 
 
 	@Override
-	@Cacheable(value = Cache.CONSTANT, key = "'" + CacheKey.ROLES_NAME + "'+#roleIds")
+	@Cacheable(value = Cache.CONSTANT, key = "'" + CacheKey.ROLES_NAME + "'+#userId")
 	public String getRoleName(Long userId) {
 		if (ToolUtil.isEmpty(userId)) {
 			return "";
@@ -150,7 +149,7 @@ public class ConstantFactory implements IConstantFactory {
 	}
 
 	@Override
-	@Cacheable(value = Cache.MENU_CONSTANT, key = "'" + CacheKey.MENU_NAME + "'+#userId")
+	@Cacheable(value = Cache.MENU_CONSTANT, key = "'" + CacheKey.MENU_NAME + "'+ T(String).valueOf(#userId).concat('-').concat(#moduleCode)")
 	public List<SysMenuEntity> getMenuByUserIdModuleCode(Long userId, String moduleCode) {
 		List<SysMenuEntity> menuList = sysMenuService.findUserModuleMenuList(userId,moduleCode);
 		if(ToolUtil.isNotEmpty(menuList)){
@@ -158,6 +157,8 @@ public class ConstantFactory implements IConstantFactory {
 		}
 		return null;
 	}
+
+
 
 	@Override
 	public String getCacheObject(String para) {

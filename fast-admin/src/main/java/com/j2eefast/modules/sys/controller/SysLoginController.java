@@ -86,9 +86,8 @@ public class SysLoginController extends BaseController {
 	@RequestMapping("login")
 	public String login(ModelMap mmp) {
 		String view = super.getPara("view");
-		String defaultView = sysConfigService.getParamValue("SYS_LOGIN_DEFAULT_VIEW");
 		if(ToolUtil.isEmpty(view)){
-			view = defaultView;
+			view = Global.getDbKey("SYS_LOGIN_DEFAULT_VIEW","Admin-LTE");
 		}else{
 			List<SysDictDataEntity> listView = sysDictDataService.selectDictDataByType("sys_login_view");
 			boolean flag = false;
@@ -99,7 +98,7 @@ public class SysLoginController extends BaseController {
 				}
 			}
 			if(!flag){
-				view = defaultView;
+				view = Global.getDbKey("SYS_LOGIN_DEFAULT_VIEW","Admin-LTE");
 			}
 		}
 		mmp.put("loginView",view);
@@ -180,7 +179,6 @@ public class SysLoginController extends BaseController {
 	public ResponseData login(String username, String password, HttpServletRequest request) {
 
 		if(ToolUtil.isNotEmpty(username) && ToolUtil.isNotEmpty(password)){
-			//SysUserEntity loginUser = ShiroUtils.getUserEntity();
 			LoginUserEntity loginUser = UserUtils.getUserInfo();
 
 			String secretKey = "";

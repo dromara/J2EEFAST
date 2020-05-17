@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
  *
  * @author: zhouzhou
  * @date: 2019-03-29 17:22
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Controller

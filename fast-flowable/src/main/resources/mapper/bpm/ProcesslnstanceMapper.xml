@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.j2eefast.flowable.bpm.mapper.ProcessInstanceMapper">
+
+
+    <!-- 我发起的流程/查询流程实例-->
+    <select id="findPage" resultType="com.j2eefast.flowable.bpm.entity.ProcessInstanceEntity">
+        SELECT DISTINCT
+        t1.ID_ AS processInstanceId,
+        t1.PROC_DEF_ID_ as processDefinitionId,
+        t1.NAME_ AS formName,
+        t1.TENANT_ID_ AS systemSn,
+        t1.BUSINESS_KEY_ AS businessKey,
+        t1.START_TIME_ AS startTime,
+        t1.END_TIME_ AS endTime,
+        (CASE WHEN t1.END_TIME_ IS NULL THEN '1'
+        ELSE '0' END) AS status,
+        (CASE WHEN (t3.`SUSPENSION_STATE_` = 2 OR t5.`SUSPENSION_STATE_` =2) THEN 2
+        ELSE 1 END) AS suspensionState,
+        t4.`prefix_url` AS prefixUrl,
+        t4.`approval_type` AS approvalType,
+        t4.`apply_type` AS applyType,
+        t2.ID_ AS starterId,
+        t2.FIRST_ as starter
+        FROM
+        act_hi_procinst t1
+        LEFT JOIN act_id_user t2 ON t1.START_USER_ID_ = t2.ID_
+        LEFT JOIN  `act_re_procdef` t3 ON t1.`PROC_DEF_ID_` = t3.`ID_`
+        LEFT JOIN `bpm_task_from` t4 ON t4.`process_definition_key` = t1.`PROC_DEF_ID_`
+        LEFT JOIN act_ru_execution t5 ON t1.PROC_INST_ID_ = t5.PROC_INST_ID_
+        where 1 = 1
+        <if test="start_userId != null and start_userId!=''">and t1.START_USER_ID_ = #{start_userId}</if>
+        <if test="start_name != null and start_name!=''">and t2.FIRST_ like CONCAT('%',#{start_name},'%')</if>
+        <if test="name != null and name!=''">and t1.NAME_ like CONCAT('%',#{name},'%')</if>
+        <if test = "sql_filter !=null and sql_filter!=''">
+            and ${sql_filter}
+        </if>
+    </select>
+
+
+
+</mapper>

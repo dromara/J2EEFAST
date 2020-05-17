@@ -1,4 +1,3 @@
-<!--/****/ -->
 <<@>include "/common/include.html"/>
 ${pageTheme}
 <@header title="新增${functionName}">
@@ -132,7 +131,7 @@ ${pageTheme}
                 <div class="col-sm-8">
                     <div class="input-group date">
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                        <input name="${field}" class="form-control" placeholder="yyyy-MM-dd" type="text"#if($column.required) required#end>
+                        <input class="form-control time-input" name="${field}"  data-type="date" data-format="yyyy-MM-dd" type="text" #if($column.required) required#end>
                     </div>
                 </div>
             </div>
@@ -168,6 +167,7 @@ ${pageTheme}
             }
         }
 #foreach($column in $columns)
+#*
 #if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "datetime")
 
         $("input[name='$column.javaField']").datetimepicker({
@@ -176,6 +176,7 @@ ${pageTheme}
             autoclose: true
         });
 #end
+*#
 #if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "icon")
         $("#_iconButton").click(function(){
             var options = {

@@ -38,7 +38,7 @@ public class SysModuleController extends BaseController {
         return urlPrefix + "/module";
     }
 
-        
+
     @RequestMapping("/list")
     @RequiresPermissions("sys:module:list")
     @ResponseBody
@@ -53,8 +53,7 @@ public class SysModuleController extends BaseController {
      * 新增参数配置
      */
     @GetMapping("/add")
-    public String add()
-    {
+    public String add() {
         return urlPrefix + "/add";
     }
 
@@ -66,12 +65,10 @@ public class SysModuleController extends BaseController {
     @BussinessLog(title = "模块", businessType = BusinessType.INSERT)
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData addSave(@Validated SysModuleEntity sysModule)
-    {
+    public ResponseData addSave(@Validated SysModuleEntity sysModule){
         //校验参数
         ValidatorUtil.validateEntity(sysModule);
-        sysModuleService.save(sysModule);
-        return success();
+        return sysModuleService.save(sysModule)?success(): error("新增失败!");
     }
     
         /**
@@ -79,8 +76,7 @@ public class SysModuleController extends BaseController {
      */
     @RequiresPermissions("sys:module:edit")
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap mmap)
-    {
+    public String edit(@PathVariable("id") Long id, ModelMap mmap){
         SysModuleEntity sysModule = sysModuleService.getById(id);
         mmap.put("sysModule", sysModule);
         return urlPrefix + "/edit";
@@ -123,7 +119,7 @@ public class SysModuleController extends BaseController {
     @RepeatSubmit
     @RequiresPermissions("sys:module:edit")
     @RequiresRoles(Constant.SU_ADMIN)
-    @PostMapping("/changeStatus")
+    @PostMapping("/status")
     @ResponseBody
     public ResponseData changeStatus(SysModuleEntity sysModule){
         return sysModuleService.updateById(sysModule)? success() : error("修改失败!");

@@ -101,7 +101,8 @@ public class DemoConfig {
 					String[] filters = get.split(",");
 					//判断是否包含
 					for(String filter : filters){
-						if(url.indexOf(filter) != -1){
+						int a = url.indexOf(filter);
+						if(url.indexOf(filter) != -1 && !(url.indexOf("model") != -1)){
 							ResponseData r = ResponseData.error("10001", ConfigConstant.DEOM_MODE_PROMPT);
 							String json = JSONUtil.toJsonStr(r);
 							response.setContentType("application/json;charset=utf-8");

@@ -4,6 +4,13 @@ import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.HeadFontStyle;
+import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
@@ -18,10 +25,14 @@ import lombok.Data;
  *
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2019-03-20 16:40
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @TableName("sys_user")
+//设置头高
+@HeadRowHeight(20)
+@HeadFontStyle(fontHeightInPoints = 12)
+@ExcelIgnoreUnannotated
 @Data
 public class SysUserEntity extends BaseEntity {
 
@@ -29,18 +40,21 @@ public class SysUserEntity extends BaseEntity {
 	 * 用户ID
 	 */
 	@TableId
+	@ExcelProperty("用户ID")
 	private Long userId;
 
 	/**
 	 * 用户名
 	 */
 	@NotBlank(message = "登陆账号不能为空")
+	@ExcelProperty("账号")
 	private String username;
 
 	/**
 	 * 用户名称
 	 */
 	@NotBlank(message = "姓名不能为空")
+	@ExcelProperty("姓名")
 	private String name;
 
 	/**
@@ -62,16 +76,21 @@ public class SysUserEntity extends BaseEntity {
 	/**
 	 * 邮箱
 	 */
+	@ExcelProperty("邮箱")
+	@ColumnWidth(25)
 	private String email;
 
 	/**
 	 * 手机号
 	 */
+	@ExcelProperty("手机号码")
+	@ColumnWidth(25)
 	private String mobile;
 
 	/**
 	 * 状态 0：禁用 1：正常
 	 */
+	@ExcelProperty("状态")
 	private String status;
 
 	@TableLogic
@@ -153,6 +172,8 @@ public class SysUserEntity extends BaseEntity {
 	 * 角色名称
 	 */
 	@TableField(exist = false)
+	@ExcelProperty("角色名称")
+	@ColumnWidth(25)
 	private String roleName;
 
 	/**
@@ -188,6 +209,9 @@ public class SysUserEntity extends BaseEntity {
 	 * 公司名称
 	 */
 	@TableField(exist = false)
+	@ExcelProperty("所属公司")
+	//列宽
+	@ColumnWidth(50)
 	private String compName;
 
 	/**

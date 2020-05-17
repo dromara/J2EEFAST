@@ -98,7 +98,7 @@ public class SysCompController extends BaseController {
 		if(sysCompService.checkCompNameUnique(comp)){
 			return success();
 		}else {
-			return success();
+			return error("已经存在!");
 		}
 	}
 
@@ -217,7 +217,7 @@ public class SysCompController extends BaseController {
 		if(sysCompService.update(comp)){
 			return success();
 		}else{
-			return success();
+			return error("修改失败!");
 		}
 	}
 
@@ -250,7 +250,7 @@ public class SysCompController extends BaseController {
 			if(sysCompService.removeById(compId)){
 				return success();
 			}else{
-				return success();
+				return error("删除失败!");
 			}
 		}else{
 			return error(ToolUtil.message("sys.msg.permissions"));

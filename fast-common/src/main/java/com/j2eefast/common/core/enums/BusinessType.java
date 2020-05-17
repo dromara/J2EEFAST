@@ -60,4 +60,13 @@ public enum BusinessType {
      * 执行
      */
     RUN,
+
+    /**
+     * 审批
+     */
+    APPROVAL,
+    /**
+     * 撤回
+     */
+    REVOKE,
 }

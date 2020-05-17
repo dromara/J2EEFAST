@@ -4,14 +4,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.j2eefast.common.core.config.RabbitmqProducer;
 import com.j2eefast.common.core.exception.RxcException;
 import com.j2eefast.common.core.page.Query;
 import com.j2eefast.common.core.utils.PageUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
+import com.j2eefast.common.rabbit.constant.RabbitBeanInfo;
+import com.j2eefast.common.rabbit.constant.RabbitInfo;
 import com.j2eefast.framework.annotation.DataFilter;
 import com.j2eefast.framework.sys.entity.SysRoleEntity;
 import com.j2eefast.framework.sys.entity.SysRoleModuleEntity;
@@ -19,6 +26,7 @@ import com.j2eefast.framework.sys.mapper.SysRoleMapper;
 import com.j2eefast.framework.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -35,6 +43,8 @@ public class SysRoleService  extends ServiceImpl<SysRoleMapper, SysRoleEntity> {
 	private SysRoleMenuService sysRoleMenuService;
 	@Resource
 	private SysRoleModuleService sysRoleModuleService;
+	@Autowired
+	private RabbitmqProducer rabbitmqProducer;
 	/**
 	 * 页面展示查询翻页
 	 */
@@ -54,8 +64,10 @@ public class SysRoleService  extends ServiceImpl<SysRoleMapper, SysRoleEntity> {
 	 * @param role
 	 * @return
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public boolean add(SysRoleEntity role){
 		if(this.save(role)){
+
 			// 保存角色与菜单关系
 			sysRoleMenuService.saveOrUpdate(role.getRoleId(), Arrays.asList(role.getMenuIds()));
 
@@ -67,6 +79,10 @@ public class SysRoleService  extends ServiceImpl<SysRoleMapper, SysRoleEntity> {
 				sysRoleModuleEntity.setRoleId(role.getRoleId());
 				sysRoleModuleService.save(sysRoleModuleEntity);
 			}
+
+			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getAddRoleHard(), JSONObject.toJSONString(role),
+					IdUtil.fastSimpleUUID(), RabbitInfo.EXCHANGE_NAME, RabbitInfo.KEY);
+
 			return true;
 		}
 		return false;
@@ -77,9 +93,13 @@ public class SysRoleService  extends ServiceImpl<SysRoleMapper, SysRoleEntity> {
 	 * @param role
 	 * @return
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public boolean update(SysRoleEntity role) {
 
 		if(this.updateById(role)){
+
+
+
 			// 更新角色与菜单关系
 			sysRoleMenuService.saveOrUpdate(role.getRoleId(), Arrays.asList(role.getMenuIds()));
 
@@ -93,11 +113,15 @@ public class SysRoleService  extends ServiceImpl<SysRoleMapper, SysRoleEntity> {
 				sysRoleModuleEntity.setRoleId(role.getRoleId());
 				sysRoleModuleService.save(sysRoleModuleEntity);
 			}
+
+			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getUpdateRoleHard(), JSONArray.toJSONString(role),
+					IdUtil.fastSimpleUUID(), RabbitInfo.EXCHANGE_NAME, RabbitInfo.KEY);
 			return true;
 		}
 		return false;
 	}
 
+	@Transactional(rollbackFor = Exception.class)
 	public boolean deleteBatchByIds(Long[] ids) {
 
 		List<SysRoleEntity> list = sysRoleMapper.findRoleByIds(ids);
@@ -109,8 +133,12 @@ public class SysRoleService  extends ServiceImpl<SysRoleMapper, SysRoleEntity> {
 		// 删除角色与菜单关联
 		sysRoleMenuService.deleteBatchByRoleIds(ids);
 
-		// 删除角色
-		return  this.removeByIds(Arrays.asList(ids));
+		if(this.removeByIds(Arrays.asList(ids))){
+			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getDelRoleHard(), ToolUtil.conversion(ids,","),
+					IdUtil.fastSimpleUUID(), RabbitInfo.EXCHANGE_NAME, RabbitInfo.KEY);
+			return true;
+		}
+		return false;
 	}
 
 

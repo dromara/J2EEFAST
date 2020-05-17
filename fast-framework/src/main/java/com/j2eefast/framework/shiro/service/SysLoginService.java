@@ -139,7 +139,6 @@ public class SysLoginService implements AuthService {
 
 		//设置登陆
 		this.setLoginDetails(loginUser,user.getUserId());
-		System.err.println(loginUser.toString());
 		return loginUser;
 	}
 
@@ -224,6 +223,7 @@ public class SysLoginService implements AuthService {
 		loginUser.setLoginIp(HttpContextUtil.getIp());
 		//设置登陆时间
 		loginUser.setNowLoginTime(DateUtil.date());
+
 		//设置登陆地点
 		loginUser.setNowLoginLocation(AddressUtil.getRealAddressByIP(loginUser.getLoginIp()));
 

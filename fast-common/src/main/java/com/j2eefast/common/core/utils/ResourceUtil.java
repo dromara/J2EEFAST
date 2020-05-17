@@ -16,7 +16,7 @@ import org.springframework.util.ResourceUtils;
  *
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2019-03-26 17:57
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class ResourceUtil extends org.springframework.util.ResourceUtils {

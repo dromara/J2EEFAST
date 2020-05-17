@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author: zhouzhou
  * @date: 2019-04-08 13:51
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Configuration

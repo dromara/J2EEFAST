@@ -17,7 +17,7 @@ import net.coobird.thumbnailator.Thumbnails.Builder;
  *
  * @author: zhouzhou
  * @date: 2019-03-30 15:43
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class ImageUtils {

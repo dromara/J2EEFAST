@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  *
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2020-03-18 09:15
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Component

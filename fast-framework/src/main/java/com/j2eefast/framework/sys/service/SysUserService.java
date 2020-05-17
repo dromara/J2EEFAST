@@ -1,29 +1,33 @@
 package com.j2eefast.framework.sys.service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.j2eefast.common.core.config.RabbitmqProducer;
 import com.j2eefast.common.core.page.Query;
 import com.j2eefast.common.core.utils.CheckPassWord;
 import com.j2eefast.common.core.utils.PageUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
+import com.j2eefast.common.rabbit.constant.RabbitBeanInfo;
+import com.j2eefast.common.rabbit.constant.RabbitInfo;
 import com.j2eefast.framework.annotation.DataFilter;
 import com.j2eefast.framework.sys.entity.SysUserEntity;
 import com.j2eefast.framework.sys.mapper.SysUserMapper;
 import com.j2eefast.framework.utils.Constant;
 import com.j2eefast.framework.utils.Global;
 import com.j2eefast.framework.utils.UserUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 /**
@@ -43,6 +47,8 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 	private SysUserDeptService sysUserDeptService;
 	@Autowired
 	private SysUserPostService sysUserPostService;
+	@Autowired
+	private RabbitmqProducer rabbitmqProducer;
 
 	/**
 	 * 用户页面查询分页
@@ -64,6 +70,21 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 															StrUtil.nullToDefault(compId,""),
 															(String) params.get(Constant.SQL_FILTER));
 		return new PageUtil(page);
+	}
+
+	@DataFilter(subComp = true, tableAlias = "c")
+	public List<SysUserEntity> findList(Map<String, Object> params) {
+		String username = (String) params.get("username");
+		String status = (String) params.get("status");
+		String mobile = (String) params.get("mobile");
+		String email = (String) params.get("email");
+		String compId = (String) params.get("compId");
+		return sysUserMapper.findList(StrUtil.nullToDefault(username,""),
+				StrUtil.nullToDefault(status,""),
+				StrUtil.nullToDefault(mobile,""),
+				StrUtil.nullToDefault(email,""),
+				StrUtil.nullToDefault(compId,""),
+				(String) params.get(Constant.SQL_FILTER));
 	}
 
 
@@ -118,6 +139,7 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 	 * @param user
 	 * @return
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public boolean add(SysUserEntity user) {
 
 		//检查密码安全级别
@@ -132,12 +154,16 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 		user.setPassword(UserUtils.sha256(user.getPassword(), user.getSalt()));
 
 		if(this.save(user)){
+
 			// 保存用户与角色关系
 			sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
 
 			// 保存用户与公司地区关系
 			sysUserDeptService.saveOrUpdate(user.getUserId(), user.getDeptIdList());
 
+
+			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getAddUserHard(),JSONArray.toJSONString(user),
+					IdUtil.fastSimpleUUID(),RabbitInfo.EXCHANGE_NAME, RabbitInfo.KEY);
 			return true;
 		}
 
@@ -149,6 +175,7 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 	 * @param user
 	 * @return
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public boolean update(SysUserEntity user) {
 
 		if (ToolUtil.isNotEmpty(user.getPassword())) {
@@ -158,6 +185,7 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 			user.setPassword(UserUtils.sha256(user.getPassword(), user.getSalt()));
 		}
 		if(this.updateById(user)){
+
 			// 保存用户与角色关系
 			sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
 
@@ -167,9 +195,27 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 			//岗位关联
 			sysUserPostService.saveOrUpdate(user.getUserId(), user.getPostCodes());
 
+
+			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getUpdateUserHard(),JSONArray.toJSONString(user),
+					IdUtil.fastSimpleUUID(),RabbitInfo.EXCHANGE_NAME, RabbitInfo.KEY);
 			return true;
 		}
 
+		return false;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public  boolean delUser(Long[] ids){
+		// 删除 用户与角色 关联表
+		sysUserRoleService.deleteBatchByUserIds(ids);
+		// 删除 用户与地区 关联表
+		sysUserDeptService.deleteBatchByUserIds(ids);
+		//删除 用户
+		if(this.removeByIds(Arrays.asList(ids))){
+			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getDelUserHard(),ToolUtil.conversion(ids,","),
+					IdUtil.fastSimpleUUID(),RabbitInfo.EXCHANGE_NAME, RabbitInfo.KEY);
+			return true;
+		}
 		return false;
 	}
 

@@ -1,0 +1,96 @@
+<div class="subheader" ng-if="model.process">
+	<div class="fixed-container">
+		<div class="btn-group pull-right">
+			<button type="button" class="btn btn-default" ng-click="deployProcess(model.process);" ng-if="model.process.latestVersion">
+				<i class="glyphicon glyphicon-saved"></i> {{'PROCESS.ACTION.RELEASE-PROCESS' | translate}}
+			</button>
+		</div>
+		<div class="btn-group pull-right">
+			<button type="button" class="btn btn-default" ng-click="openEditor()" ng-if="model.process.latestVersion">
+				<i class="glyphicon glyphicon-edit icon-and-label"></i> {{'PROCESS.ACTION.OPEN-IN-EDITOR' | translate}}
+			</button>
+			<button type="button" class="btn btn-default" ng-click="useAsNewVersion()" ng-if="!model.process.latestVersion">
+				{{'PROCESS.ACTION.USE-AS-NEW-VERSION' | translate}}
+			</button>
+		</div>
+		<div class="btn-group pull-right">
+	        <a href="{{model.bpmn20DownloadUrl}}" class="btn btn-default" title="{{'PROCESS.ACTION.EXPORT_BPMN20' | translate}}">
+	            <i class="glyphicon glyphicon-save"></i>
+	        </a>
+		</div>
+		<div class="btn-group pull-right">
+			<button type="button" class="btn btn-default" ng-click="editProcess()" ng-disabled="!model.process.latestVersion"
+				title="{{'PROCESS.ACTION.EDIT' | translate}}">
+				<i class="glyphicon glyphicon-pencil"></i>
+			</button>
+            <button type="button" class="btn btn-default" ng-click="duplicateProcess()" ng-disabled="!model.process.latestVersion"
+                    title="{{'PROCESS.ACTION.DUPLICATE' | translate}}">
+                <i class="editor-icon editor-icon-copy"></i>
+            </button>
+			<button type="button" class="btn btn-default" ng-click="deleteProcess()" title="{{'PROCESS.ACTION.DELETE' | translate}}"
+				ng-disabled="!model.process.latestVersion">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</div>
+		<div class="related btn-group pull-right">
+			<button id="toggle-history" type="button" class="btn btn-subtle" ng-click="toggleHistory($event)"
+					title="{{'PROCESS.ACTION.EDIT' | translate}}">
+				{{'PROCESS.DETAILS.HISTORY-TITLE' | translate}} <span class="counter" ng-show="model.versions.data.length">{{model.versions.data.length}}</span>
+			</button>
+		</div>
+		<div class="pull-right">
+			<a ng-click="returnToList()" class="action">&larr; {{'GENERAL.ACTION.RETURN-TO-LIST' | translate}}</a>
+		</div>
+		<!-- j2eefast 优化页面
+		<h2><span class="version">v{{model.process.version}}</span>{{model.process.name}}</h2>
+		<div class="clearfix">
+			<div class="col-xs-4 details">
+				<span><i class="glyphicon glyphicon-user"></i>{{'PROCESS.DETAILS.CREATED-BY' | translate:model.process}}</span>
+				<span><i class="glyphicon glyphicon-pencil"></i>{{'PROCESS.DETAILS.LAST-UPDATED-BY' | translate:model.process}}</span>
+			</div>
+			<div class="col-xs-8 details clearfix">
+                <div class="related btn-group">
+                    <button id="toggle-history" type="button" class="btn btn-subtle" ng-click="toggleHistory($event)"
+                        title="{{'PROCESS.ACTION.EDIT' | translate}}">
+                        {{'PROCESS.DETAILS.HISTORY-TITLE' | translate}} <span class="counter" ng-show="model.versions.data.length">{{model.versions.data.length}}</span>
+                    </button>
+                </div>
+                <a ng-show="model.stencil" ng-click="goToStencil()" class="pull-right action">{{model.stencil.name}}</a>
+                <p ng-if="model.process.description">
+                    {{model.process.description}}
+                </p>
+                <p ng-if="!model.process.description && model.process.latestVersion" class="hint">
+                    <a ng-click="editProcess()" class="subtle-select">
+                        {{'PROCESS.DETAILS.NO-DESCRIPTION' | translate}} <i class="glyphicon glyphicon-pencil"></i>
+                    </a>
+                </p>
+            </div>
+		</div>
+		-->
+
+		<h2><span class="version">v{{model.process.version}}</span>{{model.process.name}} -Key: {{model.process.key}}</h2>
+	</div>
+</div>
+<div class="content center-pane" ng-if="model.process" auto-height offset="5" >
+
+    	<div class="model-preview-wrapper" ng-if="!model.process.modelType && model.process.modelType != 1">
+			<div class="fixed-container">
+				<!-- <div class="details">
+                    <span><i class="glyphicon glyphicon-user"></i> 创建者：{{model.process.createdBy}}</span>
+                    <span><i class="glyphicon glyphicon-time"></i> 更新时间：{{model.process.lastUpdated | date:'yyyy-MM-dd HH:mm'}}</span>
+                </div> -->
+				<div class="details" style="margin:5px 0 5px 20px;color:#606b7d;">
+					<i class="glyphicon glyphicon-time"></i> {{model.process.lastUpdated | date:'yyyy-MM-dd HH:mm'}} &nbsp; &nbsp;
+					<i class="glyphicon glyphicon-book"></i>
+					<a ng-show="model.stencil" ng-click="goToStencil()" class="pull-right action">{{model.stencil.name}}</a>
+					<span ng-if="model.process.description">{{model.process.description}}</span>
+					<span ng-if="!model.process.description && model.process.latestVersion" class="hint">
+					<a ng-click="editProcess()" class="subtle-select">
+				    	{{'PROCESS.DETAILS.NO-DESCRIPTION' | translate}} <i class="glyphicon glyphicon-pencil"></i>
+				    </a>
+				</span>
+				</div>
+			</div>
+    	   <div id="bpmnModel"></div>
+    	</div>
+</div>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.j2eefast.flowable.bpm.mapper.IFlowableCommentMapper">
+    <select id="getFlowCommentVosByProcessInstanceId" parameterType="java.lang.String"
+            resultType="com.j2eefast.flowable.bpm.entity.CommentEntity">
+	 SELECT
+        t3.ID_,
+        t1.TYPE_ AS TYPE,
+        t1.TIME_ AS TIME,
+        t1.USER_ID_ AS userId,
+        t2.FIRST_ AS userName,
+        t3.TASK_ID_ AS taskId,
+        t1.PROC_INST_ID_ AS processInstanceId,
+        t1.MESSAGE_ AS message,
+        CONVERT (FULL_MSG_ USING utf8) AS fullMsg,
+        t3.`ACT_NAME_` AS taskName,
+        t3.`START_TIME_` AS startTime,
+        t3.`END_TIME_` AS endTime,
+        t3.`DURATION_` AS duration,
+        t3.ACT_ID_ AS actId
+    FROM `act_hi_actinst` AS t3
+	LEFT JOIN (SELECT * FROM act_hi_comment a WHERE a.ACTION_='AddComment') t1 ON ( t1.`TASK_ID_` = t3.`TASK_ID_` )
+	LEFT JOIN act_id_user t2 ON t1.USER_ID_ = t2.ID_
+	 WHERE t3.`PROC_INST_ID_` =  #{value} AND t3.ACT_TYPE_='userTask'
+    ORDER BY
+	t3.START_TIME_ ASC
+    </select>
+
+    <select id="findTaskInstId" parameterType="java.lang.String" resultType="String">
+        SELECT ID_ FROM `act_hi_taskinst` t1 WHERE t1.PROC_INST_ID_ =#{value} AND t1.DURATION_  IS NOT NULL
+    </select>
+
+</mapper>

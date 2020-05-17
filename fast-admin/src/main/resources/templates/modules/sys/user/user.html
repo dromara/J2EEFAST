@@ -55,6 +55,11 @@
              <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>
          </a>
      </@shiro.hasPermission>
+    <@shiro.hasPermission name="sys:user:export">
+        <a class="btn btn-warning" onclick="$.table.exportExcel()">
+            <i class="fa fa-download"></i> 导出
+        </a>
+     </@shiro.hasPermission>
 </@table>
 <@footer>
 <script>
@@ -74,6 +79,7 @@
             addUrl: prefix + "/add",
             editUrl: prefix + "/edit/{id}",
             delUrl: prefix + "/del",
+            exportUrl:  prefix + "/export",
             sortName: "createTime",
             uniqueId: "userId", /* 唯一ID */
             modalName: "用户",

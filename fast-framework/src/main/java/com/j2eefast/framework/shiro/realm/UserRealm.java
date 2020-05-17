@@ -56,7 +56,6 @@ public class UserRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-		log.info("----------------->>> 授权");
 		LoginUserEntity user = (LoginUserEntity) principals.getPrimaryPrincipal();
 		Long userId = user.getId();
 		List<String> permsList;
@@ -167,7 +166,6 @@ public class UserRealm extends AuthorizingRealm {
 				}
 			}
 			loginUser.setPermissions(permissionSet);
-
 			//刷新用户
 			UserUtils.reloadUser(loginUser);
 		}

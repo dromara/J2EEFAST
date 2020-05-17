@@ -12,6 +12,6 @@
 <div id="_topTip" class="alert alert-dismissible callout <#if notice.noticeLevel == '2'>callout-danger<#else>callout-warning</#if> animated bounceInDown" style="margin-bottom: 0px;padding: 10px 30px 10px 15px; position: absolute;z-index: 10000; display: block; width: 100%">
     <button  type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
     <p><i class="fa fa-exclamation-triangle" aria-hidden="true" style="margin-right: 10px;"></i>${notice.noticeTipTitle}
-        <a href="${ctxStatic}/statics/notice/${notice.htmlNo}0" target="_blank"><@ctx.i18n text = "点击此处查看详情"/></a>。</p>
+        <a href="${ctxStatic}/static/notice/${notice.htmlNo}0" target="_blank"><@ctx.i18n text = "点击此处查看详情"/></a>。</p>
 </div>
 </#if>

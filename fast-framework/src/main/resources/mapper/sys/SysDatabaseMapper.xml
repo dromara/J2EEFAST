@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.j2eefast.framework.sys.mapper.SysDatabaseMapper">
+
+    <resultMap type="sysDatabaseEntity" id="sysDatabaseResult">
+        <result property="id"    column="id"    />
+        <result property="dbName"    column="db_name"    />
+        <result property="jdbcDriver"    column="jdbc_driver"    />
+        <result property="userName"    column="user_name"    />
+        <result property="password"    column="password"    />
+        <result property="jdbcUrl"    column="jdbc_url"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="encType"    column="enc_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        select id, db_name, jdbc_driver, user_name, password, jdbc_url, status, del_flag,
+         enc_type, create_time, create_by, update_by, update_time, remark from sys_database
+    </sql>
+
+    <select id="findPage" resultType="com.j2eefast.common.db.entity.SysDatabaseEntity">
+        <include refid="Base_Column_List"/>
+        where del_flag = '0'
+        <if test="dbName != null and dbName != ''">
+            AND db_name like
+            <if test="_databaseId == 'oracle'"> '%,'||#{dbName}||',%'</if>
+            <if test="_databaseId == 'mysql'"> concat('%', #{dbName}, '%')</if>
+        </if>
+    </select>
+
+
+</mapper>

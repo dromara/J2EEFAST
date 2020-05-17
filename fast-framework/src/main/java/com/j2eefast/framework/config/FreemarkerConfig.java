@@ -26,7 +26,6 @@ public class FreemarkerConfig {
 			 										 throws IOException, TemplateException {
 		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
 		configurer.setTemplateLoaderPath("classpath:/templates");
-		
 		Map<String, Object> variables = new HashMap<>(1);
 		variables.put("config", sysconfig);
 		variables.put("dict",dict);

@@ -1,0 +1,9 @@
+cd ../
+
+chcp 65001
+
+set JAVA_OPTS=-Xms512m -Xmx1024m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m
+
+echo "运行版本V{$VERSION&}"
+
+java -Dfile.encoding=utf-8 -jar {$APP_NAME&} &

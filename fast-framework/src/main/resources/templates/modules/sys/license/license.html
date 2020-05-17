@@ -1,5 +1,5 @@
 <#include "/common/include.html"/>
-<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@pageTheme mark="true">
 <@header title="产品许可信息"/>
 <body class="gray-bg animated fadeInRight">
 <section class="section-content">
@@ -8,11 +8,11 @@
         <div class="error-content">
             <h3>产品许可信息. </h3>
             <p>
-                您当前的版本为专业版,非常感谢您对FASTOS的认可与支持！
+                您当前的版本为专业版,非常感谢您对J2eeFAST的认可与支持！
                 <br/>
                 <br/>    机器码是：${fastSN}
                 <br/>    产品名称：${productName}
-                <br/>    公司名称：${config.getCompany()}
+                <br/>    技术支持：j2eeFast
                 <br/>    授权时间：${authorizationTime}
             </p>
             <button type="button" class="btn btn-success btn-sm" id="licSelect"><i
@@ -31,14 +31,13 @@
 <@footer>
     <script>
         var prefix = baseURL + "sys/license";
-        //上传许可文件
+        /*上传许可文件*/
         $('#licSelect').click(function(){
             opt.layer.open({
                 type: 1,
                 area: ['580px', '180px'],
-                title: '上传许可文件 <i class="fa fa-info-circle" style="color: red"></i>注意:此操作会影响系统,谨慎!',
-                aanim: 1,
-                shade: 0.6,
+                title: '<i class="fa fa-upload"></i> 上传许可文件 <i class="fa fa-info-circle" style="color: red"></i>注意:此操作会影响系统运行,谨慎!',
+                shade: 0.3,
                 shadeClose: true,
                 resize: false,
                 scrollbar: true,
@@ -51,7 +50,7 @@
                         f: layero.find('#f').val()
                     };
                     if (form.f == '' || !opt.common.endWith(form.f, '.lic')){
-                        opt.warning("<@ctx.i18n text = "许可文件不正确，请选择后缀为 .lic 的文件。"/>")
+                        opt.warning("<@ctx.i18n text = "许可文件不正确，请选择后缀为 .lic 的文件。"/>");
                         return false;
                     }
                     var formdata = new FormData();
@@ -72,7 +71,7 @@
                                 opt.error(result.msg);
                             }
                         }
-                    })
+                    });
                     return true;
                 }
             });
@@ -83,10 +82,9 @@
             opt.layer.open({
                 type: 1,
                 area: ['590px', '320px'],
-                title: '下载许可文件',
-                aanim: 1,
-                shade: 0.6,
+                title: '<i class="fa fa-download"></i>下载许可文件',
                 shadeClose: true,
+                shade: 0.3,
                 resize: false,
                 scrollbar: true,
                 content: opt.template('licDownloadTpl'),
@@ -159,7 +157,7 @@
                     }
                 }
             });
-        })
+        });
 
         function downLoadXls(url){
             var judgeDiv = document.getElementById("dwDiv");
@@ -216,7 +214,7 @@
 	</form>
 	<script>
             function show() {
-                var html='<img src="${ctxStatic}/statics/img/verifySn.png" width="100%" height="100%" alt="机器码与验证码">';
+                var html='<img src="${ctxStatic}/static/img/verifySn.png" width="100%" height="100%" alt="机器码与验证码">';
                 opt.layer.open({
                     title: false,
                     type: 1,

@@ -1,0 +1,120 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="新增模块"/>
+    <@addorEdit fromId="form-database-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "数据库名称"/>：
+                <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-html="true" data-placement="bottom"
+                   data-content="数据库标志(字母表示) 使用: @DataSource('')">
+                    <i class="fa fa-question-circle-o" style="color: orange"></i></a>
+            </label>
+            <div class="col-sm-8">
+                <input name="dbName" class="form-control" placeholder="<@ctx.i18n text = "请输入数据库名称"/>" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "数据库驱动"/>：
+            </label>
+            <div class="col-sm-8">
+                <select id="jdbcDriver" name="jdbcDriver" class="form-control">
+                    <#list dict.getType('sys_db_driver_type')>
+                        <#items as d>
+                            <#if d.status =='0' >
+                                <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                            </#if>
+                        </#items>
+                    </#list>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "数据库账号"/>：
+            </label>
+            <div class="col-sm-8">
+                <input name="userName" class="form-control"  placeholder="<@ctx.i18n text = "请输入数据库账号"/>" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "数据库密码"/>：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input name="password"  id="password"  placeholder="<@ctx.i18n text = "请输入数据库密码"/>" class="form-control" type="password" required>
+                    <span class="input-group-addon" title="<@ctx.i18n text = "数据库密码,鼠标按下显示密码"/>"
+                          data-toggle="tooltip"
+                          data-placement="bottom"
+                          data-custom-class="tooltip-warning"
+                          onmousedown="$('#password').attr('type','text')"
+                          onmouseup="$('#password').attr('type','password')"><i class="fa fa-fw fa-key"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "URL"/>：
+            </label>
+            <div class="col-sm-8">
+                <input name="jdbcUrl" class="form-control" type="text" required>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>例如: jdbc:mysql://192.168.20.110:3306/fastdb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "敏感数据加密"/>：
+            </label>
+            <div class="col-sm-8">
+                <select id="encType" name="encType" class="form-control">
+                    <#list dict.getType('sys_db_encrypt_type')>
+                        <#items as d>
+                            <#if d.status =='0' >
+                                <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                            </#if>
+                        </#items>
+                    </#list>
+                </select>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>对敏感数据 URL、账号、密码 加密存储</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "备注"/>：</label>
+            <div class="col-sm-8">
+                <textarea name="remark" class="form-control"></textarea>
+            </div>
+        </div>
+    </@addorEdit>
+    <@footer>
+        <script type="text/javascript">
+            var prefix = baseURL + "sys/database";
+
+            $("#form-database-add").validate({
+                onkeyup: false,
+                rules:{
+                    dbName:{
+                        remote: {
+                            url: prefix + "/checkDataNameUnique",
+                            type: "POST",
+                            dataType: "html",
+                            data: {
+                                "dbName" : function() {
+                                    return opt.common.trim($("#dbName").val());
+                                }
+                            },
+                            dataFilter: function(data, type) {
+                                return opt.validate.unique(data);
+                            }
+                        }
+                    }
+                },
+                messages: {
+                    "dbName": {
+                        remote: "<@ctx.i18n text = "数据库名称已存在!"/>"
+                    }
+                },
+                focusCleanup: true
+            });
+
+            function submitHandler() {
+                if (opt.validate.form()) {
+                    opt.operate.save(prefix + "/add", $('#form-database-add').serialize());
+                }
+            }
+        </script>
+    </@footer>
+</@pageTheme>

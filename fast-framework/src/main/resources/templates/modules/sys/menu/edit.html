@@ -185,19 +185,19 @@
 			if($('input[name="type"]:checked').val() === "1"){
 				var options = {
 					id:'form-menu-edit',
-					delete:['moduleCodes']/*需要删除提交表单数据*/
+					del:['moduleCodes']/*需要删除提交表单数据*/
 				};
 				data = opt.form.dataUp(options);
 			}else if($('input[name="type"]:checked').val() === "0"){
 				var options = {
 					id:'form-menu-edit',
-					delete:['perms','url','target','moduleCodes']/*需要删除提交表单数据*/
+					del:['perms','url','target','moduleCodes']/*需要删除提交表单数据*/
 				};
 				data = opt.form.dataUp(options);
 			}else{
 				var options = {
 					id:'form-menu-edit',
-					delete:['url','target','icon','moduleCodes']/*需要删除提交表单数据*/
+					del:['url','target','icon','moduleCodes']/*需要删除提交表单数据*/
 				};
 				data = opt.form.dataUp(options);
 			}
@@ -207,6 +207,7 @@
 			})
 			moduleCodes = moduleCodes.substring(0,moduleCodes.length-1);
 			data.push({"name": "moduleCodes", "value": moduleCodes});
+			//console.log(data);
 			opt.operate.save(prefix + "/edit", data);
 		}
 	}

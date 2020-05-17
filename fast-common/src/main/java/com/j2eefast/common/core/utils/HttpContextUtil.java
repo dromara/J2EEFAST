@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * @author: zhouzhou
  * @date: 2019-04-01 20:24
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class HttpContextUtil {

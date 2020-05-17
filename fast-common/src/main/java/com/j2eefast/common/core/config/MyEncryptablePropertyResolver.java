@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  *
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2019-03-24 20:45
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class MyEncryptablePropertyResolver implements EncryptablePropertyResolver {
@@ -39,7 +39,7 @@ public class MyEncryptablePropertyResolver implements EncryptablePropertyResolve
                 if(StrUtil.startWith(str,MyEncryptablePropertyDetector.ENCODED_PASSWORD_HINT_ENC,true)){
                     str = StrUtil.removeSuffixIgnoreCase(StrUtil.removePrefixIgnoreCase(str,
                             MyEncryptablePropertyDetector.ENCODED_PASSWORD_HINT_ENC),"}");
-                    if(ToolUtil.isEmpty(key)){
+                    if(ToolUtil.isEmpty(key)){ //AB01950E7FA163AF3323F059F3DF8D87
                         key = ConfigConstant.KEY;
                     }
                     str = JasyptUtils.decyptPwd(str,key);

@@ -32,7 +32,9 @@
 		<include refid="selectDeptVo"/>
 		where 1 = 1 and d.del_flag = '0'
 		<if test="name != null and name != ''">
-			AND d.name like concat('%', #{name}, '%')
+			AND d.name like
+			<if test="_databaseId == 'oracle'"> '%,'||#{name}||',%'</if>
+			<if test="_databaseId == 'mysql'"> concat('%', #{name}, '%')</if>
 		</if>
 		<if test="type != null and type != ''">
 			AND d.type = #{type}

@@ -1,0 +1,19 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="流程图">
+        <@cssLibs.bpm_css/>
+    </@header>
+    <div class="box-body" style="padding:10px 20px 0 20px;">
+        <div class="row">
+            <div class="col-xs-12 text-center">
+                <div id="navigationTree" data-text-main-process="主流程" class="mt10"></div>
+                <div id="bpmnModel" data-model-id="" data-history-id=""
+                     data-process-definition-id="${id}" data-model-type="runtime"
+                     style="overflow:auto;"></div>
+            </div>
+        </div>
+    </div>
+    <@footer>
+        <@jsLibs.bpm_js/>
+    </@footer>
+</@pageTheme>

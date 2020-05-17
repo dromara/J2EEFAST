@@ -9,7 +9,7 @@ import com.j2eefast.framework.sys.entity.SysUserEntity;
  *
  * @author: zhouzhou
  * @date: 2019-04-07 10:00
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class UserFactory {

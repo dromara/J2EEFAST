@@ -15,16 +15,6 @@
         <fileSet>  
             <directory>src/main/resources</directory>  
             <outputDirectory>${file.separator}</outputDirectory>
-            <!--
-            <excludes>
-                <exclude>config/**</exclude>
-                <exclude>static/**</exclude>
-                <exclude>mapper/**</exclude>
-                <exclude>templates/**</exclude>
-                <exclude>run/**</exclude>
-                <exclude>i18n/**</exclude>
-            </excludes>
-            -->
         </fileSet>
         <!-- 添加子应用  静态配置文件-->
         <fileSet>
@@ -33,6 +23,10 @@
         </fileSet>
         <fileSet>
             <directory>../fast-web/src/main/resources</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../fast-flowable/src/main/resources</directory>
             <outputDirectory>${file.separator}</outputDirectory>
         </fileSet>
         <fileSet>

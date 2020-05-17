@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.j2eefast.flowable.bpm.mapper.BpmTaskFromMapper">
+
+    <resultMap type="bpmTaskFromEntity" id="bpmTaskFromResult">
+        <result property="id"    column="id"    />
+        <result property="fromName"    column="from_name"    />
+        <result property="processDefinitionKey"    column="process_definition_key"    />
+        <result property="version"    column="version"    />
+        <result property="prefixUrl"    column="prefix_url"    />
+        <result property="modelKey"    column="model_key"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectbpmTaskFromVo">
+        select id, from_name, prefix_url, process_definition_key, version, model_key, create_time, update_time, update_by, create_by, remark from bpm_task_from
+    </sql>
+
+
+    <select id="findPage" resultType="com.j2eefast.flowable.bpm.entity.BpmTaskFromEntity">
+        SELECT DISTINCT
+        t1.id as id,
+        t1.from_name as fromName,
+        t1.prefix_url AS prefixUrl,
+        t1.apply_type AS applyType,
+        t1.approval_type AS approvalType,
+        t1.process_definition_key AS processDefinitionKey,
+        t1.version AS version,
+        t1.model_key AS modelKey,
+        t2.SUSPENSION_STATE_ AS suspensionState
+        FROM
+        bpm_task_from t1
+        LEFT JOIN act_re_procdef t2 ON t1.process_definition_key = t2.ID_
+        where 1 = 1
+        <if test="fromName != null and fromName!=''">and t1.from_name like CONCAT('%',#{fromName},'%')</if>
+        <if test="version != null and version!=''">and t2.version like CONCAT('%',#{version},'%')</if>
+        <if test="modelKey != null and modelKey!=''">and t1.model_key like CONCAT('%',#{modelKey},'%')</if>
+        <if test = "sql_filter !=null and sql_filter!=''">
+            and ${sql_filter}
+        </if>
+    </select>
+</mapper>

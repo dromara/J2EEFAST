@@ -1,0 +1,20 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="便签"/>
+<body class="gray-bg">
+<div>
+    <div>
+    <div class="note-wrapper"></div>
+    <div class="note-empty" style="display: block;">
+        <i class="layui-icon layui-icon-face-surprised"></i>
+        <p>没有便签</p>
+    </div>
+    <div class="btn-circle" id="noteAddBtn" title="添加便签" style="position: absolute;">
+        <i class="layui-icon layui-icon-add-1"></i>
+    </div>
+<@footer>
+    <script>
+
+    </script>
+</@footer>
+</@pageTheme>

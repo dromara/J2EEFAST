@@ -13,6 +13,7 @@ import com.j2eefast.common.core.exception.RxcException;
 import com.j2eefast.common.core.page.Query;
 import com.j2eefast.common.core.utils.PageUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
+import com.j2eefast.common.db.context.DataSourceContext;
 import com.j2eefast.framework.utils.Global;
 import com.j2eefast.generator.gen.entity.GenTableColumnEntity;
 import com.j2eefast.generator.gen.entity.GenTableEntity;
@@ -27,6 +28,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -53,6 +55,10 @@ public class GenTableService extends ServiceImpl<GenTableMapper,GenTableEntity> 
 
     @Autowired
     private GenTableColumnService genTableColumnService;
+
+    @Lazy
+    @Resource
+    private GenTableService genTableService;
 
     @Resource
     private GenTableMapper genTableMapper;
@@ -116,10 +122,9 @@ public class GenTableService extends ServiceImpl<GenTableMapper,GenTableEntity> 
                 String temp = StrUtil.replace(sw.toString(),"<@>","#");
                 temp =StrUtil.replace(temp,"<$>","$");
                 IOUtils.write(temp, zip, CharsetUtil.UTF_8);
-                IOUtils.closeQuietly(sw);
+                IoUtil.close(sw);
                 zip.closeEntry();
-            }
-            catch (IOException e){
+            } catch (IOException e){
                 log.error("渲染模板失败，表名：" + table.getTableName(), e);
             }
         }
@@ -225,14 +230,14 @@ public class GenTableService extends ServiceImpl<GenTableMapper,GenTableEntity> 
         return this.genTableMapper.findDbTableList();
     }
 
-    public List<GenTableEntity> findSlaveDbTableList() {
+    public List<GenTableEntity> findSlaveDbTableList(String dbType) {
         return this.genTableMapper.findSlaveDbTableList();
     }
 
 
-    public List<GenTableEntity> findNoDbTableList() {
-        List<GenTableEntity> list = findSlaveDbTableList();
-        List<GenTableEntity> notList = this.genTableMapper.findDbNotTableList();
+    public List<GenTableEntity> findNoDbTableList(String dbType) {
+        List<GenTableEntity> list = genTableService.findSlaveDbTableList(dbType);
+        List<GenTableEntity> notList = this.genTableMapper.findDbNotTableList(dbType);
         Iterator it=list.iterator();
         while(it.hasNext()) {
             GenTableEntity g = (GenTableEntity) it.next();
@@ -249,22 +254,22 @@ public class GenTableService extends ServiceImpl<GenTableMapper,GenTableEntity> 
         String tableName = (String) params.get("tableName");
         String tableComment = (String) params.get("tableComment");
         String dbType = (String) params.get("dbType");
-        if(dbType.equals("0")){
+        if(dbType.equals(DataSourceContext.MASTER_DATASOURCE_NAME)){
             Page<GenTableEntity> tempPage = new Query<GenTableEntity>(params).getPage();
             Page<GenTableEntity> page = tempPage.setRecords(this.genTableMapper.selectDbTablePage(
                     tempPage, tableName,tableComment));
             return new PageUtil(page);
         }else{
-            List<GenTableEntity> notList = this.genTableMapper.findDbNotTableList();
+            List<GenTableEntity> notList = this.genTableMapper.findDbNotTableList(dbType);
             List<String> names = null;
             if(ToolUtil.isNotEmpty(notList)){
                 names =  notList.stream().map(GenTableEntity :: getTableName).collect(Collectors.toList());
             }
-            return selectNotDbTablePage(params,names);
+            return genTableService.selectNotDbTablePage(dbType,params,names);
         }
     }
 
-    public PageUtil selectNotDbTablePage(Map<String, Object> params,List<String> notList) {
+    public PageUtil selectNotDbTablePage(String dbType,Map<String, Object> params,List<String> notList) {
         String tableName = (String) params.get("tableName");
         String tableComment = (String) params.get("tableComment");
         Page<GenTableEntity> tempPage = new Query<GenTableEntity>(params).getPage();
@@ -282,12 +287,13 @@ public class GenTableService extends ServiceImpl<GenTableMapper,GenTableEntity> 
                 boolean row = this.save(table);
                 if (row) {
                     // 保存列信息
-                    List<GenTableColumnEntity> genTableColumns = null;
-                    if(dbType.equals("0")){
-                        genTableColumns  = genTableColumnService.selectDbTableColumnsByName(tableName);
-                    }else{
-                        genTableColumns  = genTableColumnService.selectDbTableColumnsByName1(tableName);
-                    }
+                    List<GenTableColumnEntity> genTableColumns = genTableColumnService.selectDbTableColumnsByName(dbType,tableName);
+//                    if(dbType.equals(DataSourceContext.MASTER_DATASOURCE_NAME)){
+//
+//                        genTableColumns  = genTableColumnService.selectDbTableColumnsByName(tableName);
+//                    }else{
+//                        genTableColumns  = genTableColumnService.selectDbTableColumnsByName1(tableName);
+//                    }
                     for (GenTableColumnEntity column : genTableColumns) {
                         GenUtils.initColumnField(column, table);
                         genTableColumnService.save(column);
@@ -333,10 +339,10 @@ public class GenTableService extends ServiceImpl<GenTableMapper,GenTableEntity> 
 
     public List<GenTableEntity> selectDbTableListByNames(String[] tableNames,String dbType) {
         List<GenTableEntity> list = null;
-        if(dbType.equals("0")){
+        if(dbType.equals(DataSourceContext.MASTER_DATASOURCE_NAME)){
             list =  this.genTableMapper.selectDbTableListByNames(tableNames);
         }else{
-            list = selectDbTableListByNames1(tableNames);
+            list = genTableService.selectDbTableListByNames1(dbType,tableNames);
         }
         for(GenTableEntity l:list){
             l.setDbType(dbType);
@@ -344,7 +350,7 @@ public class GenTableService extends ServiceImpl<GenTableMapper,GenTableEntity> 
         return list;
     }
 
-    public List<GenTableEntity> selectDbTableListByNames1(String[] tableNames) {
+    public List<GenTableEntity> selectDbTableListByNames1(String dbType,String[] tableNames) {
         return this.genTableMapper.selectDbTableListByNames(tableNames);
     }
 }

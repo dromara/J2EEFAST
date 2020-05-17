@@ -32,15 +32,15 @@ public class SysRoleDeptService  extends ServiceImpl<SysRoleDeptMapper,SysRoleDe
 		}
 
 		// 保存角色与菜单关系
-		List<SysRoleDeptEntity> list = new ArrayList<>(deptIdList.size());
+//		List<SysRoleDeptEntity> list = new ArrayList<>(deptIdList.size());
 		for (Long deptId : deptIdList) {
 			SysRoleDeptEntity sysRoleDeptEntity = new SysRoleDeptEntity();
 			sysRoleDeptEntity.setDeptId(deptId);
 			sysRoleDeptEntity.setRoleId(roleId);
-
-			list.add(sysRoleDeptEntity);
+			this.save(sysRoleDeptEntity);
+//			list.add(sysRoleDeptEntity);
 		}
-		this.saveBatch(list);
+//		this.saveBatch(list);
 	}
 
 

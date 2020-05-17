@@ -9,16 +9,14 @@ import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Component;
 
 /**
- * @ProjectName: fast
- * @Package: com.j2eefast.framework.utils
- * @ClassName: PermissionConfig
  * @Author: zhouzhou Emall:18774995071@163.com
- * @Description: 首创 html调用 Freemarker 实现按钮权限可见性
+ * @Description: html调用 Freemarker 实现按钮权限可见性
  * @Date: 2019/12/19 16:48
  * @Version: 1.0
  */
 @Component
 public class PermissionConfig {
+
     /** 没有权限，hidden用于前端隐藏按钮 */
     public static final String NOACCESS = "hidden";
 

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="${packageName}.dao.${ClassName}Dao">
+<mapper namespace="${packageName}.mapper.${ClassName}Mapper">
     
     <resultMap type="${ClassName}Entity" id="${ClassName}Result">
 #foreach ($column in $columns)
@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
 
-
+<!--
     <update id="update${ClassName}" parameterType="${packageName}.entity.${ClassName}Entity">
         update ${tableName}
         <trim prefix="SET" suffixOverrides=",">
@@ -39,10 +39,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteBatch" parameterType="${pkColumn.javaType}">
-        delete from ${tableName} where ${pkColumn.columnName} in 
+        delete from ${tableName} where ${pkColumn.columnName} in
         <foreach item="${pkColumn.javaField}" collection="array" open="(" separator="," close=")">
             #{${pkColumn.javaField}}
         </foreach>
     </delete>
-    
+-->
 </mapper>

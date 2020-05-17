@@ -35,15 +35,15 @@ public class SysUserDeptService extends ServiceImpl<SysUserDeptMapper, SysUserDe
 			return;
 		}
 		// 保存关系
-		List<SysUserDeptEntity> list = new ArrayList<>(deptIdList.size());
+//		List<SysUserDeptEntity> list = new ArrayList<>(deptIdList.size());
 		for (Long deptId : deptIdList) {
 			SysUserDeptEntity sysUserDeptEntity = new SysUserDeptEntity();
 			sysUserDeptEntity.setUserId(userId);
 			sysUserDeptEntity.setDeptId(deptId);
-			list.add(sysUserDeptEntity);
+//			list.add(sysUserDeptEntity);
+			this.save(sysUserDeptEntity);
 		}
-
-		this.saveBatch(list);
+//		this.saveBatch(list);
 	}
 
 

@@ -2,14 +2,14 @@
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
 <@header title="选择数据库"/>
 <@addorEdit fromId="form-db-select">
-	<div class="form-group">
+	<div class="form-group" style="padding-top: 20px;">
 		<label class="col-sm-3 control-label ">选择数据库：</label>
 		<div class="col-sm-8">
 			<select id="dbType" name="dbType" class="form-control">
-				<#list dict.getType('sys_db')>
+				<#list listDb>
 					<#items as d>
-						<#if d.status =='0' >
-							<option  value="${d.dictValue}" text="${d.dictLabel}" >${d.dictLabel}</option>
+						<#if d.status == '0' >
+							<option  value="${d.dbName}" text="${d.dbName}" >${d.dbName}</option>
 						</#if>
 					</#items>
 				</#list>

@@ -1,19 +1,24 @@
 fast:
-    db:
-        #开启多源配置 true, 如果为false 则会获取默认 default 配置数据库
-        muti-datasource-open: false
-        #多数据源名称列表，多个用逗号隔开， 使用方法：@DataSource(name="db1")
-        datasourceNames: db1#,db2,db3
+# 多源数据库配置改为后台[多源数据] 配置不在此处配置, 后台配置优点:更加灵活 可以实现动态增加实时生效
+#    db:
+#        #开启多源配置 true, 如果为false 则会获取默认 default 配置数据库
+#        muti-datasource-open: true
+#        #多数据源名称列表，多个用逗号隔开， 使用方法：@DataSource(name="db1")
+#        # db1,db2,db3
+#        datasourceNames: db1
     redis:
         #是否开启redis 内存数据库 <*推荐使用*>
         enabled: true
+    #工作流是否开启 如果工作流开启 必须开启 rabbitmq消息队列 否则系统人员 与 角色同步就会有异常
+    flowable:
+        enabled: false
     #是否演示模式
     demoMode:
         enabled: false
         #配置拦截规则
-        post: 'edit,del,remove,clean,updateAvatar,updateUser,resetPwd,updatePass,genCode,uploadLic'
+        post: 'edit,del,remove,clean,updateAvatar,updateUser,add,resetPwd,updatePass,genCode,uploadLic,status'
         get: 'del,remove,clean,dirTreeData'
-        urlPatterns: '/sys/*,/tool/*,/file/ueditor/*'
+        urlPatterns: '/sys/*,/tool/*,/file/ueditor/*,/bpm/procdef/*,/bpm/model/*,/app/rest/models,/bpm/processInstance/*'
         ip:
     #是否开启HTTPS false 则以server:port
     ssl:
@@ -23,12 +28,12 @@ fast:
     #此参数可以配置可以不配置,如果不配置则自动获取系统key,或者使用环境变量方式储存，使用启动命令方式,建议不配置key 让系统自己生成 因为系统是生成key是根居机器码,只有这台机器才能解密
     #需要加密的参数 DES{} 包裹 或者 SM4{} 包裹
     encrypt:
-        key:
+        key: '123456789'
     xss:
         # 过滤开关
         enabled: true
         # 排除链接（多个用逗号分隔）
-        excludes: /sys/notice/*
+        excludes: /sys/notice/*,/sys/database/add
         # 匹配链接
         urlPatterns: /sys/*,/tool/*
 ########################License认证相关#####################
@@ -47,11 +52,11 @@ license:
 
     ######生成许可证书信息 *此信息应当绝对保密 正式项目应该分离单独存放用于生成许证书*  你可以屏蔽###########
     #私钥库别名
-    privateAlias: j2eefast
+    privateAlias:
     #私钥库密码
-    keyPass: j2eefast.com@zhouzhou
+    keyPass:
     #私钥库路径
-    privateKeysStorePath: license/privateKeys.keystore
+    privateKeysStorePath:
 ########################License认证相关#####################
 
 spring:
@@ -59,35 +64,23 @@ spring:
         #默认(主)数据库配置
         default:
             driverClassName: com.mysql.cj.jdbc.Driver
-            url: jdbc:mysql://192.168.20.110:3306/fastdb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+            #url: jdbc:mysql://192.168.20.110:3306/fastdb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=CTT
+            url: ENC{6mrUX1SZ/wgmN11iXmMyqplOpIbLBTlo3wh3K7T9qieephrFWPxUeOeswsLG+HKDvzd1wbo0DONij81tZUjIIEX/2gADAjSoJewZaxIeuVD1foEoEjzB/US3uf3gJYkee3IJPFEhABPSefwJGthT4xceWx27axifRKC6SfDzl5A=}
             username: fast
             password: fast@123$
             filters: wall,mergeStat
-        ###############从数据库配置
-        db1:
-          driverClassName:
-          #从数据库是否开启
-          enabled: false
-          url:
-          username:
-          password:
-          filters:
-  #        db2:
-  #            driverClassName:
-  #            #从数据库是否开启
-  #            enabled: false
-  #            url:
-  #            username:
-  #            password:
-  #            filters:
-  #        db3:
-  #            driverClassName:
-  #            #从数据库是否开启
-  #            enabled: false
-  #            url:
-  #            username:
-  #            password:
-  #            filters:
+#             driverClassName: oracle.jdbc.driver.OracleDriver
+#             url: jdbc:oracle:thin:@192.168.20.112:1521/orcl
+#             username: fast
+#             password: fast@123$
+#             filters: wall,mergeStat
+        ###############工作流数据库配置
+#        flowable:
+#          driverClassName: com.mysql.cj.jdbc.Driver
+#          url: jdbc:mysql://192.168.20.110:3306/fast_flowabledb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+#          username: fast_flowable
+#          password: fast_flowable@123$
+#          filters: wall,mergeStat
   #redis数据库服务器
     redis:
         database: 10
@@ -101,10 +94,37 @@ spring:
             max-wait: -1ms      # 连接池最大阻塞等待时间（使用负值表示没有限制）
             max-idle: 10      # 连接池中的最大空闲连接
             min-idle: 5       # 连接池中的最小空闲连接
+    #消息队列
+    rabbitmq:
+        addresses: 192.168.20.110:5672
+        # RabbitMQ 默认的用户名和密码都是guest 而虚拟主机名称是 "/"
+        # 如果配置其他虚拟主机地址，需要预先用管控台或者图形界面创建 图形界面地址 http://主机地址:15672
+        username: system
+        password: system
+        virtual-host: /
+        # 是否启用发布者确认 具体确认回调实现见代码
+        publisher-confirms: true
+        # 是否启用发布者返回 具体返回回调实现见代码
+        publisher-returns: true
+        # 是否启用强制消息 保证消息的有效监听
+        template.mandatory: true
+        #消费端配置
+        listener:
+            simple:
+                #消费端
+                concurrency: 5
+                #最大消费端数
+                max-concurrency: 10
+                #自动签收auto  手动 manual
+                acknowledge-mode: manual
+                #限流（海量数据，同时只能过来一条）
+                prefetch: 1
 
 mybatis-plus:
     #实体扫描，多个package用逗号或者分号分隔
     type-aliases-package: com.j2eefast.*.*.entity
+    #扫描mapper 相当于 @MapperScan 注解,多个逗号分割
+    mapper-package: com.j2eefast.*.*.dao
     #打印sql语句,调试用
     configuration:
         log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -112,7 +132,7 @@ http:
   #port: 8200 #web端口
   #port: 80 #web端口
 server:
-    name: '##################Fast云系统OS[开发环境]##############'
-    projectName: 'FAST云系统[开发环境]'
+    name: '##################J2eeFAST[开发环境]##############'
+    projectName: 'J2eeFAST[开发环境]'
     port: 8080 #HTTPS端口
     #port: 443 #HTTPS端口

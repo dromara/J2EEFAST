@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author: zhouzhou
  * @date: 2019-04-07 13:21
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public interface GenTableMapper extends BaseMapper<GenTableEntity> {
@@ -26,15 +26,19 @@ public interface GenTableMapper extends BaseMapper<GenTableEntity> {
 	int updateGenTable(GenTableEntity genTable);
 
 	/**
-	 * 查询据库列表
+	 * 主据库列表
 	 *
 	 * @return 数据库表集合
 	 */
 	List<GenTableEntity> findDbTableList();
 
+	/**
+	 * 从数据库
+	 * @return
+	 */
 	List<GenTableEntity> findSlaveDbTableList();
 
-	List<GenTableEntity> findDbNotTableList();
+	List<GenTableEntity> findDbNotTableList(@Param("dbType") String dbType);
 
 	List<GenTableEntity>  selectDbTablePage(IPage<?> params,
 											@Param("tableName") String tableName,

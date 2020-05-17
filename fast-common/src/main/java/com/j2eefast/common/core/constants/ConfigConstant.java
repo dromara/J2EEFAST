@@ -1,9 +1,12 @@
 package com.j2eefast.common.core.constants;
 
 import com.j2eefast.common.core.utils.HexUtil;
+import com.j2eefast.common.core.utils.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 系统常量
@@ -32,6 +35,10 @@ public final class ConfigConstant {
 	public static final String 					SECRETKEY 							= "_secretKey";
 	public static final String 					LANGUAGE							= "_lang";
 
+	/**
+	 * 数据源容器
+	 */
+	public static Map<Object, Object> DATA_SOURCES = new ConcurrentHashMap<>();
 	/**
 	 * 资源映射路径 前缀
 	 */

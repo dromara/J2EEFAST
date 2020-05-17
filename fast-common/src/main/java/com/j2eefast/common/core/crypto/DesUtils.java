@@ -2,9 +2,7 @@
  * Copyright (c) 2013-Now http://jeesite.com All rights reserved.
  */
 package com.j2eefast.common.core.crypto;
-
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 

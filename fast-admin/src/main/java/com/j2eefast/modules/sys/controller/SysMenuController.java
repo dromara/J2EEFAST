@@ -165,11 +165,7 @@ public class SysMenuController extends BaseController {
 	@RequestMapping(value = "/checkMenuNameUnique", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseData checkMenuNameUnique(SysMenuEntity menu){
-		if(sysMenuService.checkMenuNameUnique(menu)){
-			return success();
-		}else{
-			return success();
-		}
+		return sysMenuService.checkMenuNameUnique(menu)?success():error("已经存在!");
 	}
 
 	/**
@@ -232,18 +228,11 @@ public class SysMenuController extends BaseController {
 	public ResponseData save(@Validated SysMenuEntity menu) {
 		// 数据校验
 		verifyForm(menu);
-
-		if (!sysMenuService.checkMenuNameUnique(menu))
-		{
+		if (!sysMenuService.checkMenuNameUnique(menu)){
 			return error("新增菜单'" + menu.getName()+ "'失败，菜单名称已存在");
 		}
-
-		if(sysMenuService.save(menu)){
-			return success();
-		}else{
-			return success();
-		}
-
+		UserUtils.clearCachedAuthorizationInfo(); //清理权限缓存
+		return sysMenuService.save(menu)?success():error("新增失败!");
 	}
 
 
@@ -260,8 +249,8 @@ public class SysMenuController extends BaseController {
 		if (menuList.size() > 0) {
 			return error("请先删除子菜单或按钮");
 		}
-		sysMenuService.removeById(menuId);
-		return success();
+		UserUtils.clearCachedAuthorizationInfo(); //清理权限缓存
+		return sysMenuService.removeById(menuId)?success():error("删除失败!");
 	}
 
 	/**

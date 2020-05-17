@@ -1,22 +1,27 @@
 package com.j2eefast.framework.config;
 
+import cn.hutool.core.util.StrUtil;
 import com.j2eefast.common.core.datasources.MybatisPulsMetaObjectHandler;
+import com.j2eefast.common.core.io.PropertiesUtils;
 import com.j2eefast.common.core.mutidatasource.annotaion.aop.MultiSourceAop;
+import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.framework.utils.UserUtils;
 import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.mapper.MapperScannerConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 
-
 /**
- * mybatis-plus配置
+ * mybatis-plus 配置
+ * @author: zhouzhou Emall:18774995071@163.com
+ * @time 2020/2/14 18:32
+ * @version V1.0
  */
 @Configuration
-@MapperScan(basePackages = {
-        "com.j2eefast.*.*.mapper",
-        "com.j2eefast.*.*.dao"})
 public class MybatisPlusConfig {
+
 
 //	@Bean
 //	public PerformanceInterceptor performanceInterceptor() {
@@ -48,11 +53,19 @@ public class MybatisPlusConfig {
 	}
 
 	/**
-	 * 多数据源切换的aop
+	 * 动态配置 mapper 的扫描路径
+	 * @author: zhouzhou Emall:18774995071@163.com
 	 */
 	@Bean
-	public MultiSourceAop multiSourceExAop() {
-		return new MultiSourceAop();
+	public MapperScannerConfigurer mapperScannerConfigurer(){
+		MapperScannerConfigurer scannerConfigurer = new MapperScannerConfigurer();
+		String mapperPackage = PropertiesUtils.getInstance().getProperty("mybatis-plus.mapper-package","com.j2eefast.*.*.mapper," +
+				"com.j2eefast.*.*.dao");
+		if(ToolUtil.isNotEmpty(mapperPackage)){
+			scannerConfigurer.setBasePackage("com.j2eefast.*.*.mapper,"+mapperPackage);
+		}else{
+			scannerConfigurer.setBasePackage("com.j2eefast.*.*.mapper");
+		}
+		return scannerConfigurer;
 	}
-	
 }

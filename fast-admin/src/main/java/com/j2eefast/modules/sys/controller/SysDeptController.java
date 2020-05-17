@@ -149,7 +149,7 @@ public class SysDeptController extends BaseController {
 		 if(sysDeptService.checkDeptNameUnique(dept)){
 			 return success();
 		 }else {
-			 return success();
+			 return error("已经存在!");
 		 }
 	}
 

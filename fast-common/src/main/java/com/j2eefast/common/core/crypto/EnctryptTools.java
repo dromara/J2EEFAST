@@ -1,6 +1,5 @@
 package com.j2eefast.common.core.crypto;
 import cn.hutool.core.codec.Base64;
-import org.apache.logging.log4j.util.Base64Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.j2eefast.common.core.utils.HexUtil;

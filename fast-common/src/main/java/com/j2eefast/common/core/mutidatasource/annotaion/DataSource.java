@@ -7,9 +7,9 @@ import java.lang.annotation.*;
  * @author zhouzhou
  * @date 2020-03-12 09:55
  */
-@Inherited
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
+@Inherited
 public @interface DataSource {
 	
 	/**

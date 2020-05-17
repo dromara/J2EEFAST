@@ -5,7 +5,7 @@ package com.j2eefast.framework.sys.constant.factory;
  *
  * @author: zhouzhou
  * @date: 2019-04-07 10:03
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 
@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author: zhouzhou
  * @date: 2019-04-02 11:01
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public interface IConstantFactory {
@@ -75,6 +75,12 @@ public interface IConstantFactory {
 	 */
 	String getMenuStatusName(String status);
 
+	/**
+	 * 通过用户ID 菜单编码 获取菜单
+	 * @param userId
+	 * @param moduleCode
+	 * @return
+	 */
 	List<SysMenuEntity> getMenuByUserIdModuleCode(Long userId, String moduleCode);
 
 

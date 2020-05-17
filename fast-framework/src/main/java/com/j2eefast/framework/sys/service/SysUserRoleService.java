@@ -11,6 +11,7 @@ import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.framework.sys.entity.SysUserRoleEntity;
 import com.j2eefast.framework.sys.mapper.SysUserRoleMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -33,15 +34,14 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 		}
 
 		// 保存用户与角色关系
-		List<SysUserRoleEntity> list = new ArrayList<>(roleIdList.size());
+//		List<SysUserRoleEntity> list = new ArrayList<>(roleIdList.size());
 		for (Long roleId : roleIdList) {
 			SysUserRoleEntity sysUserRoleEntity = new SysUserRoleEntity();
 			sysUserRoleEntity.setUserId(userId);
 			sysUserRoleEntity.setRoleId(roleId);
-
-			list.add(sysUserRoleEntity);
+//			list.add(sysUserRoleEntity);
+			this.save(sysUserRoleEntity);
 		}
-		this.saveBatch(list);
 	}
 
 	public List<Long> findRoleIdList(Long userId) {
@@ -84,14 +84,13 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 	 * @return
 	 */
 	public boolean addAuthUsers(Long roleId,  Long[] userIds) {
-		List<SysUserRoleEntity> list = new ArrayList<SysUserRoleEntity>();
 		for(Long userId: userIds){
 			SysUserRoleEntity sysUserRoleEntity = new SysUserRoleEntity();
 			sysUserRoleEntity.setUserId(userId);
 			sysUserRoleEntity.setRoleId(roleId);
-			list.add(sysUserRoleEntity);
+			this.save(sysUserRoleEntity);
 		}
-		return this.saveBatch(list);
+		return true;
 	}
 
 	/**
@@ -100,6 +99,7 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 	 * @param roleIds
 	 * @return
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public boolean addUserAuths(Long userId, Long[] roleIds) {
 		// 先删除用户与角色关系
 		this.removeByMap(new MapUtil().put("user_id", userId));
@@ -108,8 +108,8 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 			SysUserRoleEntity sysUserRoleEntity = new SysUserRoleEntity();
 			sysUserRoleEntity.setUserId(userId);
 			sysUserRoleEntity.setRoleId(roleId);
-			list.add(sysUserRoleEntity);
+			this.save(sysUserRoleEntity);
 		}
-		return this.saveBatch(list);
+		return true;
 	}
 }

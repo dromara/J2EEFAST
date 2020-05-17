@@ -8,7 +8,7 @@ import com.j2eefast.framework.log.entity.SysOperLogEntity;
  *
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2019-03-20 16:43
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public interface SysOperLogMapper extends BaseMapper<SysOperLogEntity> {

@@ -18,7 +18,7 @@ import java.util.List;
  * <p>自定义LicenseManager，用于增加额外的服务器硬件信息校验</p>
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2020-03-17 09:14
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class CustomLicenseManager  extends LicenseManager {

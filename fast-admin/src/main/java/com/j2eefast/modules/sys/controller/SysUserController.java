@@ -1,7 +1,14 @@
 package com.j2eefast.modules.sys.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ArrayUtil;
+import com.alibaba.excel.EasyExcel;
 import com.j2eefast.common.core.base.entity.LoginUserEntity;
 import com.j2eefast.common.core.base.entity.Ztree;
 import com.j2eefast.common.core.utils.*;
@@ -87,6 +94,22 @@ public class SysUserController extends BaseController {
 		mmap.put("roles", sysRoleService.list());
 		return urlPrefix + "/add";
 	}
+
+	@BussinessLog(title = "用户管理", businessType = BusinessType.EXPORT)
+	@RequiresPermissions("system:user:export")
+	@PostMapping("/export")
+	@ResponseBody
+	public ResponseData export(@RequestParam Map<String, Object> params) throws Exception {
+		String fileName =  "测试";
+		fileName = ToolUtil.encodingExcelFilename(fileName);
+		String folder = Global.getConifgFile() + File.separator + "pio" + File.separator;
+		FileUtil.touch(folder + fileName);
+		List<SysUserEntity> listData = sysUserService.findList(params);
+		EasyExcel.write(folder + fileName, SysUserEntity.class).sheet("模板").doWrite(listData);
+		return success(fileName);
+	}
+
+
 
 
 	/**
@@ -219,8 +242,7 @@ public class SysUserController extends BaseController {
 		if (!flag) {
 			return error(ToolUtil.message("sys.user.oldPasswordError"));
 		}
-		if (loginUser.getId().equals(user.getUserId()))
-		{
+		if (loginUser.getId().equals(user.getUserId())){
 			loginUser.setPwdSecurityLevel(user.getPwdSecurityLevel());
 			loginUser.setPassword(newPassword);
 			loginUser.setSalt(salt);
@@ -243,7 +265,7 @@ public class SysUserController extends BaseController {
 		if(sysUserService.checkUserNameUnique(username)){
 			return success();
 		}
-		return success();
+		return error("已经存在!");
 	}
 
 	/**
@@ -255,7 +277,7 @@ public class SysUserController extends BaseController {
 		if(sysUserService.checkMobileUnique(user)){
 			return success();
 		}
-		return success();
+		return error("已经存在!");
 	}
 
 
@@ -271,8 +293,7 @@ public class SysUserController extends BaseController {
 			return error("密码不能为空");
 		}
 		ValidatorUtil.validateEntity(user);
-		sysUserService.add(user);
-		return success();
+		return sysUserService.add(user)?success(): error("新增失败!");
 	}
 
 
@@ -288,7 +309,7 @@ public class SysUserController extends BaseController {
 	public ResponseData edit(@Validated SysUserEntity user) {
 
 		ValidatorUtil.validateEntity(user);
-		return sysUserService.update(user) ? success() : success();
+		return sysUserService.update(user) ? success() : error("修改失败!");
 	}
 
 
@@ -303,7 +324,7 @@ public class SysUserController extends BaseController {
 	@ResponseBody
 	public ResponseData changeStatus(SysUserEntity user)
 	{
-		return sysUserService.changeStatus(user) ? success() : success();
+		return sysUserService.changeStatus(user) ? success() : error("修改失败!");
 	}
 
 	/**
@@ -326,9 +347,8 @@ public class SysUserController extends BaseController {
 	@BussinessLog(title = "用户管理", businessType = BusinessType.GRANT)
 	@PostMapping("/authRole/insertAuthRoles")
 	@ResponseBody
-	public ResponseData selectAuthUserAll(Long userId, Long[] roleIds)
-	{
-		return  sysUserRoleService.addUserAuths(userId, roleIds)?success() : success();
+	public ResponseData selectAuthUserAll(Long userId, Long[] roleIds){
+		return  sysUserRoleService.addUserAuths(userId, roleIds)?success() : error("授权失败!");
 	}
 
 	/**
@@ -340,13 +360,9 @@ public class SysUserController extends BaseController {
 	@RequiresRoles(Constant.SU_ADMIN)
 	@ResponseBody
 	public ResponseData delete(Long[] ids) {
-			// 删除 用户与角色 关联表
-			sysUserRoleService.deleteBatchByUserIds(ids);
-			// 删除 用户与地区 关联表
-			sysUserDeptService.deleteBatchByUserIds(ids);
-			//删除 用户
-			sysUserService.removeByIds(Arrays.asList(ids));
-
-			return success();
+		if(ArrayUtil.contains(ids,UserUtils.getUserId())){
+			return error("不能删除自己!");
+		}
+		return sysUserService.delUser(ids)?success(): error("删除失败!");
 	}
 }

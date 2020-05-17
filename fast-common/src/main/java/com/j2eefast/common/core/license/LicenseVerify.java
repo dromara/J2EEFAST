@@ -19,7 +19,7 @@ import java.util.prefs.Preferences;
  * <p>License校验类</p>
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2020-03-17 17:10
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class LicenseVerify {

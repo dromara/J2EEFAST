@@ -33,14 +33,15 @@ public class SysRoleMenuService extends ServiceImpl<SysRoleMenuMapper, SysRoleMe
 		}
 
 		// 保存角色与菜单关系
-		List<SysRoleMenuEntity> list = new ArrayList<>(menuIdList.size());
+//		List<SysRoleMenuEntity> list = new ArrayList<>(menuIdList.size());
 		for (Long menuId : menuIdList) {
 			SysRoleMenuEntity sysRoleMenuEntity = new SysRoleMenuEntity();
 			sysRoleMenuEntity.setMenuId(menuId);
 			sysRoleMenuEntity.setRoleId(roleId);
-			list.add(sysRoleMenuEntity);
+			this.save(sysRoleMenuEntity);
+//			list.add(sysRoleMenuEntity);
 		}
-		this.saveBatch(list);
+//		this.saveBatch(list);
 	}
 
 	public List<Long> findMenuIdList(Long roleId) {

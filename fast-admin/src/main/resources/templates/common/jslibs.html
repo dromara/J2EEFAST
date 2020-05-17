@@ -3,62 +3,71 @@
 <#-- 引用特殊JS-->
 <#--ztree树插件css js-->
 <#macro ztree_js>
-    <script src="${ctxStatic}/statics/plugins/ztree/3.5/js/jquery.ztree.all.min.js?V=${config.getDvVersion()}"></script>
-    <script src="${ctxStatic}/statics/plugins/ztree/3.5/js/jquery.ztree.exhide.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/ztree/3.5/js/jquery.ztree.all.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/ztree/3.5/js/jquery.ztree.exhide.min.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <#--select2下拉框插件css-->
 <#macro select2_js>
-    <script src="${ctxStatic}/statics/plugins/select2/select2.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/select2/select2.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <#--jsonview格式化和语法高亮JSON格式数据查看插件-->
 <#macro jsonview_js>
-    <script src="${ctxStatic}/statics/plugins/jsonview/jquery.jsonview.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/jsonview/jquery.jsonview.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <#--bootstrap-select下拉框插件-->
 <#macro bootstrap_select_js>
-    <script src="${ctxStatic}/statics/plugins/bootstrap-select/bootstrap-select.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/bootstrap-select/bootstrap-select.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <#--头像-->
 <#macro cropbox_js>
-    <script src="${ctxStatic}/statics/plugins/cropbox/cropbox.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/cropbox/cropbox.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <#--表格拖拽插件-->
 <#macro bootstrap_table_reorder_js>
-    <script src="${ctxStatic}/statics/plugins/bootstrap-table/extensions/reorder/bootstrap-table-reorder.js?V=${config.getDvVersion()}"></script>
-    <script src="${ctxStatic}/statics/plugins/bootstrap-table/extensions/reorder/jquery.tablednd.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/reorder/bootstrap-table-reorder.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/reorder/jquery.tablednd.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <#--代码修饰器-->
 <#macro prism_js>
-    <script src="${ctxStatic}/statics/plugins/prism/prism.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/prism/prism.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <#--代码修饰器-->
 
 <#--下拉分页选择插件-->
 <#macro selectpage_js>
-    <script src="${ctxStatic}/statics/plugins/selectpage/selectpage.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/selectpage/selectpage.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <!-- sparkline线状图插件 -->
 <#macro sparkline_js>
-    <script src="${ctxStatic}/statics/plugins/report/sparkline/jquery.sparkline.min.js?V=${config.getDvVersion()}"></script>
+    <script src="${ctxStatic}/static/plugins/report/sparkline/jquery.sparkline.min.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <!-- summernote富文本编辑器插件 -->
 <#macro summernote_js>
-    <script src="${ctxStatic}/statics/plugins/summernote/summernote.js?V=${config.getDvVersion()}"></script>
-    <script src="${ctxStatic}/statics/plugins/summernote/summernote-zh-CN.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/summernote/summernote.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/summernote/summernote-zh-CN.js?V=${config.getDvVersion()}"></script>
 </#macro>
 
 <#macro ueditor_js>
-    <script src="${ctxStatic}/statics/plugins/ueditor/1.4.33/ueditor.config.js?V=${config.getDvVersion()}"></script>
-    <script src="${ctxStatic}/statics/plugins/ueditor/1.4.33/ueditor.all.js?V=${config.getDvVersion()}"></script>
-    <script src="${ctxStatic}/statics/plugins/ueditor/1.4.33/lang/zh-cn/zh-cn.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/ueditor/1.4.33/ueditor.config.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/ueditor/1.4.33/ueditor.all.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/ueditor/1.4.33/lang/zh-cn/zh-cn.js?V=${config.getDvVersion()}"></script>
 </#macro>
-<#--下拉分页选择插件-->
+
+<#-- 工作流页面svg画流程图-->
+<#macro bpm_js>
+<script src="${ctxStatic}/flowable/modeler/display/jquery.qtip.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/flowable/modeler/display/raphael.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/flowable/modeler/display/bpmn-draw.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/flowable/modeler/display/bpmn-icons.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/flowable/modeler/display/Polyline.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/flowable/modeler/display/displaymodel.min.js?V=${config.getDvVersion()}"></script>
+</#macro>

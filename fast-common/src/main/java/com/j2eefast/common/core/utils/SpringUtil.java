@@ -27,8 +27,7 @@ public class SpringUtil implements BeanFactoryPostProcessor{
 	 * @date 2020-03-12 14:39
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T getBean(String name) throws BeansException
-	{
+	public static <T> T getBean(String name) throws BeansException{
 	    return (T) BEAN_FACTORY.getBean(name);
 	}
 	
@@ -37,8 +36,7 @@ public class SpringUtil implements BeanFactoryPostProcessor{
 	 * @author zhouzhou
 	 * @date 2020-03-12 14:39
 	 */
-	public static <T> T getBean(Class<T> clz) throws BeansException
-	{
+	public static <T> T getBean(Class<T> clz) throws BeansException{
 	    T result = (T) BEAN_FACTORY.getBean(clz);
 	    return result;
 	}
@@ -48,8 +46,7 @@ public class SpringUtil implements BeanFactoryPostProcessor{
 	 * @author zhouzhou
 	 * @date 2020-03-12 14:39
 	 */
-	public static boolean containsBean(String name)
-	{
+	public static boolean containsBean(String name){
 	    return BEAN_FACTORY.containsBean(name);
 	}
 	
@@ -60,14 +57,12 @@ public class SpringUtil implements BeanFactoryPostProcessor{
 	 * @author zhouzhou
 	 * @date 2020-03-12 14:39
 	 */
-	public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException
-	{
+	public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException{
 	    return BEAN_FACTORY.isSingleton(name);
 	}
 	
 
-	public static Class<?> getType(String name) throws NoSuchBeanDefinitionException
-	{
+	public static Class<?> getType(String name) throws NoSuchBeanDefinitionException {
 	    return BEAN_FACTORY.getType(name);
 	}
 	
@@ -76,8 +71,7 @@ public class SpringUtil implements BeanFactoryPostProcessor{
 	 * @author zhouzhou
 	 * @date 2020-03-12 14:39
 	 */
-	public static String[] getAliases(String name) throws NoSuchBeanDefinitionException
-	{
+	public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {
 	    return BEAN_FACTORY.getAliases(name);
 	}
 }

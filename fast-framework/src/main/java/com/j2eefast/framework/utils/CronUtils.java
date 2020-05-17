@@ -11,9 +11,6 @@ import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
 
 /**
- *
- * @ClassName: CronUtils
- * @Package: com.j2eefast.common.core.utils
  * @Description: cron表达式工具类
  * @author: zhouzhou Emall:18774995071@163.com
  * @time 2020/1/19 13:33

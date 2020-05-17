@@ -1,13 +1,13 @@
 <#include "/common/include.html"/>
-<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@pageTheme mark="true">
 <@header title="主页"/>
 <body class="gray-bg animated fadeInRight" style="height: auto">
     <div class="row  border-bottom white-bg dashboard-header">
         <div class="col-sm-8">
-            <h2>FastOS管理框架</h2>
+            <h2>J2eeFAST 开源平台</h2>
             <p>
-                FastOS 是一个 Java EE 企业级快速开发平台，基于经典技术组合（Spring Boot、Spring MVC、Apache Shiro、MyBatis、freemarker、Bootstrap、AdminLTE）采用经典开发模式，让初学者能够更快的入门并投入到团队开发中去。
-                在线代码生成功能，包括核心模块如：组织机构、角色用户、菜单及按钮授权、数据权限、系统参数、内容管理、license认证等。采用松耦合设计；界面无刷新，一键换肤,一键国际化；众多账号安全设置，密码策略；在线定时任务配置；支持集群，支持SAAS；支持多数据源；支持读写分离、分库分表.
+                J2eeFAST 是一个 Java EE 企业级快速开发平台，基于经典技术组合（Spring Boot、Spring MVC、Apache Shiro、MyBatis、freemarker、Bootstrap、AdminLTE）采用经典开发模式，让初学者能够更快的入门并投入到团队开发中去。
+                在线代码生成功能，包括核心模块如：组织机构、角色用户、菜单及按钮授权、数据权限、系统参数、内容管理、license认证,BPM工作流等。采用松耦合设计；界面无刷新，一键换肤,一键国际化；众多账号安全设置，密码策略；在线定时任务配置；支持集群，支持SAAS；支持多数据源；支持读写分离、分库分表.
             </p>
             <p>
                 <b>当前版本：</b><span class="label label-warning">v${config.getVersion()}</span>
@@ -19,6 +19,7 @@
                 <li>核心框架：Spring Boot 2.2.5.RELEASE </li>
                 <li>安全框架：Apache Shiro</li>
                 <li>模板引擎：Freemarker</li>
+                <li>工作流引擎：Flowable 6.4.2</li>
                 <li>前端：AdminLTE 2.3.8, Bootstrap 3.3.7, Bootstrap-Table 1.11.0, JQuery 3.3.1</li>
                 <li>持久层框架：MyBatis-Plus 3.3.1</li>
                 <li>定时任务: Quartz</li>
@@ -34,7 +35,7 @@
             <div class="col-sm-4">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>更新日志</h5>
+                        <h5>更新日志 <i class="fa fa-file-text-o"></i></h5>
                     </div>
                     <div class="ibox-content no-padding">
                         <div class="panel-body">
@@ -42,10 +43,66 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h5 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.4</a><code class="pull-right">2020.04.11</code>
+                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.6</a><code class="pull-right">2020.05.17</code>
                                         </h5>
                                     </div>
                                     <div id="v41" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>1. 新增BPM 工作流模块</li>
+                                                <li>2. 修复登陆页面安全key cookie超时导致登陆异常问题</li>
+                                                <li>3. 新增报表导出功能</li>
+                                                <li>4. 修改fastJS.js 支持报表导出</li>
+                                                <li>5. 修复用户删除问题,不能自身删除自身</li>
+                                                <li>6. 修复ie版本过低提示页面问题.</li>
+                                                <li>7. 修改@MapperScan注解到配置文件,便于二次开发</li>
+                                                <li>8. 使用Hutool获取硬件信息解决获取机器码兼容性问题</li>
+                                                <li>9. 升级layer到3.1.1最新版本,解决监听窗口拉伸动作问题</li>
+                                                <li>10.修复国际化切换[繁体]异常问题</li>
+                                                <li>11.首页新增[便签]小工具</li>
+                                                <li>12.修复菜单层级问题,理论可以支持无限级</li>
+                                                <li>13.新增大量文档</li>
+                                                <li>14.修复部分细节</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h5 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.5</a><code class="pull-right">2020.05.10</code>
+                                        </h5>
+                                    </div>
+                                    <div id="v41" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>1. 优化项目打包流程,call mvn install 一键打gz包</li>
+                                                <li>2. 修改Yml工具类增强获取文件</li>
+                                                <li>3. 修改打包运行内存</li>
+                                                <li>4. 修复新增模块404异常,编辑菜单模块提交重复问题</li>
+                                                <li>5. 修复菜单缓存多个模块问题</li>
+                                                <li>6. 优化页面部分窗口小图标</li>
+                                                <li>7.修复在使用Nginx反向代理, 获取真实IP问题</li>
+                                                <li>8.修复系统设置默认语言不生效问题</li>
+                                                <li>9.修复mac系统获取机器码异常问题,在此感谢@Mico、@AKAI 提供的测试与代码</li>
+                                                <li>10.新增系统兼容Oracle,到此J2eeFAST 已经可以同时兼容Mysql,与Orcale.其他支持可以自行扩增</li>
+                                                <li>11.修改对多源数据库支持,改成数据库配置形式可以无限扩展,实时生效。</li>
+                                                <li>12.修复前端界面不能获取语言不能通过cookie获取问题.</li>
+                                                <li>13.新增启动扫描配置文件</li>
+                                                <li>14.修复因网络变动而导致机器码变动的情况.</li>
+                                                <li>15.新增502页面,主要用于配合nginx反向代理使用.当服务器升级期间通过nginx引导502页面</li>
+                                                <li>16.修复若干细节</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h5 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.4</a><code class="pull-right">2020.04.11</code>
+                                        </h5>
+                                    </div>
+                                    <div id="v41" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ol>
                                                 <li>1. 新增百度ueditor富文本编辑器更换之前编辑器</li>
@@ -148,23 +205,25 @@
                     <div class="ibox-content">
                         <p>
                             <i class="fa fa-snapchat-ghost"></i>：
-                            FASTOS (快速开发开源系统)名字由来:包含作者对于软件开发的美好幻想，希望软件开发变的快速而简单，每个人都能分享自己的技术从而达到快速又强大的软件系统,让我们有更多的时间去陪伴家人!<br/>
+                            J2eeFAST (快速开发开源系统)名字由来:包含作者对于软件开发的美好幻想，希望软件开发变的快速而简单，每个人都能分享自己的技术从而达到快速又强大的软件系统,让我们有更多的时间去陪伴家人!<br/>
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你可能在本系统中看到众多优秀开源项目的影子，因为她本身集成了众多优秀的开源项目精华功能，在这种环境中成长的，但是她目前还有很多缺点，
-                            希望大神们嘴下留情。如果你也喜欢开源、喜欢本项目,作者欢迎您的加入,FASTOS会因为您的加入而变的更加完善与丰富!
+                            希望大神们嘴下留情。如果你也喜欢开源、喜欢本项目,作者欢迎您的加入,J2eeFAST会因为您的加入而变的更加完善与丰富!
                         </p>
-                        <p class="mt10"><i class="fa fa-send-o"></i> ：如果本项目对你有帮助<ins><a href="https://gitee.com/zhouhuanOGP/J2EEFAST" target="_blank">请点击Star收藏</a></ins>(<a href="javascript:show()">点击查看</a>),<strong>本项目会长期维护</strong>,若你在使用中有<u>任何问题或建议</u>欢迎在<del><a href="https://gitee.com/zhouhuanOGP/J2EEFAST/issues" target="_blank">码云issue提交问题</a></del>作者会第一时间处理，让我们一起完善FASTOS
+                        <p class="mt10"><i class="fa fa-send-o"></i> ：如果本项目对你有帮助<ins><a href="https://gitee.com/zhouhuanOGP/J2EEFAST" target="_blank">请点击Star收藏</a></ins>(<a href="javascript:show()">点击查看</a>),<strong>本项目会长期维护</strong>,若你在使用中有<u>任何问题或建议</u>欢迎在<del><a href="https://gitee.com/zhouhuanOGP/J2EEFAST/issues" target="_blank">码云issue提交问题</a></del>作者会第一时间处理，让我们一起完善J2eeFAST
                         </p>
-                        <p class="mt5"><i class="fa fa-book"></i> 关于文档：<s>因目前项目初期,暂还没时间整理,后期会整理.</s>
+                        <p class="mt5"><i class="fa icon-cursor"></i> 官网：<a href="http://www.j2eefast.com" target="_blank">http://www.j2eefast.com</a>
+                        </p>
+                        <p class="mt5"><i class="fa fa-book"></i> 关于文档：<a href="https://gitee.com/zhouhuanOGP/J2EEFAST/wikis/pages" target="_blank">Gitee Wiki 文档</a>
                         </p>
                         <p class="mt5"><i class="fa fa-cloud-upload"></i> 关于更新：项目每周都会有更新,演示网站会在周五~周日,不定期暂停访问,带来不便尽情谅解!
                         </p>
-                        <p class="mt5"><i class="fa fa-qq"></i> QQ群：<s>因目前项目初期暂不提供，所有问题请在码云issue提问,后期会开放官方群,请随时关注!</s>
+                        <p class="mt5"><i class="fa fa-qq"></i> QQ群：<a href="https://jq.qq.com/?_wv=1027&k=5xTlnN6" target="_blank">805468934</a>
                         </p>
                         <p class="mt5"><i class="fa fa-envelope-open-o"></i> <strong>免责声明：</strong>
-                        <li style="color: red"><strong>1. 本项目代码全部开源，无需任何费用。如果有人向你贩卖本系统都是骗子!</strong></li>
-                            <li>2. 不得将 FASTOS 于危害国家安全、荣誉和利益的行为，不能以任何形式用于非法为目的的行为,否则后果自负</li>
-                            <li>3. FASTOS 前身主要用于银行项目,本身很注重安全因素,可以从项目登陆可以看出.但是您也需了解使用本软件的风险，是软件皆有漏洞，任何人都无法保证100%没有漏洞，所以由软件漏洞造成的损失不予赔偿，也不承担任何因使用本软件而产生相关法律责任。请软件上线使用前进行足够的安全检测，以避免此问题发生。</li>
-                            <li>4. 新版本会增加项目启动证书认证,可以使用你的机器码在本系统中生成证书后启动。若你是大神则略过!</li>
+                        <li style="color: red;"><strong>1. 本项目代码全部开源，无需任何费用。如果有人向你贩卖本系统都是骗子!</strong></li>
+                        <li>2. 不得将 J2eeFAST 于危害国家安全、荣誉和利益的行为，不能以任何形式用于非法为目的的行为,否则后果自负</li>
+                        <li>3. J2eeFAST 前身主要用于银行项目,本身很注重安全因素,可以从项目登陆可以看出.但是您也需了解使用本软件的风险，是软件皆有漏洞，任何人都无法保证100%没有漏洞，所以由软件漏洞造成的损失不予赔偿，也不承担任何因使用本软件而产生相关法律责任。请软件上线使用前进行足够的安全检测，以避免此问题发生。</li>
+                        <li>4. 新版本会增加项目启动证书认证,可以使用你的机器码在本系统中生成证书后启动。若你是大神则略过!</li>
                         </p>
                         <p class="mt20">
                             <a class="btn btn-success btn-outline" href="https://gitee.com/zhouhuanOGP/J2EEFAST" target="_blank">
@@ -319,12 +378,13 @@
 <#--    </div>-->
 </div>
 <@footer>
-<script type="text/javascript" src="${ctxStatic}/statics/plugins/flot/jquery.flot.js?V=${config.getDvVersion()}"></script>
+<script type="text/javascript" src="${ctxStatic}/static/plugins/flot/jquery.flot.js?V=${config.getDvVersion()}"></script>
 <@jsLibs.sparkline_js/>
 <script type="text/javascript">
 
+
     function show() {
-        var html = '<img src="${ctxStatic}/statics/img/collect.png" width="100%" height="100%" alt="点击收藏">';
+        var html = '<img src="${ctxStatic}/static/img/collect.png" width="100%" height="100%" alt="点击收藏">';
         opt.layer.open({
             title: false,
             type: 1,
@@ -445,9 +505,8 @@
 
         var previousPoint = null,
             previousLabel = null;
-        //$.plot($("#flot-dashboard-chart"), dataset, options);
+        /*$.plot($("#flot-dashboard-chart"), dataset, options);*/
     });
 </script>
 </@footer>
-</body>
 </@pageTheme>

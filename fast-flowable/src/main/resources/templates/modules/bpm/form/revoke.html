@@ -1,0 +1,121 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="撤回任务">
+</@header>
+<@addorEdit fromId="task-form-complete">
+            <input name="processInstanceId" value="${bpmOaForm.processInstanceId}" type="hidden">
+            <h4 class="form-header h4"><@ctx.i18n text = "基本信息"/></h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "请假人"/>：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input class="form-control" value="${bpmOaForm.userName}"  type="text"  readonly="true">
+                                <span class="input-group-addon"><i class="fa fa-user-circle"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "请假类型"/>：</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" value="${dict.getLabel('sys_leave_type', bpmOaForm.leaveType)}" type="text" readonly="true">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "开始时间"/>：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input class="form-control" value="${bpmOaForm.startTime?string('yyyy-MM-dd')}" type="text" readonly="true" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "结束时间"/>：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input class="form-control" value="${bpmOaForm.endTime?string('yyyy-MM-dd')}"  type="text"  readonly="true">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "请假天数"/>：</label>
+                        <div class="col-sm-8">
+                            <input value="${bpmOaForm.leaveDays?default("")}" class="form-control" type="text"  readonly="true">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                 <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "请假原因"/>：</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control"  readonly="true">${bpmOaForm.leaveReason?default("")}</textarea>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+            <h4 class="form-header h4"><@ctx.i18n text = "处理信息"/></h4>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "原因"/>：</label>
+                        <div class="col-sm-10">
+                            <textarea id="comment"  rows="8" name="message" class="form-control" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</@addorEdit>
+    <div class="hr-line-dashed"></div>
+    <div class="row" id="_addTab">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-sm btn-danger" onclick="opt.form.submit()()"><i class="fa fa-mail-reply"></i> <@ctx.i18n text = "撤回"/></button>&nbsp;
+            <button type="button" class="btn btn-sm btn-default" onclick="process()"><i class="fa fa-photo"></i> <@ctx.i18n text = "流程跟踪"/></button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i> <@ctx.i18n text = "关闭"/></button>
+        </div>
+    </div>
+<@footer>
+    <script type="text/javascript">
+        var prefix = baseURL + "bpm/task";
+
+        $("#task-form-complete").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if (opt.validate.form()) {
+                opt.operate.save(prefix + "/revoke", $('#task-form-complete').serialize());
+            }
+        }
+        
+        /*流程跟踪*/
+        function process() {
+            var options = {
+                url: baseURL + "bpm/processInstance/preview/${bpmOaForm.processInstanceId}",
+                title: '<@ctx.i18n text = "流程跟踪"/>',
+                btn:['<i class="fa fa-close"></i> '+$.i18n.prop("取消")],
+                width: $(top.window).width() - 300,
+                height: $(top.window).height() - 200
+            };
+            opt.modal.openMainWin(options);
+        }
+    </script>
+</@footer>
+</@pageTheme>

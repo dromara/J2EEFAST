@@ -1,0 +1,60 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="修改OA请假单">
+    </@header>
+    <@addorEdit fromId="task-form-info">
+        <input name="taskId" value="${taskId}" type="hidden">
+        <input name="processInstanceId" value="${bpmOaForm.processInstanceId}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label"></span><@ctx.i18n text = "请假人"/>：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input class="form-control" value="${bpmOaForm.userName}"  type="text"  readonly="true">
+                    <span class="input-group-addon"><i class="fa fa-user-circle"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "请假类型"/>：</label>
+            <div class="col-sm-8">
+                <input class="form-control" value="${dict.getLabel('sys_leave_type', bpmOaForm.leaveType)}" type="text" readonly="true">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "开始时间"/>：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input class="form-control" value="${bpmOaForm.startTime?string('yyyy-MM-dd')}" type="text" readonly="true" >
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "结束时间"/>：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input class="form-control" value="${bpmOaForm.endTime?string('yyyy-MM-dd')}"  type="text"  readonly="true">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "请假天数"/>：</label>
+            <div class="col-sm-8">
+                <input value="${bpmOaForm.leaveDays?default("")}" class="form-control" type="text"  readonly="true">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><@ctx.i18n text = "请假原因"/>：</label>
+            <div class="col-sm-8">
+                <textarea class="form-control"  readonly="true">${bpmOaForm.leaveReason?default("")}</textarea>
+            </div>
+        </div>
+    </@addorEdit>
+    <@footer/>
+</@pageTheme>

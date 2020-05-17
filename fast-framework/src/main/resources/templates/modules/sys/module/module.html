@@ -127,14 +127,14 @@
             /* 用户管理-停用 */
             function disable(id) {
                 opt.modal.confirm("确认要停用模块吗？", function() {
-                    opt.operate.post(prefix + "/changeStatus", { "id": id, "status": 1 });
+                    opt.operate.post(prefix + "/status", { "id": id, "status": 1 });
                 })
             }
 
             /* 用户管理启用 */
             function enable(id) {
                 opt.modal.confirm("确认要启用模块吗？", function() {
-                    opt.operate.post(prefix + "/changeStatus", { "id": id, "status": 0 });
+                    opt.operate.post(prefix + "/status", { "id": id, "status": 0 });
                 })
             }
         </script>

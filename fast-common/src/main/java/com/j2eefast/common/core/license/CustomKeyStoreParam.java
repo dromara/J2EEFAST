@@ -11,7 +11,7 @@ import java.io.InputStream;
  * <p>自定义读取证书路径</p>
  * @author: zhouzhou Emall:18774995071@163.com
  * @date: 2020-03-16 17:04
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class CustomKeyStoreParam extends AbstractKeyStoreParam {

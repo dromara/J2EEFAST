@@ -6,7 +6,10 @@ import com.j2eefast.common.core.enums.BusinessType;
 import com.j2eefast.common.core.exception.RxcException;
 import com.j2eefast.common.core.utils.PageUtil;
 import com.j2eefast.common.core.utils.ResponseData;
+import com.j2eefast.common.db.context.DataSourceContext;
+import com.j2eefast.common.db.entity.SysDatabaseEntity;
 import com.j2eefast.framework.sys.entity.SysModuleEntity;
+import com.j2eefast.framework.sys.service.SysDatabaseService;
 import com.j2eefast.framework.sys.service.SysDictTypeSerive;
 import com.j2eefast.framework.sys.service.SysModuleService;
 import com.j2eefast.common.core.controller.BaseController;
@@ -52,6 +55,8 @@ public class GenController extends BaseController {
     private SysModuleService sysModuleService;
     @Autowired
     private GenTableService genTableService;
+    @Autowired
+    private SysDatabaseService sysDatabaseService;
     @Autowired
     private SysDictTypeSerive sysDictTypeSerive;
 
@@ -193,6 +198,8 @@ public class GenController extends BaseController {
     @GetMapping("/edit/{tableId}")
     public String edit(@PathVariable("tableId") Long tableId, ModelMap mmap){
         GenTableEntity table = genTableService.findGenTableById(tableId);
+        List<SysDatabaseEntity> listDb =  sysDatabaseService.list();
+        mmap.put("listDb",listDb);
         mmap.put("gen_table", table);
         return urlPrefix + "/edit";
     }
@@ -215,20 +222,20 @@ public class GenController extends BaseController {
     @RequiresPermissions("tool:gen:list")
     @GetMapping("/importTable/{dbtype}")
     public String importTable(@PathVariable("dbtype") String dbtype,ModelMap mmap){
-        if(dbtype.equals("0")){
+        mmap.put("dbType", dbtype);
+        if(dbtype.equals(DataSourceContext.MASTER_DATASOURCE_NAME)){
             mmap.put("dbTables", genTableService.findDbTableList());
-            mmap.put("dbType", "0");
         }else{
-            mmap.put("dbTables", genTableService.findNoDbTableList());
-            mmap.put("dbType", "1");
+            mmap.put("dbTables", genTableService.findNoDbTableList(dbtype));
         }
         return urlPrefix + "/importTable";
     }
 
     /**导入选择***/
     @GetMapping("/selectDb")
-    public String selectDb()
-    {
+    public String selectDb(ModelMap mmap) {
+       List<SysDatabaseEntity> listDb =  sysDatabaseService.list();
+        mmap.put("listDb",listDb);
         return urlPrefix + "/selectDb";
     }
 
@@ -257,7 +264,7 @@ public class GenController extends BaseController {
     private void genCode(HttpServletResponse response, byte[] data) throws IOException
     {
         response.reset();
-        response.setHeader("Content-Disposition", "attachment; filename=\"LixinCode.zip\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"fastos.zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
         IOUtils.write(data, response.getOutputStream());
@@ -275,8 +282,7 @@ public class GenController extends BaseController {
      */
     @GetMapping("/dirTreeData")
     @ResponseBody
-    public List<Ztree> dirTreeData()
-    {
+    public List<Ztree> dirTreeData(){
         File[] roots = File.listRoots();//
         List<Ztree> ztrees = new ArrayList<Ztree>();
         for (int i=0; i< roots.length; i++) {

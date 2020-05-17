@@ -37,13 +37,13 @@ public class GenTableColumnService extends ServiceImpl<GenTableColumnMapper,GenT
         return genTableColumnMapper.updateGenTableColumn(genTable);
     }
 
-    public List<GenTableColumnEntity> selectDbTableColumnsByName(String tableName) {
+    public List<GenTableColumnEntity> selectDbTableColumnsByName(String dbType,String tableName) {
         return genTableColumnMapper.selectDbTableColumnsByName(tableName);
     }
 
-    public List<GenTableColumnEntity> selectDbTableColumnsByName1(String tableName) {
-        return genTableColumnMapper.selectDbTableColumnsByName(tableName);
-    }
+//    public List<GenTableColumnEntity> selectDbTableColumnsByName1(String tableName) {
+//        return genTableColumnMapper.selectDbTableColumnsByName(tableName);
+//    }
 
     public int deleteGenTableColumnByIds(Long[] ids) {
         return genTableColumnMapper.deleteGenTableColumnByIds(ids);

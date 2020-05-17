@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.j2eefast.flowable.bpm.mapper.BpmTaskMapper" >
+    <!-- 待办-->
+    <select id="findApplyingTasksPage" resultType="com.j2eefast.flowable.bpm.entity.BpmTaskEntity">
+        SELECT DISTINCT
+            t1.ID_ AS taskId,
+            t1.NAME_ AS taskName,
+            t2.NAME_ AS formName,
+            t2.TENANT_ID_ AS tenantId,
+            t2.BUSINESS_KEY_ AS businessKey,
+            t2.PROC_INST_ID_ AS processInstanceId,
+            t1.CREATE_TIME_ AS startTime,
+            u.`FIRST_` AS username,
+            t1.`SUSPENSION_STATE_` AS status,
+            t1.PRIORITY_ as priority
+        FROM
+            act_ru_task t1
+        INNER JOIN act_ru_execution t2 ON t1.PROC_INST_ID_ = t2.PROC_INST_ID_
+        LEFT JOIN act_ru_identitylink t3 ON t3.TASK_ID_ = t1.ID_
+        LEFT JOIN `act_hi_procinst` t4 ON t1.`PROC_INST_ID_` = t4.`PROC_INST_ID_`
+        LEFT JOIN `act_id_user` u ON u.`ID_` = t4.`START_USER_ID_`
+        WHERE
+            t2.BUSINESS_KEY_ IS NOT NULL
+        AND (
+            t1.ASSIGNEE_ = #{userId}
+            OR (
+                t1.ASSIGNEE_ IN (
+                    SELECT
+                        G.group_id_
+                    FROM
+                        act_id_membership G
+                    WHERE
+                        G.user_id_ = #{userId}
+                )
+            )
+            OR (
+                (
+                    t1.ASSIGNEE_ IS NULL
+                    OR t1.ASSIGNEE_ = ''
+                )
+                AND (
+                    t3.USER_ID_ = #{userId}
+                    OR t3.GROUP_ID_ IN (
+                        SELECT
+                            g.group_id_
+                        FROM
+                            act_id_membership g
+                        WHERE
+                            g.user_id_ = #{userId}
+                    )
+                )
+            )
+        )
+        <if test = "sql_filter !=null and sql_filter!=''">
+            and ${sql_filter}
+        </if>
+    </select>
+
+    <!-- 已办-->
+    <select id="findApplyedTasksPage" resultType="com.j2eefast.flowable.bpm.entity.BpmTaskEntity">
+        SELECT DISTINCT
+            t1.ID_ AS taskId,
+            t1.NAME_ AS taskName,
+            t2.FIRST_ AS username,
+            t1.PRIORITY_ as priority,
+            t2.ID_ AS approverId,
+            t3.NAME_ AS formName,
+            t3.BUSINESS_KEY_ AS businessKey,
+            t3.PROC_INST_ID_ AS processInstanceId,
+            t3.TENANT_ID_ AS tenantId,
+            t4.START_TIME_ AS startTime,
+            t4.`DURATION_` as duration,
+            t4.END_TIME_ AS endTime,
+            t6.`apply_type` AS applyType,
+            t6.`prefix_url` AS prefixUrl
+        FROM
+            act_hi_taskinst t1
+        LEFT JOIN act_hi_procinst t3 ON t1.PROC_INST_ID_ = t3.PROC_INST_ID_
+        LEFT JOIN `act_hi_actinst` t4 ON(t1.PROC_INST_ID_ = t4.PROC_INST_ID_ AND t4.`TASK_ID_` = t1.`ID_`)
+        LEFT JOIN `act_hi_comment` t5 ON(t5.`TASK_ID_` = t1.`ID_` AND t5.`USER_ID_` IS NOT NULL)
+        LEFT JOIN act_id_user t2 ON t5.`USER_ID_` = t2.ID_
+        LEFT JOIN `bpm_task_from` t6 ON t6.`process_definition_key` = t1.`PROC_DEF_ID_`
+        WHERE
+            t1.END_TIME_ IS NOT NULL
+        <if test="userId != null and userId!=''">
+            AND t1.ASSIGNEE_ = #{userId}
+        </if>
+        <if test = "sql_filter !=null and sql_filter!=''">
+            and ${sql_filter}
+        </if>
+    </select>
+</mapper>

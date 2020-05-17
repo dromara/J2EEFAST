@@ -36,10 +36,14 @@
         <include refid="selectRoleContactVo"/>
         WHERE r.del_flag = '0'
         <if test="roleName != null and roleName != ''">
-            AND r.role_name like concat('%', #{roleName}, '%')
+            AND r.role_name like
+            <if test="_databaseId  == 'oracle'"> '%,'||#{roleName}||',%'</if>
+            <if test="_databaseId  == 'mysql'"> concat('%', #{roleName}, '%') </if>
         </if>
         <if test = "roleKey !=null and roleKey!=''">
-            AND r.role_key like concat('%', #{roleKey}, '%')
+            AND r.role_key like
+            <if test="_databaseId  == 'oracle'"> '%,'||#{roleKey}||',%'</if>
+            <if test="_databaseId  == 'mysql'"> concat('%', #{roleKey}, '%') </if>
         </if>
         <if test = "sql_filter !=null and sql_filter!=''">
             and ${sql_filter}

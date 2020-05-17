@@ -1,19 +1,18 @@
 fast:
-    db:
-        #开启多源配置 true, 如果为false 则会获取默认 default 配置数据库
-        muti-datasource-open: false
-        #多数据源名称列表，多个用逗号隔开， 使用方法：@DataSource(name="db1")
-        datasourceNames: db1#,db2,db3
     redis:
         #是否开启redis 内存数据库 <*推荐使用*>
+        enabled: true
+    #工作流是否开启 如果工作流开启 必须开启 rabbitmq消息队列 否则系统人员 与 角色同步就会有异常
+    flowable:
         enabled: true
     #是否演示模式
     demoMode:
         enabled: false
         #配置拦截规则
-        post: 'edit,del,remove,clean,updateAvatar,updateUser,resetPwd,updatePass,genCode,uploadLic,add,uploadFile'
+        post: 'edit,del,remove,clean,updateAvatar,updateUser,add,resetPwd,updatePass,genCode,uploadLic,status'
         get: 'del,remove,clean,dirTreeData'
-        urlPatterns: '/sys/*,/tool/*'
+        urlPatterns: '/sys/*,/tool/*,/file/ueditor/*,/bpm/procdef/*,/bpm/model/*,/bpm/processInstance/*'
+        ip:
     #是否开启HTTPS false 则以server:port
     ssl:
         enabled: true
@@ -28,7 +27,7 @@ fast:
         # 过滤开关
         enabled: true
         # 排除链接（多个用逗号分隔）
-        excludes: /sys/notice/*
+        excludes: /sys/notice/*,/sys/database/add
         # 匹配链接
         urlPatterns: /sys/*,/tool/*
 ########################License认证相关#####################
@@ -63,8 +62,8 @@ spring:
             username:
             password:
             filters: wall,mergeStat
-        ###############从数据库配置
-        db1:
+        ###############工作流数据库配置
+        flowable:
             driverClassName:
             #从数据库是否开启
             enabled: false
@@ -72,22 +71,6 @@ spring:
             username:
             password:
             filters:
-#        db2:
-#            driverClassName:
-#            #从数据库是否开启
-#            enabled: false
-#            url:
-#            username:
-#            password:
-#            filters:
-#        db3:
-#            driverClassName:
-#            #从数据库是否开启
-#            enabled: false
-#            url:
-#            username:
-#            password:
-#            filters:
     #redis数据库服务器
     redis:
         database: 10
@@ -101,18 +84,42 @@ spring:
                 max-wait: -1ms      # 连接池最大阻塞等待时间（使用负值表示没有限制）
                 max-idle: 10      # 连接池中的最大空闲连接
                 min-idle: 5       # 连接池中的最小空闲连接
-
+    #消息队列
+    rabbitmq:
+        addresses: ip:5672
+        # RabbitMQ 默认的用户名和密码都是guest 而虚拟主机名称是 "/"
+        # 如果配置其他虚拟主机地址，需要预先用管控台或者图形界面创建 图形界面地址 http://主机地址:15672
+        username:
+        password:
+        virtual-host: /
+        # 是否启用发布者确认 具体确认回调实现见代码
+        publisher-confirms: true
+        # 是否启用发布者返回 具体返回回调实现见代码
+        publisher-returns: true
+        # 是否启用强制消息 保证消息的有效监听
+        template.mandatory: true
+        #消费端配置
+        listener:
+            simple:
+                #消费端
+                concurrency: 5
+                #最大消费端数
+                max-concurrency: 10
+                #自动签收auto  手动 manual
+                acknowledge-mode: manual
+                #限流（海量数据，同时只能过来一条）
+                prefetch: 1
 mybatis-plus:
     #实体扫描，多个package用逗号或者分号分隔
     type-aliases-package: com.j2eefast.*.*.entity
-    #打印sql语句,调试用
-    #configuration:
-    #   log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #扫描mapper 相当于 @MapperScan 注解,多个逗号分割
+    mapper-package: com.j2eefast.*.*.dao
+
 http:
     #port: 8200 #web端口
     port: 80 #web端口
 server:
-    name: '##################Fast云系统OS[生产环境]##############'
-    projectName: 'FAST云系统[生产环境]'
+    name: '##################J2eeFAST[生产环境]##############'
+    projectName: 'J2eeFAST[生产环境]'
     #port: 8080 #HTTPS端口
     port: 443 #HTTPS端口

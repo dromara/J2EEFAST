@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.j2eefast.flowable.bpm.mapper.ProcessDefinitionMapper">
+    <select id="getById" parameterType="java.lang.String"
+            resultType="com.j2eefast.flowable.bpm.entity.BpmProcessDefinitionEntity">
+        SELECT
+        t.CATEGORY_ AS category,
+        t.ID_ AS id,
+        t.NAME_ AS name,
+        t.KEY_ AS modelKey,
+        t.RESOURCE_NAME_ AS resourceName,
+        t.DGRM_RESOURCE_NAME_ as diagramResourceName,
+        t.SUSPENSION_STATE_ as suspensionState,
+        t.VERSION_ AS version,
+        t.DEPLOYMENT_ID_ AS deploymentId,
+        t.TENANT_ID_ AS tenantId
+        FROM
+        act_re_procdef t
+        where t.ID_ = #{value}
+    </select>
+
+    <select id="findPage"
+            resultType="com.j2eefast.flowable.bpm.entity.BpmProcessDefinitionEntity">
+        SELECT
+        t.CATEGORY_ AS category,
+        t.ID_ AS id,
+        t.NAME_ AS name,
+        t.KEY_ AS modelKey,
+        t.RESOURCE_NAME_ AS resourceName,
+        t.DGRM_RESOURCE_NAME_ as dgrmResourceName,
+        t.SUSPENSION_STATE_ as suspensionState,
+        t.VERSION_ AS version,
+        t.DEPLOYMENT_ID_ AS deploymentId,
+        t.TENANT_ID_ AS tenantId
+        FROM
+        act_re_procdef t
+        <where>
+            <if test="name!=null and name!=''">
+                and t.NAME_ LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="modelKey!=null and modelKey!=''">
+                or t.KEY_ LIKE CONCAT('%',#{modelKey},'%')
+            </if>
+            <if test="category!=null and category!=''">
+                or t.CATEGORY_  = #{category}
+            </if>
+            <if test="suspensionState!=null and suspensionState!=''">
+                or t.SUSPENSION_STATE_  = #{suspensionState}
+            </if>
+            <if test = "sql_filter !=null and sql_filter!=''">
+                and ${sql_filter}
+            </if>
+        </where>
+    </select>
+</mapper>

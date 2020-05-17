@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author: zhouzhou
  * @date: 2019-04-02 21:55
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 public class CookieUtil {
@@ -44,12 +44,28 @@ public class CookieUtil {
 		setCookie(response, name, value, "/", maxAge);
 	}
 
+	public static void setReadCookie(HttpServletResponse response, String name, String value, int maxAge) {
+		setReadCookie(response, name, value, "/", maxAge);
+	}
+
 	/**
-	 * 设置 Cookie
+	 * 设置 前端可读Cookie
 	 * @param name 名称
 	 * @param value 值
 	 * @param maxAge 生存时间（单位秒）
 	 */
+	public static void setReadCookie(HttpServletResponse response, String name, String value, String path, int maxAge) {
+		if (ToolUtil.isNotEmpty(name)){
+			name = URLUtil.encodeAll(name);
+			value = URLUtil.encodeAll(value);
+			Cookie cookie = new Cookie(name, null);
+			cookie.setPath(path);
+			cookie.setMaxAge(maxAge);
+			cookie.setValue(value);
+			response.addCookie(cookie);
+		}
+	}
+
 	public static void setCookie(HttpServletResponse response, String name, String value, String path, int maxAge) {
 		if (ToolUtil.isNotEmpty(name)){
 			name = URLUtil.encodeAll(name);
@@ -78,7 +94,7 @@ public class CookieUtil {
 	 * @return 值
 	 */
 	public static String getCookie(HttpServletRequest request, HttpServletResponse response, String name) {
-		return getCookie(request, response, name, false);
+		return getCookie(request, response, name, true);
 	}
 
 	/**
@@ -90,7 +106,7 @@ public class CookieUtil {
 	 * @return 值
 	 */
 	public static String getCookie(HttpServletRequest request, HttpServletResponse response, String name, boolean isRemove) {
-		return getCookie(request, response, name, "/", false);
+		return getCookie(request, response, name, "/", isRemove);
 	}
 
 	/**

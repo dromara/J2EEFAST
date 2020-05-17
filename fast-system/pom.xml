@@ -35,12 +35,6 @@
 			<groupId>com.qiniu</groupId>
 			<artifactId>qiniu-java-sdk</artifactId>
 	</dependency>
-    
-    <!-- 获取系统信息-->
-	<dependency>
-		<groupId>com.github.oshi</groupId>
-		<artifactId>oshi-core</artifactId>
-	</dependency>
 	
     <dependency>
       <groupId>junit</groupId>

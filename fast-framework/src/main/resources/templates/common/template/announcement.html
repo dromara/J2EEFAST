@@ -5,7 +5,7 @@
 <head><meta charset="UTF-8" />
 <title>${noticeTitle}</title>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" >
-<link rel="shortcut icon" href="../../statics/img/favicon.ico">
+<link rel="shortcut icon" href="../../static/img/favicon.ico">
 <meta name="renderer" content="webkit"><base target="_blank" />
     <style type="text/css">
 a{text-decoration:none;color:#0072c6;}a:hover{text-decoration:none;color:#004d8c;}
@@ -30,6 +30,20 @@ span{display:block;font-size:12px;line-height:12px;}
     /*border-style: solid solid none;*/
     border: 1px solid #ddd;
 }
+::-webkit-scrollbar-track {
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 10px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background-color: #999;
+}
 </style>
 </head><body>
 <div style="width:100%;text-align: center;"><h1>${noticeTitle}</h1></div>
@@ -47,7 +61,7 @@ span{display:block;font-size:12px;line-height:12px;}
     </div>
 </div>
 <hr>
-<iframe id="frame-content" width="100%" scrolling="no" src="/fast/statics/notice/${htmlNo}" frameborder="0"></iframe>
+<iframe id="frame-content" width="100%" scrolling="no" src="${ctxStatic}/static/notice/${htmlNo}" frameborder="0"></iframe>
 <hr>
 <div style="width:100%;text-align: right;font-size: 12px;">
     发布人: ${createBy}

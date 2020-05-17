@@ -4,16 +4,31 @@
 <mapper namespace="com.j2eefast.framework.sys.mapper.SysMenuMapper">
 
     <sql id="selectMenuVo">
-        select menu_id, name, parent_id, order_num, url,  type, hide, ifnull(perms,'') as perms,target, icon,module_codes, create_by, create_time
+        select menu_id, name, parent_id, order_num, url,  type, hide,
+        <if test="_databaseId  == 'oracle'">
+            nvl(perms,'') as perms,
+        </if>
+        <if test="_databaseId  == 'mysql'">
+            ifnull(perms,'') as perms,
+        </if>
+        target, icon,module_codes, create_by, create_time
 		from sys_menu
     </sql>
 
-    <sql id="selectMenuVo1">
+    <sql id="selectMenuVo1_Mysql">
 		SELECT DISTINCT m.menu_id, m.parent_id, m.name, m.url, m.hide, IFNULL(m.perms,'') AS perms,m.module_codes,m.target, m.type, m.icon, m.order_num, m.create_time FROM(SELECT
 		a.*,SUBSTRING_INDEX( SUBSTRING_INDEX( a.module_codes, ',', b.help_topic_id + 1 ), ',',- 1 ) AS cs
 		FROM
 		sys_menu a
 		JOIN sys_index b ON b.help_topic_id <![CDATA[ < ]]> ( LENGTH( a.module_codes ) - LENGTH( REPLACE ( a.module_codes, ',', '' ) ) + 1)) AS m
+    </sql>
+
+
+    <sql id="selectMenuVo1_Orcale">
+        select m.menu_id, m.parent_id,
+        m.name, m.url, m.hide, nvl(m.perms,'') AS perms,m.module_codes,m.target, m.type, m.icon, m.order_num, m.create_time from
+        (SELECT distinct REGEXP_SUBSTR(t.module_codes, '[^,]+', 1, level) as cs,t.*
+        from sys_menu t connect by level   <![CDATA[ <=  ]]> regexp_count(t.module_codes, ',') + 1 )   m
     </sql>
 
     <select id="findNotButtonList" resultType="com.j2eefast.framework.sys.entity.SysMenuEntity">
@@ -29,7 +44,12 @@
 	</select>
 
     <select id="findModuleMenuAll"  parameterType="String"  resultType="com.j2eefast.framework.sys.entity.SysMenuEntity">
-        <include refid="selectMenuVo1"/>
+        <if test="_databaseId  == 'oracle'">
+            <include refid="selectMenuVo1_Orcale"/>
+        </if>
+        <if test="_databaseId  == 'mysql'">
+            <include refid="selectMenuVo1_Mysql"/>
+        </if>
         <if test="moduleCodes != null and moduleCodes != ''">
             WHERE m.cs in
             <foreach item="code" collection="moduleCodes.split(',')" open="(" separator="," close=")">
@@ -40,14 +60,24 @@
     </select>
 
     <select id="findListmoduleParentId" resultType="com.j2eefast.framework.sys.entity.SysMenuEntity">
-        <include refid="selectMenuVo1"/>
+        <if test="_databaseId  == 'oracle'">
+            <include refid="selectMenuVo1_Orcale"/>
+        </if>
+        <if test="_databaseId  == 'mysql'">
+            <include refid="selectMenuVo1_Mysql"/>
+        </if>
         where m.parent_id = #{parentId} and m.hide = 0
         and m.cs = #{modules}
         order by m.order_num asc
     </select>
 
     <select id="findMenuAllByUserIdModelId" resultType="com.j2eefast.framework.sys.entity.SysMenuEntity">
-        <include refid="selectMenuVo1"/>
+        <if test="_databaseId  == 'oracle'">
+            <include refid="selectMenuVo1_Orcale"/>
+        </if>
+        <if test="_databaseId  == 'mysql'">
+            <include refid="selectMenuVo1_Mysql"/>
+        </if>
         left join sys_role_menu rm on m.menu_id = rm.menu_id
         left join sys_user_role ur on rm.role_id = ur.role_id
         LEFT JOIN sys_role ro on ur.role_id = ro.role_id
@@ -70,9 +100,12 @@
     </select>
 
     <select id="findMenuTree" parameterType="Long" resultType="String">
-		select concat(m.menu_id, ifnull(m.perms,'')) as perms
+		select concat(m.menu_id,
+        <if test="_databaseId  == 'oracle'"> nvl(m.perms,'') </if>
+        <if test="_databaseId  == 'mysql'">ifnull(m.perms,'') </if>
+		) as perms
 		from sys_menu m
-			left join sys_role_menu rm on m.menu_id = rm.menu_id
+		left join sys_role_menu rm on m.menu_id = rm.menu_id
 		where rm.role_id = #{roleId}
 		order by m.parent_id, m.order_num
 	</select>
@@ -81,7 +114,9 @@
         <include refid="selectMenuVo"/>
         <where>
             <if test="name != null and name != ''">
-                AND name like concat('%', #{name}, '%')
+                AND name like
+                <if test="_databaseId  == 'oracle'"> '%,'||#{name}||',%'</if>
+                <if test="_databaseId  == 'mysql'"> concat('%', #{name}, '%') </if>
             </if>
             <if test="hide != null">
                 AND hide = #{hide}
@@ -91,15 +126,23 @@
     </select>
 
     <select id="findMenuListByUserId" resultType="com.j2eefast.framework.sys.entity.SysMenuEntity">
-        select distinct m.menu_id, m.parent_id, m.name, m.url, m.hide, ifnull(m.perms,'') as perms,
-         m.target,m.type, m.icon, m.order_num, m.create_time
+        select distinct m.menu_id, m.parent_id, m.name, m.url, m.hide,
+        <if test="_databaseId  == 'oracle'">
+            nvl(m.perms,'') as perms,
+        </if>
+        <if test="_databaseId  == 'mysql'">
+            ifnull(m.perms,'') as perms,
+        </if>
+        m.target,m.type, m.icon, m.order_num, m.create_time
         from sys_menu m
         left join sys_role_menu rm on m.menu_id = rm.menu_id
         left join sys_user_role ur on rm.role_id = ur.role_id
         LEFT JOIN sys_role ro on ur.role_id = ro.role_id
         where ur.user_id = #{userId}
         <if test="name != null and name != ''">
-            AND m.name like concat('%', #{name}, '%')
+            AND m.name like
+            <if test="_databaseId  == 'oracle'"> '%,'||#{name}||',%'</if>
+            <if test="_databaseId  == 'mysql'"> concat('%', #{name}, '%') </if>
         </if>
         <if test="hide != null">
             AND m.hide = #{hide}
@@ -113,7 +156,14 @@
     </select>
 
     <select id="findMenuAllByUserId" parameterType="Long" resultType="com.j2eefast.framework.sys.entity.SysMenuEntity">
-		select distinct m.menu_id, m.parent_id, m.name, m.url, m.hide, ifnull(m.perms,'') as perms,m.module_codes,m.target, m.type, m.icon, m.order_num, m.create_time
+		select distinct m.menu_id, m.parent_id, m.name, m.url, m.hide,
+        <if test="_databaseId  == 'oracle'">
+            nvl(perms,'') as perms,
+        </if>
+        <if test="_databaseId  == 'mysql'">
+            ifnull(perms,'') as perms,
+        </if>
+		m.module_codes,m.target, m.type, m.icon, m.order_num, m.create_time
 		from sys_menu m
 			 left join sys_role_menu rm on m.menu_id = rm.menu_id
 			 left join sys_user_role ur on rm.role_id = ur.role_id

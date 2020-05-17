@@ -5,8 +5,8 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <!--定义日志存放的位置，默认存放在项目启动的相对路径的目录-->
-    <springProperty scope="context" name="LOG_PATH" source="logging.path" defaultValue="logs/"/>
-    <springProperty scope="context" name="LOG_FILE" source="logging.file" defaultValue="fast"/>
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path" defaultValue="logs/"/>
+    <springProperty scope="context" name="LOG_FILE" source="logging.file.name" defaultValue="fast"/>
     <!-- ****************************************************************************************** -->
     <!-- ****************************** 本地开发只在控制台打印日志 ************************************ -->
     <!-- ****************************************************************************************** -->
@@ -24,7 +24,7 @@
         </root>
 
         <!--各个服务的包在本地执行的时候，打开debug模式-->
-        <logger name="com.j2eefast" level="debug" additivity="false">
+        <logger name="com.j2eefast" level="info" additivity="false">
             <appender-ref ref="STDOUT"/>
         </logger>
     </springProfile>
@@ -47,7 +47,11 @@
             <appender-ref ref="STDOUT"/>
         </logger>
 
-        <logger name="freemarker.cache" level="info" additivity="true">
+        <logger name="com.j2eefast" level="debug" additivity="false">
+            <appender-ref ref="STDOUT"/>
+        </logger>
+
+        <logger name="freemarker.cache" level="info" additivity="false">
             <appender-ref ref="STDOUT"/>
         </logger>
     </springProfile>
@@ -75,12 +79,12 @@
 
                 <!-- 归档的日志文件的路径，%d{yyyy-MM-dd}指定日期格式，%i指定索引 -->
                 <fileNamePattern>${LOG_PATH}error/${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
-
                 <!-- 除按日志记录之外，还配置了日志文件不能超过2M，若超过2M，日志文件会以索引0开始，
                 命名日志文件，例如log-error-2013-12-21.0.log -->
                 <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                     <maxFileSize>10MB</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>180</maxHistory> <!-- 保留天数 -->
             </rollingPolicy>
 
             <!-- 追加方式记录日志 -->
@@ -118,6 +122,8 @@
                 <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                     <maxFileSize>10MB</maxFileSize>
                 </timeBasedFileNamingAndTriggeringPolicy>
+
+                <maxHistory>180</maxHistory> <!-- 保留天数 -->
             </rollingPolicy>
 
             <!-- 追加方式记录日志 -->

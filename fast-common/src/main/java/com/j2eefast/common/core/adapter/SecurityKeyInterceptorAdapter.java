@@ -27,19 +27,19 @@ public class SecurityKeyInterceptorAdapter extends HandlerInterceptorAdapter{
 
 		//设置语言 Cookie
         if(ToolUtil.isNotEmpty(language)){
-			CookieUtil.setCookie(response,ConfigConstant.LANGUAGE,language,60*60*24*7);
+			CookieUtil.setReadCookie(response,ConfigConstant.LANGUAGE,language,60*60*24*7);
         }
 		String _secretKey = "";
 		//获取登录安全Key
 		if(request.getCookies() == null){
 			_secretKey = IdUtil.simpleUUID().toLowerCase();
-			CookieUtil.setCookie(response,ConfigConstant.SECRETKEY, _secretKey,60*30);
+			CookieUtil.setReadCookie(response,ConfigConstant.SECRETKEY, _secretKey,60*30);
 
 		}else{
 			_secretKey = CookieUtil.getCookie(request,ConfigConstant.SECRETKEY);
 			if(ToolUtil.isEmpty(_secretKey)){
 				_secretKey = IdUtil.simpleUUID().toLowerCase();
-				CookieUtil.setCookie(response,ConfigConstant.SECRETKEY, _secretKey,60*30);
+				CookieUtil.setReadCookie(response,ConfigConstant.SECRETKEY, _secretKey,60*30);
 			}
 		}
 		request.setAttribute(ConfigConstant.SECRETKEY, _secretKey);

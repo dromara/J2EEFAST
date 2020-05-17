@@ -1,40 +1,35 @@
 package ${packageName}.entity;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableName;
 import javax.validation.constraints.NotBlank;
+import com.baomidou.mybatisplus.annotation.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 #if($table.crud)
-import com.lixinos.common.core.domain.BaseEntity;
+import com.j2eefast.common.core.base.entity.BaseEntity;
 #end
 #foreach ($import in $importList)
 import ${import};
 #end
 
 /**
-
- * @ClassName: ${functionName}
- * @Package: ${packageName}
- * @Description: ${tableName}
+ * ${tableName}
  * @author: ${author}
- * @time ${datetime}
- 
- * /----------------------------/
- * /---><---/
- * /----------------------------/
+ * @date ${datetime}
  */
 #if($table.crud)
 #set($Entity="extends BaseEntity")
 #else
 #set($Entity="implements Serializable")
 #end
+@Data
 @TableName("${tableName}")
-public class ${ClassName}Entity ${Entity}
-{
-    private static final long serialVersionUID = 1L;
+public class ${ClassName}Entity ${Entity}{
 
 #foreach ($column in $columns)
 #if($table.crud)
@@ -48,11 +43,11 @@ public class ${ClassName}Entity ${Entity}
     private $column.javaType $column.javaField;
 #else
 #if($column.pk) #* 是表主键*#
-#if($column.increment) #* 是主键自增型*#
-    @TableId
+#if($column.increment) #* 是主键*#
+	@TableId(type = IdType.AUTO)
     private $column.javaType $column.javaField;
 #else
-    @TableId(value = "$column.columnName",type = IdType.INPUT)
+    @TableId(value = "$column.columnName",type = IdType.ASSIGN_ID)
     private $column.javaType $column.javaField;
 #end
 #else
@@ -66,12 +61,18 @@ public class ${ClassName}Entity ${Entity}
     @NotNull(message = "参数值不能为空")
 #end
 #end
+#if($column.javaField == 'delFlag')
+    @TableLogic
+#end
     private $column.javaType $column.javaField;
 #end
 #end
 #end
 #else
     /** $column.columnComment */
+#if($column.javaField == 'delFlag')
+    @TableLogic
+#end
 #if($column.plus)
     @TableField(exist = false)
 #if($column.javaType == 'Date')
@@ -81,10 +82,10 @@ public class ${ClassName}Entity ${Entity}
 #else
 #if($column.pk) #* 是表主键*#
 #if($column.increment) #* 是主键自增型*#
-    @TableId
+	@TableId(type = IdType.AUTO)
     private $column.javaType $column.javaField;
 #else
-    @TableId(value = "$column.columnName",type = IdType.INPUT)
+    @TableId(value = "$column.columnName",type = IdType.ASSIGN_ID)
     private $column.javaType $column.javaField;
 #end
 #else
@@ -104,6 +105,7 @@ public class ${ClassName}Entity ${Entity}
 #end
 
 #end
+#*
 #foreach ($column in $columns)
 #if($table.crud)
 #if(!$table.isSuperColumn($column.javaField))
@@ -128,7 +130,6 @@ public class ${ClassName}Entity ${Entity}
         return $column.javaField;
     }
 #end
-
 #end
-
+*#
 }

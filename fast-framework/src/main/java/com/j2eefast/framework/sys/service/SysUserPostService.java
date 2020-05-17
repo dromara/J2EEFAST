@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author: zhouzhou
  * @date: 2019-04-10 15:02
- * @web: https://www.j2eefast.com
+ * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
 @Service
@@ -31,15 +31,15 @@ public class SysUserPostService  extends ServiceImpl<SysUserPostMapper, SysUserP
 		}
 
 		// 保存用户与角色关系
-		List<SysUserPostEntity> list = new ArrayList<>(postCodes.size());
+//		List<SysUserPostEntity> list = new ArrayList<>(postCodes.size());
 		for (String postCode : postCodes) {
 			SysUserPostEntity post = new SysUserPostEntity();
 			post.setUserId(userId);
 			post.setPostCode(postCode);
-			list.add(post);
+//			list.add(post);
+			this.save(post);
 		}
-
-		this.saveBatch(list);
+//		this.saveBatch(list);
 	}
 
 	public boolean deleteBatchByUserIds(Long[] userIds) {

@@ -1,0 +1,48 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="部署流程"/>
+    <@addorEdit fromId="form-model-add">
+        <div style="padding:25px 0 0 0;">
+            <input type="hidden"  name="modelId" value="${model.id}"/>
+            <div class="form-group">
+                <label class="col-xs-3 control-label "><span style="color: red; ">*</span>流程名称：</label>
+                <div class="col-xs-8">
+                    <input class="form-control" type="text"  value="${model.name}"  readonly="true">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3 control-label"><span style="color: red; ">*</span>流程Key：</label>
+                <div class="col-xs-8">
+                    <input class="form-control" type="text" value="${model.key}"  readonly="true">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3 control-label"><@ctx.i18n text = "流程类型"/>：</label>
+                <div class="col-xs-8">
+                    <select  name="category" class="form-control">
+                        <#list dict.getType('sys_bpm_category')>
+                            <#items as d>
+                                <#if d.status =='0' >
+                                    <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                </#if>
+                            </#items>
+                        </#list>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </@addorEdit>
+    <div class="hr-line-dashed"></div>
+    <div class="row" style="text-align: center;" id="_addTab">
+            <button type="button" class="btn btn-sm btn-primary" onclick="opt.form.submit()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.close()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+    </div>
+    <@footer>
+        <script>
+            var prefix = baseURL + "bpm/model";
+            function submitHandler() {
+                opt.operate.save(prefix + "/add", $('#form-model-add').serialize());
+            }
+        </script>
+    </@footer>
+</@pageTheme>
