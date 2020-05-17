@@ -9,7 +9,7 @@
 |  ![输入图片说明](https://images.gitee.com/uploads/images/2020/0430/095150_40d615d7_1816537.png "屏幕截图.png")|![输入图片说明](https://images.gitee.com/uploads/images/2020/0430/095915_bde5078e_1816537.png "屏幕截图.png") | ![输入图片说明](https://images.gitee.com/uploads/images/2020/0430/095223_c92dffe5_1816537.png "屏幕截图.png") |
 
 
-  **_说明:目前演示系统是2.0.6最新集成工作流版本目前还有点小BUG, gitee为2.0.5版本并没有更新，目前工作流模块还有很多功能并没有完善所以暂时不更新，更新时间待定，以演示网站公告时间为准!_** 
+  **_说明:最新代码已更新大家可以下载体验,有问题可以加群** 
 
 # J2eeFAST
 
