@@ -44,8 +44,6 @@
         <!-- versions -->
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
-        <log4j.version>1.2.17</log4j.version>
-        <log4j2.version>2.11.2</log4j2.version>
         <commons-logging.version>1.2</commons-logging.version>
         <easy.captcha>1.6.2</easy.captcha>
         <velocity.version>1.7</velocity.version>
@@ -101,20 +99,6 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
-                <optional>true</optional>
-            </dependency>
-
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>${log4j.version}</version>
-                <optional>true</optional>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j2.version}</version>
                 <optional>true</optional>
             </dependency>
 
