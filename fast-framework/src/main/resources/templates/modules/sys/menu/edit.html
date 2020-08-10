@@ -1,136 +1,119 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="修改菜单"/>
-<@addorEdit fromId="form-menu-edit">
-			<input name="menuId"  id="menuId"  type="hidden" value="${menu.menuId}"   />
-			<input id="treeId"     name="parentId" type="hidden" value="${menu.parentId}" />
-			<div class="form-group">
-				<label class="col-sm-3 control-label "><@ctx.i18n text = "上级菜单"/>：</label>
-				<div class="col-sm-8">
-				    <div class="input-group">
-						<input class="form-control" type="text" onclick="selectMenuTree()" id="treeName" readonly="true" value="${menu.parentName?default("主目录")}">
-						<span class="input-group-btn"><a  href="javascript:selectMenuTree();" class="btn btn-default"><i class="fa fa-fw fa-search"></i></a></span>
-				    </div>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "菜单类型"/>：</label>
-				<div class="col-sm-8">
-					<#list dict.getType('sys_menu_type')>
-						<#items as d>
-							<#if d.status =='0' >
-								<label class="radio-box"> <input type="radio" name="type" value="${d.dictValue}" <#if menu.type?c ==d.dictValue >checked</#if>/><@ctx.i18n text = "${d.dictLabel}"/></label>
-							</#if>
-						</#items>
-					</#list>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "菜单名称"/>：</label>
-				<div class="col-sm-8">
-					<input class="form-control" type="text" name="name" id="name" value="${menu.name?default("")}" required>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "所属模块"/>：</label>
-				<div class="col-sm-8">
-					<#list modules>
-						<#items as d>
-							<#if d.status =='0' >
-								<label>
-									<#assign a=0 />
-									<#list menu.moduleCodes?default("")?split(",") as x>
-										<#if x == d.moduleCode>
-											<#assign a=1 />
-										</#if>
-									</#list>
-									<label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" <#if a== 1>checked</#if> required/><@ctx.i18n text = "${d.moduleName}" /></label>
-								</label>
-							</#if>
-						</#items>
-					</#list>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "请求地址"/>：</label>
-				<div class="col-sm-8">
-					<input id="url" name="url" class="form-control" type="text" value="${menu.url?default("#")}">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "目标"/>：
-					<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="bottom"
-					   data-content="菜单已什么形式打开">
-						<i class="fa fa-question-circle-o" style="color: orange"></i></a>
-				</label>
-				<div class="col-sm-8">
-					<select id="target" name="target" class="form-control">
-						<#list dict.getType('sys_menu_target')>
-							<#items as d>
-								<#if d.status =='0' >
-									<option value="${d.dictValue}" <#if (d.isDefault =='Y' && menu.target == "") ||
-									(menu.target ==d.dictValue ) >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
-								</#if>
-							</#items>
-						</#list>
-					</select>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "权限标识"/>：
+<@header title="修改菜单" bodyClass="white-bg" libs=["bootstrapSelect"]/>
+<div class="wrapper wrapper-content ibox-content">
+<@form.form id="form-menu-edit" class="form-horizontal">
+	<@form.hidden name="id" value="${menu.id?default('')}"/>
+	<div class="form-group">
+		<label class="col-sm-3 control-label "><@ctx.i18n text = "上级菜单"/>：</label>
+		<div class="col-sm-8">
+			<@form.treeselect id="treeId" value="${menu.parentId}" name="parentId" boxTitle="上级菜单选择" url="sys/menu/menuTreeData"
+			labelValue="${menu.parentName?default('主目录')}"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "菜单类型"/>：</label>
+		<div class="col-sm-8">
+			<@form.radio name="type" dictType="sys_menu_type" value="${menu.type}"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "菜单名称"/>：</label>
+		<div class="col-sm-8">
+			<input class="form-control" type="text" name="name" id="name" value="${menu.name?default("")}" required>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "所属模块"/>：</label>
+		<div class="col-sm-8">
+<#--			<#list modules>-->
+<#--				<#items as d>-->
+<#--					<#if d.status =='0' >-->
+<#--						<label>-->
+<#--							<#assign a=0 />-->
+<#--							<#list menu.moduleCodes?default("")?split(",") as x>-->
+<#--								<#if x == d.moduleCode>-->
+<#--									<#assign a=1 />-->
+<#--								</#if>-->
+<#--							</#list>-->
+<#--							<label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" <#if a== 1>checked</#if> required/><@ctx.i18n text = "${d.moduleName}" /></label>-->
+<#--						</label>-->
+<#--					</#if>-->
+<#--				</#items>-->
+<#--			</#list>-->
+			<@form.checkbox name="moduleCodes" items=modules itemLabel="moduleName" value="${menu.moduleCodes}" itemValue="moduleCode" required=true/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "请求地址"/>：</label>
+		<div class="col-sm-8">
+			<@form.input name="url" value="${menu.url?default('#')}" helpTip="Controller类中Mapping 如：@RequestMapping(\"/sys/demo\") 填写:sys/demo + 具体方法@GetMapping"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "目标"/>：
+			<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="bottom"
+			   data-content="菜单已什么形式打开">
+				<i class="fa fa-question-circle-o" style="color: orange"></i></a>
+		</label>
+		<div class="col-sm-8">
+<#--			<select id="target" name="target" class="form-control">-->
+<#--				<#list dict.getType('sys_menu_target')>-->
+<#--					<#items as d>-->
+<#--						<#if d.status =='0' >-->
+<#--							<option value="${d.dictValue}" <#if (d.isDefault =='Y' && menu.target == "") ||-->
+<#--							(menu.target ==d.dictValue ) >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>-->
+<#--						</#if>-->
+<#--					</#items>-->
+<#--				</#list>-->
+<#--			</select>-->
+			<@form.select name="target" dictType="sys_menu_target" value="${menu.target}"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "权限标识"/>：
 <#--					<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="<@ctx.i18n text = "权限标识"/>"-->
 <#--					   data-content="控制器中定义的权限标识，如：shiro.hasPermission('')"><i class="fa fa-question-circle-o" style="color: orange"></i></a>-->
-				</label>
-				<div class="col-sm-8">
-					<input id="perms" name="perms" class="form-control" type="text" value="${menu.perms?default("")}">
-					<span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>控制器中定义的权限标识，如：<#noparse><@shiro.hasPermission name="sys:menu:add"></#noparse></span>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "排序"/>：</label>
-				<div class="col-sm-8">
-					<input class="form-control" type="text" name="orderNum" value="${menu.orderNum?default(0)}" required>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "图标"/>：
-					<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-html="true"
-					   data-content="自定义获取图标:<a href='http://www.fontawesome.com.cn/faicons/' target='_blank'>http://www.fontawesome.com.cn/faicons/</a>">
-						<i class="fa fa-question-circle-o" style="color: orange"></i></a>
-				</label>
-				<div class="col-sm-8">
-<#--					<input id="icon" name="icon" class="form-control" type="text" placeholder="选择图标" value="${menu.icon?default("")}">-->
-<#--                    <div class="ms-parent" style="width: 100%;">-->
-<#--                        <div class="icon-drop animated flipInX" style="display: none;max-height:200px;overflow-y:auto">-->
-<#--							<#include "/common/icon.html">-->
-<#--                        </div>-->
-<#--                    </div>-->
-					<div class="input-group">
-						<span class="input-group-addon"><i id="menuIconIcon" class="fa fa-fw ${menu.icon?default("")}"></i></span>
-						<input id="menuIcon" name="icon" type="text" value="${menu.icon?default("")}" class="form-control" placeholder="选择图标">
-						<span class="input-group-btn"><a id="menuIconButton" href="javascript:" class="btn btn-default"
-							><i class="fa fa-fw fa-search"></i></a></span>
-					</div>
-<#--					<span class="help-block m-b-none"><i class="fa fa-info-circle"></i>-->
-<#--							自定义获取图标:<a href="http://www.fontawesome.com.cn/faicons/" target="_blank">http://www.fontawesome.com.cn/faicons/</a>-->
-<#--					</span>-->
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "菜单状态"/>：</label>
-				<div class="col-sm-8">
-					<#list dict.getType('sys_show_hide')>
-						<#items as d>
-							<div class="radio-box">
-								<input type="radio" id="${d.dictCode}" name="hide" value="${d.dictValue}"
-									   <#if d.dictValue == (menu.hide?c) >checked</#if>>
-								<label for="${d.dictCode}"><@ctx.i18n text = "${d.dictLabel}"/></label>
-							</div>
-						</#items>
-					</#list>
-				</div>
-			</div>
-</@addorEdit>
+		</label>
+		<div class="col-sm-8">
+<#--			<input id="perms" name="perms" class="form-control" type="text" value="${menu.perms?default("")}">-->
+<#--			<span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>控制器中定义的权限标识，如：<#noparse><@shiro.hasPermission name="sys:menu:add"></#noparse></span>-->
+			<@form.input name="perms" value="${menu.perms?default('')}" helpTip="控制器中定义的权限标识，如：<@shiro.hasPermission name=\"sys:menu:add\">"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "排序"/>：</label>
+		<div class="col-sm-8">
+<#--			<input class="form-control" type="text" name="orderNum" value="${menu.orderNum?default(0)}" required>-->
+			<@form.input name="orderNum" value="${menu.orderNum?default(0)}" required=true/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "图标"/>：
+			<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-html="true"
+			   data-content="自定义获取图标:<a href='http://www.fontawesome.com.cn/faicons/' target='_blank'>http://www.fontawesome.com.cn/faicons/</a>">
+				<i class="fa fa-question-circle-o" style="color: orange"></i></a>
+		</label>
+		<div class="col-sm-8">
+			<@form.iconselect name="icon" placeholder="选择图标" value="${menu.icon?default('')}"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label"><@ctx.i18n text = "菜单状态"/>：</label>
+		<div class="col-sm-8">
+<#--			<#list dict.getType('sys_show_hide')>-->
+<#--				<#items as d>-->
+<#--					<div class="radio-box">-->
+<#--						<input type="radio" id="${d.dictCode}" name="hide" value="${d.dictValue}"-->
+<#--							   <#if d.dictValue == (menu.hide?c) >checked</#if>>-->
+<#--						<label for="${d.dictCode}"><@ctx.i18n text = "${d.dictLabel}"/></label>-->
+<#--					</div>-->
+<#--				</#items>-->
+<#--			</#list>-->
+			<@form.radio name="hide" value="${menu.hide?c}" dictType="sys_show_hide"/>
+		</div>
+	</div>
+</@form.form>
 <@footer>
  <script>
 	var prefix = baseURL + "sys/menu";
@@ -152,8 +135,8 @@
 					type: "POST",
 					dataType: "html",
 					data: {
-						"menuId": function() {
-							return $("#menuId").val();
+						"id": function() {
+							return $("#id").val();
 						},
 						"parentId": function() {
 							return $("input[name='parentId']").val();
@@ -227,30 +210,6 @@
 
 
 	$(function() {
-		/*$("input[name='icon']").focus(function() {
-			$(".icon-drop").show();
-		});
-		$("#form-menu-edit").click(function(event) {
-			var obj = event.srcElement || event.target;
-			if (!$(obj).is("input[name='icon']")) {
-				$(".icon-drop").hide();
-			}
-		});
-		$(".icon-drop").find(".ico-list i").on("click",
-		function() {
-			$('#icon').val($(this).attr('class'));
-		});*/
-
-		$("#menuIconButton").click(function(){
-			var options = {
-				url: prefix+'/iconSelect?value='+$("#menuIcon").val(),
-				title:'图标选择',
-				callBack: doIconSubmit
-			};
-			opt.modal.openMainWin(options);
-		});
-
-
 		$('input[name="type"]').on('ifChecked',
 		function(event) {
 			var menuType = $(event.target).val();
@@ -262,62 +221,24 @@
 		if (menuType == "0") {
 			$("#url").parents(".form-group").hide();
 			$("#perms").parents(".form-group").hide();
-			$("#menuIcon").parents(".form-group").show();
+			$("#target").parents(".form-group").hide();
+			$("#icon").parents(".form-group").show();
 			$("input[name='hide']").parents(".form-group").show();
 		} else if (menuType == "1") {
 			$("#url").parents(".form-group").show();
+			$("#target").parents(".form-group").show();
 			$("#perms").parents(".form-group").show();
-			$("#menuIcon").parents(".form-group").show();
+			$("#icon").parents(".form-group").show();
 			$("input[name='hide']").parents(".form-group").show();
 		} else if (menuType == "2") {
 			$("#url").parents(".form-group").hide();
 			$("#perms").parents(".form-group").show();
-			$("#menuIcon").parents(".form-group").hide();
+			$("#icon").parents(".form-group").hide();
+			$("#target").parents(".form-group").hide();
 			$("input[name='hide']").parents(".form-group").hide();
 		}
 	}
 
-	/*菜单管理-修改-选择菜单树*/
-	/*// function selectMenuTree() {
-	// 	var menuId = $("#treeId").val();
-	// 	if(menuId > 0) {
-	// 		var url = prefix + "/selectMenuTree/" + menuId;
-	// 		opt.modal.open("选择菜单", url, '380', '380');
-	// 	} else {
-	// 		opt.modal.warning("主菜单不能选择");
-	// 	}
-	// }*/
-
-	function selectMenuTree() {
-		var menuId = $("#treeId").val();
-		if(menuId > 0) {
-			var url = prefix + "/selectMenuTree/" + menuId;
-			var options = {
-				title: '菜单选择',
-				width: "380",
-				url: url,
-				callBack: doSubmit
-			};
-			opt.modal.openOptions(options);
-		} else {
-			opt.modal.warning("主菜单不能选择");
-		}
-	}
-
-	function doSubmit(index, layero){
-		var body = layer.getChildFrame('body', index);
-		$("#treeId").val(body.find('#treeId').val());
-		$("#treeName").val(body.find('#treeName').val());
-		layer.close(index);
-	}
-
-	function doIconSubmit(index, layero,_layer){
-		var body = _layer.getChildFrame('body', index);
-		var icon = body.find('#icon').val();
-		$("#menuIconIcon").attr("class",'fa fa-fw '+icon);
-		$("#menuIcon").val(icon).change();
-		_layer.close(index);
-	}
 </script>
 </@footer>
 </@pageTheme>

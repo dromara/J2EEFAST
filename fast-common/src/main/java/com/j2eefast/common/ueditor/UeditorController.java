@@ -42,9 +42,7 @@ public class UeditorController{
         try {
             response.setContentType("application/json");
             String rootPth = sysConfigService.getParamValue("SYS_CONFIG_PROFILE");
-            //rootPth = JSON.parseObject(rootPth).getString("paramValue");
             String exec = new ActionEnter(request, rootPth,"config").exec();
-            System.err.println(exec);
             PrintWriter writer = response.getWriter();
             writer.write(exec);
             writer.flush();

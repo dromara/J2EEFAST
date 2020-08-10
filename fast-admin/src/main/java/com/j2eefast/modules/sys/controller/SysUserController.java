@@ -1,16 +1,12 @@
 package com.j2eefast.modules.sys.controller;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.excel.EasyExcel;
 import com.j2eefast.common.core.base.entity.LoginUserEntity;
-import com.j2eefast.common.core.base.entity.Ztree;
 import com.j2eefast.common.core.utils.*;
 import com.j2eefast.common.core.business.annotaion.BussinessLog;
 import com.j2eefast.common.core.enums.BusinessType;
@@ -20,8 +16,8 @@ import com.j2eefast.framework.log.service.SysLoginInfoSerice;
 import com.j2eefast.framework.sys.entity.*;
 import com.j2eefast.framework.sys.service.*;
 import com.j2eefast.framework.utils.Global;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +47,7 @@ public class SysUserController extends BaseController {
 	@Autowired
 	private SysUserRoleService sysUserRoleService;
 	@Autowired
-	private SysUserDeptService sysUserDeptService;
+	private SysPostService sysPostService;
 	@Autowired
 	private SysLoginInfoSerice  sysLoginInfoService;
 	@Autowired
@@ -65,14 +61,11 @@ public class SysUserController extends BaseController {
 	@RequiresPermissions("sys:user:view")
 	@GetMapping()
 	public String user(ModelMap mmap){
-		LoginUserEntity loginUser = UserUtils.getUserInfo();
-		List<Ztree> ztrees = sysCompService.findCompTree(loginUser.getCompId(),loginUser.getId());
-		mmap.put("comps",  ztrees);
 		return urlPrefix + "/user";
 	}
 	
 	/**
-	 * 用户列表
+	 * 页面用户表格分页查询
 	 * @author zhouzhou
 	 * @date 2020-03-07 13:31
 	 */
@@ -91,12 +84,13 @@ public class SysUserController extends BaseController {
 	 */
 	@GetMapping("/add")
 	public String add(ModelMap mmap){
-		mmap.put("roles", sysRoleService.list());
+		mmap.put("roles", sysRoleService.getRolesAll());
+		mmap.put("posts",sysPostService.getPostAll());
 		return urlPrefix + "/add";
 	}
 
 	@BussinessLog(title = "用户管理", businessType = BusinessType.EXPORT)
-	@RequiresPermissions("system:user:export")
+	@RequiresPermissions("sys:user:export")
 	@PostMapping("/export")
 	@ResponseBody
 	public ResponseData export(@RequestParam Map<String, Object> params) throws Exception {
@@ -119,12 +113,11 @@ public class SysUserController extends BaseController {
 	public String edit(@PathVariable("userId") Long userId,ModelMap mmap){
 		
 		SysUserEntity user = sysUserService.findUserByUserId(userId);
-		// 获取用户所属的角色列表resetPwd
-		List<SysUserDeptEntity> deptIdList = sysUserDeptService.findListByUserId(userId);
-		List<SysRoleEntity> roles = sysRoleService.findByRolesByUserId(userId);
-		mmap.put("roles", roles);
+		mmap.put("roles", sysRoleService.getRolesAll());
+		mmap.put("posts",sysPostService.getPostAll());
+		mmap.put("selectRoles", sysRoleService.getRolesByUserIdToStr(userId));
+		mmap.put("selectPosts",sysPostService.getPostByUserIdToStr(userId));
 		mmap.put("user", user);
-		mmap.put("deptList",deptIdList);
 		return urlPrefix + "/edit";
 	}
 
@@ -212,8 +205,8 @@ public class SysUserController extends BaseController {
 	}
 
 	@RequiresPermissions("sys:user:resetPwd")
-	@GetMapping("/resetPwd/{userId}")
-	public String resetPwd(@PathVariable("userId") Long userId, ModelMap mmap){
+	@GetMapping("/resetPwd/{id}")
+	public String resetPwd(@PathVariable("id") Long userId, ModelMap mmap){
 		mmap.put("user", sysUserService.getById(userId));
 		return urlPrefix + "/resetPwd";
 	}
@@ -238,11 +231,11 @@ public class SysUserController extends BaseController {
 		// 新密码
 		String newPassword = UserUtils.sha256(user.getPassword(), salt);
 
-		boolean flag = sysUserService.updatePassWord(user.getUserId(), newPassword,salt,user.getPwdSecurityLevel());
+		boolean flag = sysUserService.updatePassWord(user.getId(), newPassword,salt,user.getPwdSecurityLevel());
 		if (!flag) {
 			return error(ToolUtil.message("sys.user.oldPasswordError"));
 		}
-		if (loginUser.getId().equals(user.getUserId())){
+		if (loginUser.getId().equals(user.getId())){
 			loginUser.setPwdSecurityLevel(user.getPwdSecurityLevel());
 			loginUser.setPassword(newPassword);
 			loginUser.setSalt(salt);
@@ -260,8 +253,7 @@ public class SysUserController extends BaseController {
 	 */
 	@RequestMapping(value = "/checkUserNameUnique", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseData checkLoginNameUnique(String username)
-	{
+	public ResponseData checkLoginNameUnique(String username) {
 		if(sysUserService.checkUserNameUnique(username)){
 			return success();
 		}
@@ -296,9 +288,6 @@ public class SysUserController extends BaseController {
 		return sysUserService.add(user)?success(): error("新增失败!");
 	}
 
-
-
-	
 	/**
 	 * 更新用户
 	 */
@@ -307,7 +296,6 @@ public class SysUserController extends BaseController {
 	@RequiresPermissions("sys:user:edit")
 	@ResponseBody
 	public ResponseData edit(@Validated SysUserEntity user) {
-
 		ValidatorUtil.validateEntity(user);
 		return sysUserService.update(user) ? success() : error("修改失败!");
 	}

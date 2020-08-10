@@ -62,21 +62,21 @@ public class RunTest {
 				int POST = (int) YamlUtil.getProperty(yamlMap, "server.port");
 				s = StrUtil.replace(s, "{$APP_POST&}", String.valueOf(POST));
 				byte[] b = s.getBytes("UTF-8");
-				int size = 0;
-				for(int i=0; i<b.length; i++) {
-					if(b[i] == 0x0a) {
-						size +=1;
-					}
-				}
-				byte[] c = new byte[b.length -size];
-				int k = 0;
-				for(int i=0; i<b.length; i++) {
-					if(b[i] != 0x0d) {
-						c[k] = b[i];
-						k++;
-					}
-				}
-				FileUtil.writeBytes(c, FileUtil.touch(new UserInfo().getCurrentDir() + File.separator+ "\\target\\runFAST.sh" ));
+//				int size = 0;
+//				for(int i=0; i<b.length; i++) {
+//					if(b[i] == 0x0a) {
+//						size +=1;
+//					}
+//				}
+//				byte[] c = new byte[b.length -size];
+//				int k = 0;
+//				for(int i=0; i<b.length; i++) {
+//					if(b[i] != 0x0d) {
+//						c[k] = b[i];
+//						k++;
+//					}
+//				}
+				FileUtil.writeBytes(b, FileUtil.touch(new UserInfo().getCurrentDir() + File.separator+ "\\target\\runFAST.sh" ));
 				//FileUtil.writeBytes(c, FileUtil.touch(new UserInfo().getCurrentDir() + File.separator+ "\\target\\classes\\runFAST.sh" ));
 			}
 		} catch (Exception e) {

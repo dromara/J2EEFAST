@@ -122,4 +122,17 @@ public class SysDatabaseService extends ServiceImpl<SysDatabaseMapper, SysDataba
 		return flag;
 	}
 
+
+	/** 
+	* @Title: getByName 
+	* @Description: 根据名称获取数数据源
+	* @param dbName
+	* @return  SysDatabaseEntity 
+	* @author mfksn001@163.com
+	* @Date: 2020年6月1日
+	*/
+	public SysDatabaseEntity getByName(String dbName) {
+		return sysDatabaseMapper.getByName(dbName);
+	}
+
 }

@@ -1,13 +1,14 @@
-<<@>include "/common/include.html"/>
+<<@>include "/common/defaultEngine.html"/>
 ${pageTheme}
-<@header title="${functionName}列表">
-</@header>
-<@search fromId="${businessName}-form">
-<div class="select-list">
-<ul>
-#foreach($column in $columns)
-#if($column.query)
-#set($dictType=$column.dictType)
+<@header title="${functionName}列表" bodyClass="gray-bg animated fadeInRight" isAnimation="false" libs=["table","zTree","layout-latest"]/>
+<div class="container-div">
+ <div class="row">
+  <div class="col-sm-12 search-collapse">
+    <@form.form id="${businessName}-form" class="form-inline">
+     <div class="select-list">
+      <ul>
+#foreach($column in $columns)##
+#if($column.query)##
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
 #set($parentheseIndex=$column.columnComment.indexOf("（"))
 #if($parentheseIndex != -1)
@@ -15,90 +16,99 @@ ${pageTheme}
 #else  
 #set($comment=$column.columnComment)
 #end  
-#if($column.htmlType == "input")
-                            <li>
-                                <@ctx.i18n text = "${comment}"/>：
-                                <input type="text" name="${column.javaField}"/>
-                            </li>
-#elseif($column.htmlType == "select" || $column.htmlType == "radio" && "" != $dictType)
-                            <li>
-                                <@ctx.i18n text = "${comment}"/>：
-                                <select name="${column.javaField}" class="form-control">
-                                    <option value=""><@ctx.i18n text = "所有"/></option>
-                                <<@>list dict.getType('${dictType}')>
-                                    <<@>items as d>
-                                        <<@>if d.status =='0' >
-                                            <option value="${d.dictValue}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></option>
-                                        </<@>if>
-                                    </#items>
-                                </<@>list>
-                                </select>
-                            </li>
-#elseif($column.htmlType == "select" || $column.htmlType == "radio" && $dictType)
-                            <li>
-                                ${comment}：
-                                <select name="${column.javaField}">
-                                    <option value="">所有</option>
-                                </select>
-                            </li>
-#elseif($column.htmlType == "datetime")
-                            <li class="select-time">
-                                ${comment}：
-                                <input type="text" class="time-input" placeholder="开始时间" name="begin${AttrName}"/>
-                                <span>-</span>
-                                <input type="text" class="time-input" placeholder="结束时间" name="end${AttrName}"/>
-                            </li>
+#if($column.htmlType == "input")##
+           <li>
+              <label> <@ctx.i18n text = "${comment}"/>：
+              #if($column.queryType == "BETWEEN")<input type="text"  placeholder="begin" name="begin${AttrName}"/><span>-</span> <input type="text"  placeholder="${comment}" name="end${AttrName}"/> #else <input type="text" placeholder="${comment}" name="${column.javaField}"/>#end </label>
+            </li>
+#elseif($column.htmlType == "select" || $column.htmlType == "radio" && "" != $dictType)##
+           <li>
+                 <label> <@ctx.i18n text = "${comment}"/>： </label>
+                <select name="${column.javaField}" class="form-control">
+                    <option value=""><@ctx.i18n text = "所有"/></option>
+                <<@>list dict.getType('${column.dictType}')>
+                    <<@>items as d>
+                        <<@>if d.status =='0' >
+                            <option value="${d.dictValue}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></option>
+                        </<@>if>
+                    </#items>
+                </<@>list>
+                </select>
+           </li>
+#elseif($column.htmlType == "select" || $column.htmlType == "radio" && $dictType)##
+           <li>
+                 <label> <@ctx.i18n text = "${comment}"/>： </label>
+                <select name="${column.javaField}">
+                    <option value="">所有</option>
+                </select>
+           </li>
+#elseif($column.htmlType == "datetime")##
+          <li class="select-time">
+             <label> <@ctx.i18n text = "${comment}"/>： </label>
+#if($column.queryType == "BETWEEN")## BETWEEN
+            <input type="text" class="time-input" placeholder="开始时间" name="begin${AttrName}"/>
+            <span>-</span>
+            <input type="text" class="time-input" placeholder="结束时间" name="end${AttrName}"/>
+#else#### BETWEEN
+            <input type="text" class="time-input" placeholder="" name="${AttrName}"/>
+#end#### BETWEEN
+        </li>
+#elseif($column.htmlType == "comp")##
+       <li>
+         <label> <@ctx.i18n text = "${comment}"/>：</label>
+         <@form.treeselect name = "${column.javaField}"  boxTitle="选择归属公司" url="sys/comp/treeData" expandLevel=true  placeholder="请选择归属公司"/>
+       </li>
+                                                    
 #end
 #end
 #end
-    <li>
-        <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;&nbsp;<@ctx.i18n text = "查询"/></a>
-        <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
-    </li>
-    </ul>
-    </div>
-</@search>
-<@table tableId="bootstrap-table">
-
-#if($table.crud)
+        <li>
+          <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;&nbsp;<@ctx.i18n text = "查询"/></a>
+          <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+       </li>
+      </ul>
+   </div>
+  </@form.form>
+ </div>
+  <@table id="bootstrap-table">
+#if($table.crud)####
     <@shiro.hasPermission name="${permissionPrefix}:add">
-                    <a class="btn btn-success" onclick="opt.operate.add()"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
+        <a class="btn btn-success" onclick="#if($table.target == "tab")opt.operate.addTab()#else opt.operate.add()#end"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
     </@shiro.hasPermission>
     <@shiro.hasPermission name="${permissionPrefix}:edit">
-        <a class="btn btn-primary single disabled" onclick="opt.operate.edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
+        <a class="btn btn-primary single disabled" onclick="#if($table.target == "tab")opt.operate.editTab()#else opt.operate.edit()#end"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
     </@shiro.hasPermission>
     <@shiro.hasPermission name="${permissionPrefix}:del">
         <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">
             <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>
         </a>
     </@shiro.hasPermission>
-#elseif($table.r && $table.rDel)
+#elseif($table.r && $table.rDel)####
     <@shiro.hasPermission name="${permissionPrefix}:del">
         <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">
             <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>
         </a>
     </@shiro.hasPermission>
-#end
-
-
-</@table>
+#end###
+   </@table>
+  <div>
+</div>
 <@footer>
-<script>
-#if($table.crud)
+<script type="text/javascript">
+#if($table.crud)####$table.crud CURD权限
     var editFlag = "<$>{permission.hasPermi("${permissionPrefix}:edit")}";
     var listFlag = "<$>{permission.hasPermi("${permissionPrefix}:add")}";
     var delFlag = "<$>{permission.hasPermi("${permissionPrefix}:del")}";
-    var visible = <$>{permission.isPermitteds("${permissionPrefix}:edit,
-    ${permissionPrefix}:del,${permissionPrefix}:add")?string('true', 'false')};
-#elseif($table.r && $table.rDel)
+    var visible = <$>{permission.isPermitteds("${permissionPrefix}:edit,${permissionPrefix}:del,${permissionPrefix}:add")?string('true', 'false')};
+#elseif($table.r && $table.rDel)####
     var delFlag = "<$>{permission.hasPermi("${permissionPrefix}:del")}";
     var visible = <$>{permission.isPermitteds("${permissionPrefix}:del")?string('true', 'false')};
-#end
-    #foreach($column in $columns)
-    #if(${column.dictType} != '')
+#end#### CURD权限
+#foreach($column in $columns)##获取dictDatas
+#if(${column.dictType} != '')####
     var ${column.javaField}Datas = <$>{dict.getDictListJson('${column.dictType}')};
-    #end
-    #end
+#end
+#end##获取dictDatas
     var prefix = baseURL + "${moduleName}/${businessName}";
 
     $(function() {
@@ -109,105 +119,85 @@ ${pageTheme}
             editUrl: prefix + "/edit/{id}",
             delUrl: prefix + "/del",
             modalName: "${functionName}",
-#elseif($table.r && $table.rDel)
+#elseif($table.r && $table.rDel)## 只读含删除选项
             delUrl: prefix + "/del",
             modalName: "${functionName}",
-#end
-            uniqueId:  #foreach($column in $columns) #if($column.pk) '${column.javaField}'#end #end, /* 唯一ID */
-            columns: [{
-                title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
-                    return $.table.serialNumber(index);
-                }
-            }
-#foreach($column in $columns)
-#set($indexTag = $velocityCount)
-#set($dictType=$column.dictType)
-#set($javaField=$column.javaField)
-#set($parentheseIndex=$column.columnComment.indexOf("（"))
+#end## 只读含删除选项
+            uniqueId:  #foreach($column in $columns)#if($column.pk)'${column.javaField}',#end#end/* 唯一ID */#####
+
+            escape: true,/* 分页设置 */
+            showPageGo: true,/* 分页设置 */
+            pageSize: 10,/* 分页设置 */
+            pageList: [10, 30, 50],/* 分页设置 */
+            columns: [
+                {title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);
+                }}
+#foreach($c in $columns)## foreach columns
+##set($indexTag = $velocityCount) ##不使用了
+#set($dictType=$c.dictType)
+#set($parentheseIndex=$c.columnComment.indexOf("（")) ##注释含有括符
 #if($parentheseIndex != -1)
-#set($comment=$column.columnComment.substring(0, $parentheseIndex))
-#else
-#set($comment=$column.columnComment)
-#end
-#if($column.pk)
-                ,{
-                    field : '${javaField}'
-                    ,title : '<@ctx.i18n text = "${comment}"/>'
-                    ,visible: false
-                }
-#end
-    #foreach($c in $columns)
-    #if($c.list)
-        #set($d=$c.dictType)
-        #set($j=$c.javaField)
-        #set($p=$c.columnComment.indexOf("（"))
-        #if($p != -1)
-            #set($com=$c.columnComment.substring(0, $p))
-        #else
-            #set($com=$c.columnComment)
-        #end
-        #if($c.sort == $indexTag)
-            #if($c.list && "" != $d)
-                ,{
-                    field : '${j}'
-                    ,title : '<@ctx.i18n text = "${com}"/>'
-#if($c.tableSort)   ,sortable: true#end
-                    ,formatter: function(value, row, index) {
-                       return $.table.selectDictLabel(${j}Datas, value);
-                    }
-                }
-             #elseif($c.list && "" != $j)
-                ,{
-                    field : '${j}'
-                    ,title : '<@ctx.i18n text = "${com}"/>'
-#if($c.tableSort)   ,sortable: true#end
-                }
-             #end
-        #end
-       #end
-    #end
-#end
-#if($table.crud)
-                ,{
-                    title:"<@ctx.i18n text = "操作"/>"
-                    ,align: 'left'
-                    ,visible:visible
-#if($table.actionsType == "icon")
-                    ,class:'action'
-#end
-                    ,formatter: function(value, row, index) {
-                        var actions = [];
-#if($table.actionsType == "default")
-                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-edit"></i>编辑</a> ');
-                        actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-remove"></i>删除</a>');
-#elseif($table.actionsType == "icon")
-                        actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "编辑"/>" onclick="opt.operate.edit(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-edit"></i></a> ');
-                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-trash-o"></i></a> ');
-#end
+#set($com=$c.columnComment.substring(0, $parentheseIndex))
+#else##
+#set($com=$c.columnComment)##
+#end#####注释含有括符
+#if($c.pk)##
+               ,{field : '${c.javaField}',title : '<@ctx.i18n text = "${com}"/>',visible: false}
+#end##主键否
+#if($c.list)## islist是否列表显示 
+##if($c.sort == $indexTag)## indexTag ##不使用了
+#if($c.list && "" != $c.dictType)## dictType 类型
+              ,{field : '${c.javaField}',title : '<@ctx.i18n text = "${com}"/>'#if($c.tableSort),sortable: true#end,formatter: function(value, row, index) {
+                            return $.table.selectDictLabels(${c.javaField}Datas, value); }}
+#elseif($c.list && "" != ${c.javaField})## 非dictType
+#if(${c.htmlType} == "comp")## 是否是系统实体业关联字段
+             ,{field : 'compName',title : '<@ctx.i18n text = "${com}"/>'#if($c.tableSort),sortable: true#end }
+#elseif(${c.htmlType} == "dept")
+             ,{field : 'deptName',title : '<@ctx.i18n text = "${com}"/>'#if($c.tableSort),sortable: true#end }
+#else###是否是系统实体业关联字段
+             ,{field : '${c.javaField}',title : '<@ctx.i18n text = "${com}"/>'#if($c.tableSort),sortable: true#end}
+#end##是否是系统实体业关联字段
+#end##dictType 
+##end### end for indexTag
+#end## end for islist
+#end##end foreach
+#if($table.crud)###crud2按钮
+               ,{title:"<@ctx.i18n text = "操作"/>",align: 'center',visible:visible#if($table.actionsType == "icon"),class:'action'#end,formatter: function(value, row, index) {
+                        var actions = [];###
+
+ #if($table.actionsType == "default") ##按钮显示样式
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="#if($table.target == "tab")opt.operate.editTab#else opt.operate.edit#end(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-edit"></i>编辑</a> ');####
+
+                        actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-remove"></i>删除</a>');####
+
+ #elseif($table.actionsType == "icon") ##按钮显示样式
+                        actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "编辑"/>" onclick="#if($table.target == "tab")opt.operate.editTab#else opt.operate.edit#end(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-edit"></i></a> ');####
+
+                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-trash-o"></i></a> ');###
+ #end##按钮显示样式
+
                         return actions.join('');
                     }
                 }
-#elseif($table.r && $table.rDel)
-                ,{
-                    title:"<@ctx.i18n text = "操作"/>"
-                    ,align: 'left'
-                    ,visible:visible
-#if($table.actionsType == "icon")
-                    ,class:'action'
-#end
-                    ,formatter: function(value, row, index) {
-                        var actions = [];
-#if($table.actionsType == "default")
-                        actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-remove"></i>删除</a>');
-#elseif($table.actionsType == "icon")
-                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-trash-o"></i></a> ');
-#end
+#elseif($table.r && $table.rDel) ###只读表是否含有删除
+
+                ,{title:"<@ctx.i18n text = "操作"/>",align: 'left',visible:visible#if($table.actionsType == "icon"),class:'action'#end,formatter: function(value, row, index) {
+                        var actions = [];####
+
+ #if($table.actionsType == "default")###
+                        actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-remove"></i>删除</a>');####
+
+ #elseif($table.actionsType == "icon")###
+                        actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.${pkColumn.javaField} + '\')"><i class="fa fa-trash-o"></i></a> ');####
+
+ #end##
+
                         return actions.join('');
                     }
-                }
-#end
-                ]
-            };
+                 }
+#end###crud2按钮
+            ]};
             $.table.init(options);
         });
 

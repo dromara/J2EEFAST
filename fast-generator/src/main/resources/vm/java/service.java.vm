@@ -3,9 +3,19 @@ package ${packageName}.service;
 
 import ${packageName}.entity.${ClassName}Entity;
 import ${packageName}.mapper.${ClassName}Mapper;
+#if($table.dbName != 'MASTER' && $table.dbName != 'DEFAULT')##设置多数据源
+import cn.hutool.core.util.StrUtil;
+import com.j2eefast.common.core.utils.SpringUtil;
+import com.j2eefast.framework.sys.entity.SysCompEntity;
+import com.j2eefast.framework.sys.service.SysCompService;
+import com.j2eefast.framework.utils.FileUploadUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.j2eefast.common.core.mutidatasource.annotaion.DataSource;
+#end##
 import com.j2eefast.common.core.page.Query;
 import com.j2eefast.common.core.utils.PageUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
+import com.j2eefast.framework.utils.Constant;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,6 +24,17 @@ import javax.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.Arrays;
+import org.springframework.transaction.annotation.Transactional;
+#set($isImg = "0")#####
+#foreach ($column in $columns)####
+#if($column.htmlType == "imgcup")####
+#set($isImg = "1")
+#break###
+#end####
+#end###
+#if($table.rFile || $table.rImg || $isImg == "1")
+import com.j2eefast.framework.utils.FileUploadUtils;
+#end####
 /**
  *
  * ${functionName}Service接口
@@ -22,78 +43,232 @@ import java.util.Arrays;
  */
 @Service
 public class ${ClassName}Service extends ServiceImpl<${ClassName}Mapper,${ClassName}Entity> {
-
-	@Resource
-	private ${ClassName}Mapper ${className}Mapper;
-
-	/**
-	 * 页面分页查询
-     */
-	public PageUtil findPage(Map<String, Object> params) {
-		QueryWrapper<${ClassName}Entity> r = new QueryWrapper<${ClassName}Entity>();
-#foreach($column in $columns)
-    #set($queryType=$column.queryType)## 查询方式（EQ等于、NE不等于、GT大于、LT小于、LIKE模糊、BETWEEN范围）
-    #set($javaField=$column.javaField)## JAVA字段名
-    #set($javaType=$column.javaType) ## JAVA类型
-    #set($columnName=$column.columnName) ## 列名称
-    #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-    #if($column.query)
-    ##if($javaType == 'String' )
-        String $javaField = (String) params.get("$javaField");
-    ##else
-        #if($column.queryType == "EQ")
-        r.eq(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
-        #elseif($column.queryType == "NE")
-        r.ne(ToolUtil.isNotEmpty($javaField), "$columnName"e, $javaField);
-        #elseif($column.queryType == "GT")
-        r.gt(ToolUtil.isNotEmpty($javaField),"$columnName", $javaField);
-        #elseif($column.queryType == "LT")
-        r.lt(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
-        #elseif($column.queryType == "LIKE")
-        r.like(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
-        ##                    #elseif($column.queryType == "BETWEEN")
-        ##                        r.between(StrUtil.isNotNull($javaField), $columnName, $javaField))
-        #end
-
-    #end
+#set ($iscompId_ = "")
+#set ($isdeptId_ = "")
+#foreach($column in $columns)##
+	#if($column.htmlType == 'comp')
+		#if($foreach.hasNext)#set ($iscompId_ = $column.javaField)#end###
+	#end
+	#if($column.htmlType == 'dept')
+		#if($foreach.hasNext)#set ($isdeptId_ = $column.javaField)#end###
+	#end
 #end
-		Page<${ClassName}Entity> page = this.baseMapper.selectPage(new Query<${ClassName}Entity>(params).getPage(), r);
+
+	@Resource###
+
+	private ${ClassName}Mapper ${className}Mapper;###
+
+	#if($table.dbName !='MASTER' && ($isdeptId_ != '' || $iscompId_ != ''))
+	@Autowired###
+
+	private SysCompService sysCompService;###
+
+	#end
+	/**
+	 * mybaitis-plus   单表页面分页查询
+     */
+#if($table.dbName != 'MASTER' && $table.dbName != 'DEFAULT')##设置多数据源
+    @DataSource(name="$table.dbName")
+#end##
+	public PageUtil findPage(Map<String, Object> params) {
+        QueryWrapper<${ClassName}Entity> queryWrapper = new QueryWrapper<${ClassName}Entity>();
+#foreach($column in $columns)##
+#set($queryType=$column.queryType)## 查询方式（EQ等于、NE不等于、GT大于、LT小于、LIKE模糊、BETWEEN范围）
+#set($javaField=$column.javaField)## JAVA字段名
+#set($javaType=$column.javaType) ## JAVA类型
+#set($columnName=$column.columnName) ## 列名称
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#if($column.query)##
+#if($javaType == 'SysCompEntity' or $javaType == 'SysDeptEntity' or $javaType == 'SysUserEntity')##关联实体对像不参查询
+#else##
+      String $javaField = (String) params.get("$javaField");
+#if($column.queryType == "EQ") ##EQ
+        queryWrapper.eq(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
+#elseif($column.queryType == "NE")##
+        queryWrapper.ne(ToolUtil.isNotEmpty($javaField), "$columnName"e, $javaField);
+#elseif($column.queryType == "GT")##
+        queryWrapper.gt(ToolUtil.isNotEmpty($javaField),"$columnName", $javaField);
+#elseif($column.queryType == "LT")##
+        queryWrapper.lt(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
+#elseif($column.queryType == "LIKE")##
+        queryWrapper.like(ToolUtil.isNotEmpty($javaField), "$columnName", $javaField);
+#elseif($column.queryType == "BETWEEN")##
+        String begin$AttrName = (String) params.get("begin$AttrName");
+        String end$AttrName = (String) params.get("end$AttrName");
+        queryWrapper.between(ToolUtil.isNotEmpty(begin$AttrName) || ToolUtil.isNotEmpty(end$AttrName), "$columnName", begin$AttrName,end$AttrName);
+#end ##EQ
+#end##
+#end ##query
+#end##foreach
+		Page<${ClassName}Entity> page = ${className}Mapper.selectPage(new Query<${ClassName}Entity>(params).getPage(), queryWrapper);
+		#if($table.dbName !='MASTER' && ($iscompId_ != '' || $iscompId_ != ''))
+		for(${ClassName}Entity ${className}: page.getRecords()){
+			#if($iscompId_ != '')
+				#set($compName_ = $iscompId_.substring(0,1).toUpperCase() + $iscompId_.substring(1))
+				${className}.setCompName(SpringUtil.getAopProxy(this).getByCompEntity(${className}.get${compName_}(),null).getName());###
+
+			#end
+			#if($isdeptId_ != '')
+				#set($deptName_ = $isdeptId_.substring(0,1).toUpperCase() + $isdeptId_.substring(1))
+				${className}.setDeptName(SpringUtil.getAopProxy(this).getByCompEntity(null,${className}.get${deptName_}()).getName());###
+			#end
+		}
+		#end
 		return new PageUtil(page);
     }
 
+#if($table.dbName !='MASTER' && ($iscompId_ != '' || $iscompId_ != ''))
+	@DataSource(name="MASTER")
+	public SysCompEntity getByCompEntity(Long compId,Long deptId){
+		return sysCompService.getOne(new QueryWrapper<SysCompEntity>().
+				eq("id",ToolUtil.isNotEmpty(compId)?compId:deptId).eq("type",ToolUtil.isNotEmpty(compId)?"0":"1"));
+	}
+#end
+    /**
+     * 自定义分页查询，含关联实体对像
+     */
+#if($table.dbName != 'MASTER' && $table.dbName != 'DEFAULT')##设置多数据源
+    @DataSource(name="$table.dbName")
+#end##
+	public PageUtil findPage(Map<String, Object> params,${ClassName}Entity ${className}Entity) {
+		Page<${ClassName}Entity> page = ${className}Mapper.findPage(new Query<${ClassName}Entity>(params).getPage(),
+																${className}Entity,
+																(String) params.get(Constant.SQL_FILTER));
+		return new PageUtil(page);
+	}
 	/**
      * 批量删除
      */
+#if($table.dbName != 'MASTER' && $table.dbName != 'DEFAULT')##设置多数据源
+    @DataSource(name="$table.dbName")
+#end##     
 	@Transactional(rollbackFor = Exception.class)
-	public boolean delete${ClassName}ByIds(${pkColumn.javaType}[] ids) {
+	public boolean del${ClassName}ByIds(${pkColumn.javaType}[] ids) {
 		return this.removeByIds(Arrays.asList(ids));
 	}
 
 	/**
      * 单个删除
      */
-	public boolean delete${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField}) {
+#if($table.dbName != 'MASTER' && $table.dbName != 'DEFAULT')##设置多数据源
+    @DataSource(name="$table.dbName")
+#end##
+	public boolean del${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField}) {
 		return this.removeById(${pkColumn.javaField});
 	}
 
 	/**
      * 保存
      */
-	public boolean save${ClassName}(${ClassName}Entity ${className}){
-        return this.save(${className});
+#if($table.dbName != 'MASTER' && $table.dbName != 'DEFAULT')##设置多数据源
+    @DataSource(name="$table.dbName")
+#end##
+	public boolean add${ClassName}(${ClassName}Entity ${className}){
+		#foreach ($column in $columns)####
+		#if($column.htmlType == "imgcup")####
+
+		//图片剪切数据转换####
+		#set($id = $column.javaField.substring(0,1).toUpperCase() + $column.javaField.substring(1))#####
+
+		${className}.set${id}(FileUploadUtils.saveImgBase64(${className}.get${id}()));#####
+		#break###
+		#end####
+		#end###
+
+		if(this.save(${className})){###
+			#if($table.rFile || $table.rImg)####
+
+			//更新关联附件信息####
+			#foreach ($column in $columns)
+			#if($column.pk)
+			#set($id = $column.javaField.substring(0,1).toUpperCase() + $column.javaField.substring(1))
+
+			${column.javaType} pkId =  ${className}.get${id}();#break###
+			#end####
+			#end####
+			#if($table.rFile)
+
+			FileUploadUtils.saveFileUpload(pkId,"${tableName}_file");####
+			#end
+			#if($table.rImg)
+
+			FileUploadUtils.saveFileUpload(pkId,"${tableName}_img");####
+			#end####
+			#end####
+
+			return true;
+		}
+        return false;
     }
 
 	/**
      * 修改根居ID
      */
+#if($table.dbName != 'MASTER' && $table.dbName != 'DEFAULT')##设置多数据源
+    @DataSource(name="$table.dbName")
+#end##
 	public boolean update${ClassName}ById(${ClassName}Entity ${className}) {
-		return this.updateById(${className});
+		#foreach ($column in $columns)####
+		#if($column.htmlType == "imgcup")####
+
+		//图片剪切数据转换####
+		#set($id = $column.javaField.substring(0,1).toUpperCase() + $column.javaField.substring(1))#####
+
+		${className}.set${id}(FileUploadUtils.saveImgBase64(${className}.get${id}()));#####
+		#break###
+		#end####
+		#end###
+
+		if(this.updateById(${className})){####
+			#if($table.rFile || $table.rImg)####
+
+			//更新关联附件信息#####
+			#foreach ($column in $columns)
+			#if($column.pk)
+			#set($id = $column.javaField.substring(0,1).toUpperCase() + $column.javaField.substring(1))
+
+			${column.javaType} pkId =  ${className}.get${id}();#break###
+			#end####
+			#end####
+			#if($table.rFile)
+
+			FileUploadUtils.saveFileUpload(pkId,"${tableName}_file");####
+			#end
+			#if($table.rImg)
+
+			FileUploadUtils.saveFileUpload(pkId,"${tableName}_img");####
+			#end####
+			#end####
+
+			return true;
+		}
+		return false;
 	}
 
 	/**
      * 根居ID获取对象
      */
-	public ${ClassName}Entity get${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField}){
-		return this.getById(${pkColumn.javaField});
+#if($table.dbName != 'MASTER' && $table.dbName != 'DEFAULT')##设置多数据源
+    @DataSource(name="$table.dbName")
+#end##
+	public ${ClassName}Entity find${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField}){
+		#if($table.dbName !='MASTER' && ($iscompId_ != '' || $isdeptId_ != ''))
+		${ClassName}Entity ${className} = this.getById(${pkColumn.javaField});##
+
+		#if($iscompId_ != '')
+		#set($compName_ = $iscompId_.substring(0,1).toUpperCase() + $iscompId_.substring(1))
+		${className}.setCompName(SpringUtil.getAopProxy(this).getByCompEntity(${className}.get${compName_}(),null).getName());##
+
+		#end
+		#if($isdeptId_ != '')
+		#set($deptName_ = $isdeptId_.substring(0,1).toUpperCase() + $isdeptId_.substring(1))
+		${className}.setDeptName(SpringUtil.getAopProxy(this).getByCompEntity(null,${className}.get${deptName_}()).getName());##
+
+		#end
+		return ${className};
+		#else
+		return ${className}Mapper.find${ClassName}ById(${pkColumn.javaField});####
+		#end
+
 	}
 }

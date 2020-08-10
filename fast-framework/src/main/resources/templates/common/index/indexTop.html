@@ -124,14 +124,14 @@
                 <li class="dropdown user user-menu">
                     <a href="javascript:void(0);" class="dropdown-toggle">
                         <img src="${ctxStatic}<#if user.avatar?? && user.avatar!="">${user.avatar}<#else>/static/img/user2-160x160.jpg</#if>"
-                             class="user-image" alt="User Image">
+                           onerror="imgUserError();"  class="user-image" alt="User Image"/>
                         <span class="hidden-xs">${user.name}</span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- 头像图片User image -->
                         <li class="user-header">
                             <img src="${ctxStatic}<#if user.avatar?? && user.avatar!="">${user.avatar}<#else>/static/img/user2-160x160.jpg</#if>"
-                                 class="img-circle" alt="User Image">
+                              onerror="imgUserError();"   class="img-circle" alt="User Image" />
                             <p>
                             <h4><@ctx.i18n text = "上次登陆时间"/> :
                                 <#if user.loginTime?exists>
@@ -158,10 +158,11 @@
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-left">
-                                <a id="updatePassword" href="javascript:void(0);" class="btn btn-default btn-flat"><i class="fa icon-lock-open"></i> <@ctx.i18n text = "修改密码"/></a>
+                                <a id="updatePassword" href="javascript:void(0);" title="<@ctx.i18n text = "修改密码"/>" class="btn btn-default btn-flat" style="width: 120px;overflow: hidden;
+                                 white-space: nowrap;text-overflow: ellipsis;"><i class="fa icon-lock-open"></i> <@ctx.i18n text = "修改密码"/></a>
                             </div>
                             <div class="pull-right">
-                                <a click-id="logout" href="javascript:void(0);" class="btn btn-default btn-flat"><i class="fa icon-power"></i> <@ctx.i18n text = "退出"/></a>
+                                <a click-id="logout" href="javascript:void(0);" title="<@ctx.i18n text = "退出"/>" class="btn btn-default btn-flat"><i class="fa icon-power"></i> <@ctx.i18n text = "退出"/></a>
                             </div>
                         </li>
                     </ul>

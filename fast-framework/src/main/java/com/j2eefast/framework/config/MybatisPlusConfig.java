@@ -12,14 +12,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
  * mybatis-plus 配置
  * @author: zhouzhou Emall:18774995071@163.com
  * @time 2020/2/14 18:32
  * @version V1.0
+ * EnableAspectJAutoProxy 此处作用是使框架暴露代理对象 使其SpringUtil.getAopProxy 能够获取
  */
 @Configuration
+@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 public class MybatisPlusConfig {
 
 

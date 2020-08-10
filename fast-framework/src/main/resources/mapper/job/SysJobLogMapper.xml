@@ -3,23 +3,9 @@
 
 <mapper namespace="com.j2eefast.framework.quartz.mapper.SysJobLogMapper">
 
-	<!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="SysJobLogEntity">
-        <id column="log_id" property="logId" />
-        <result column="job_id" property="jobId" />
-        <result column="job_name" property="jobName" />
-        <result column="job_group" property="jobGroup" />
-        <result column="bean_name" property="beanName" />
-        <result column="method_name" property="methodName" />
-        <result column="params" property="params" />
-        <result column="status" property="status" />
-        <result column="error" property="error" />
-        <result column="times"  property="times" />
-        <result column="create_time" property="createTime" />
-    </resultMap>
-
 	<update id="cleanJobLog">
-        truncate table sys_job_log
+    <!-- truncate table sys_job_log -->
+        DELETE FROM sys_job_log
     </update>
 
    <!-- <delete id="deleteJobByIds" parameterType="Long">

@@ -7,12 +7,13 @@ import com.j2eefast.common.core.base.entity.Ztree;
 import com.j2eefast.common.core.exception.RxcException;
 import com.j2eefast.common.core.page.Query;
 import com.j2eefast.common.core.utils.PageUtil;
+import com.j2eefast.common.core.utils.RedisUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.framework.sys.entity.SysDictTypeEntity;
 import com.j2eefast.framework.sys.mapper.SysDictTypeMapper;
+import com.j2eefast.framework.utils.RedisKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +28,8 @@ public class SysDictTypeSerive extends ServiceImpl<SysDictTypeMapper,SysDictType
 
     @Autowired
     private SysDictDataService sysDictDataService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 页面展示查询翻页
@@ -44,10 +47,10 @@ public class SysDictTypeSerive extends ServiceImpl<SysDictTypeMapper,SysDictType
 
 
     public boolean checkDictTypeUnique(SysDictTypeEntity dict) {
-        Long dictId = ToolUtil.isEmpty(dict.getDictId()) ? -1L : dict.getDictId();
+        Long dictId = ToolUtil.isEmpty(dict.getId()) ? -1L : dict.getId();
         SysDictTypeEntity dictType = this.getOne(new QueryWrapper<SysDictTypeEntity>()
                 .eq("dict_type",dict.getDictType()));
-        if (!ToolUtil.isEmpty(dictType) && dictType.getDictId().longValue() != dictId.longValue()){
+        if (!ToolUtil.isEmpty(dictType) && dictType.getId().longValue() != dictId.longValue()){
             return  false;
         }
         return true;
@@ -60,9 +63,9 @@ public class SysDictTypeSerive extends ServiceImpl<SysDictTypeMapper,SysDictType
         for (SysDictTypeEntity dict : dictList){
             if ("0".equals(dict.getStatus())){
                 Ztree ztree = new Ztree();
-                ztree.setId(dict.getDictId());
-                ztree.setName(transDictName(dict));
-                ztree.setTitle(dict.getDictType());
+                ztree.setId(dict.getId());
+                ztree.setTitle(transDictName(dict));
+                ztree.setName(dict.getDictType());
                 ztrees.add(ztree);
             }
         }
@@ -86,4 +89,10 @@ public class SysDictTypeSerive extends ServiceImpl<SysDictTypeMapper,SysDictType
         }
        return  this.removeByIds(Arrays.asList(ids));
     }
+
+
+    public boolean clearDictRedis(){
+        return redisUtil.deletes(RedisKeys.getDictConfigKey("*"));
+    }
+
 }

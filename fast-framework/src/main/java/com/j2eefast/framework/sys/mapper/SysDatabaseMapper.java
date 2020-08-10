@@ -22,4 +22,14 @@ public interface SysDatabaseMapper extends BaseMapper<SysDatabaseEntity> {
 	Page<SysDatabaseEntity> findPage(IPage<?> params,
 								 @Param("dbName") String dbName);
 
+	/** 
+	* @Title: getByName 
+	* @Description: 根据用户名获取数据源
+	* @param dbName
+	* @return  SysDatabaseEntity 
+	* @author mfksn001@163.com
+	* @Date: 2020年6月1日
+	*/
+	SysDatabaseEntity getByName(@Param("dbName") String dbName);
+
 }

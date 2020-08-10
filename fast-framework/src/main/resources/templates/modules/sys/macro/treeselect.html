@@ -1,0 +1,125 @@
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="公司树" libs=["zTree"] bodyClass="hold-transition box box-main">
+<style>
+	body{height:auto;font-family: "Microsoft YaHei";}
+	button{font-family: "SimSun","Helvetica Neue",Helvetica,Arial;}
+</style>
+</@header>
+	<@form.hidden  name="treeId" value="${treeId?default(0)}"/>
+	<@form.hidden  name="treeName" value="${treeName?default('')}"/>
+	<@form.hidden  name="parentIds" value="${parentIds?default('')}" />
+	<@form.hidden  name="type" />
+	<div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
+		<label id="btnShow" title="显示搜索" style="display:none;">︾</label>
+		<label id="btnHide" title="隐藏搜索">︽</label>
+	</div>
+	<div class="treeSearchInput" id="search">
+		<label for="keyword">关键字：</label><input type="text" class="empty" id="keyword" maxlength="50">
+		<button class="btn" id="btn" onclick="$.tree.searchNode()"> 搜索 </button>
+	</div>
+	<div class="treeExpandCollapse">
+		<a href="#" onclick="$.tree.expand()">展开</a> /
+		<a href="#" onclick="$.tree.collapse()">折叠</a>
+	</div>
+	<div id="tree" class="ztree treeselect"></div>
+<@footer>
+	<script>
+		$(function() {
+			var url = baseURL + "${url}" + <#if correlationId=="">""<#else>"?correlationId=${correlationId}"</#if>;
+			<#if checked== "false">
+				var options = {
+					url: url,
+					<#if expandLevel=="true">expandLevel : 2,</#if>
+					onClick : zOnClick,
+					onCheck : onCheck,
+					check: {
+						enable: true,
+						chkStyle: "radio",
+						radioType: "${radioType}"
+					},
+				};
+			<#else>
+				var options = {
+					url: url,
+					_list:$("#treeId").val(),
+					<#if expandLevel=="true">expandLevel : 2,</#if>
+					data: {
+						simpleData: {
+							enable: true,
+							idKey: "id",
+							pIdKey: "pId",
+							rootPId: -1
+						}
+					},
+					check: {
+						enable:true,
+						nocheckInherit:true,
+						chkboxType:{ "Y" : "s", "N" : "ps" }
+					},
+					onClick : zOnClick,
+					onCheck: onCheck
+				};
+			</#if>
+
+			$.tree.init(options);
+		});
+		<#if checked== "false">
+		function zOnClick(event, treeId, treeNode) {
+			<#if isSelectParent== "true">
+			if(treeNode.isParent){
+				opt.error("父点击不能选择!");
+				return;
+			}
+			</#if>
+			$._tree.checkNode(treeNode, !treeNode.checked, null, true);
+			console.log($.tree.getParentIds(treeNode));
+			$("#parentIds").val($.tree.getParentIds(treeNode));
+			var treeId = treeNode.id;
+			var treeName = treeNode.name;
+			if(opt.common.isNotEmpty(treeNode.type)){
+				$("#type").val(treeNode.type);
+			}
+			$("#treeId").val(treeId);
+			$("#treeName").val(treeName);
+		}
+
+		function onCheck(event, treeId, treeNode) {
+			//选中指定节点
+			$._tree.selectNode(treeNode);
+			console.log($.tree.getParentIds(treeNode));
+			$("#parentIds").val($.tree.getParentIds(treeNode));
+			var treeId = treeNode.id;
+			var treeName = treeNode.name;
+			if(opt.common.isNotEmpty(treeNode.type)){
+				$("#type").val(treeNode.type);
+			}
+			$("#treeId").val(treeId);
+			$("#treeName").val(treeName);
+		}
+		<#else>
+		function zOnClick(event, treeId, treeNode) {
+			$._tree.checkNode(treeNode, !treeNode.checked, null, true);
+		}
+		function onCheck(event, treeId, treeNode) {
+
+			var _p = $._tree.getCheckedNodes();
+			var ids = "";
+			var names = "";
+			for(var i=0; i<_p.length; i++ ){
+				<#if isSelectParent== "true">
+				if(_p[i].isParent){
+					continue;
+				}
+				</#if>
+				ids += _p[i].id + ",";
+				names += _p[i].name + ",";
+				$._tree.selectNode(_p);
+			}
+			$("#treeId").val(ids.substr(0,ids.length-1));
+			$("#treeName").val(names.substr(0,names.length-1));
+		}
+		</#if>
+	</script>
+</@footer>
+</@pageTheme>

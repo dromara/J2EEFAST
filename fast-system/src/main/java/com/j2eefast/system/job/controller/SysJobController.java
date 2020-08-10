@@ -8,6 +8,7 @@ import com.j2eefast.common.core.utils.ResponseData;
 import com.j2eefast.common.core.controller.BaseController;
 import com.j2eefast.framework.utils.CronUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -77,10 +78,8 @@ public class SysJobController extends BaseController {
 	public ResponseData save(@Validated SysJobEntity sysJob) {
 
 		ValidatorUtil.validateEntity(sysJob);
+		return sysJobService.add(sysJob)?success():error("保存失败!");
 
-		sysJobService.add(sysJob);
-
-		return success();
 	}
 
 	/**
@@ -100,13 +99,11 @@ public class SysJobController extends BaseController {
 	@RequiresPermissions("sys:job:edit")
 	@ResponseBody
 	@RepeatSubmit
-	public ResponseData update(SysJobEntity sysJob) {
+	public ResponseData update(SysJobEntity sysJob) throws Exception {
 
 		ValidatorUtil.validateEntity(sysJob);
+		return sysJobService.updateSysJob(sysJob)?success(): error("修改失败!");
 
-		sysJobService.updateSysJob(sysJob);
-
-		return success();
 	}
 
 	/**
@@ -117,10 +114,10 @@ public class SysJobController extends BaseController {
 	@RequiresPermissions("sys:job:del")
 	@ResponseBody
 	@RepeatSubmit
-	public ResponseData del(Long[] ids) {
+	public ResponseData del(Long[] ids) throws SchedulerException {
 
-		return sysJobService.deleteBatchByIds(ids)?success():error("删除失败!");
-
+		sysJobService.deleteBatchByIds(ids);
+		return success();
 	}
 
 	/**
@@ -131,22 +128,23 @@ public class SysJobController extends BaseController {
 	@RequiresPermissions("sys:job:run")
 	@ResponseBody
 	@RepeatSubmit
-	public ResponseData run(Long[] jobIds) {
-		sysJobService.run(jobIds);
+	public ResponseData run(Long[] ids) throws SchedulerException {
+		sysJobService.run(ids);
 		return success();
 	}
 
+
 	/**
-	 * 暂停定时任务
+	 * 任务调度状态修改
 	 */
 	@BussinessLog(title = "定时任务", businessType = BusinessType.UPDATE)
-	@RequestMapping(value = "/pause", method = RequestMethod.POST)
 	@RequiresPermissions("sys:job:changeStatus")
+	@PostMapping("/status")
 	@ResponseBody
-	@RepeatSubmit
-	public ResponseData pause(Long[] jobIds) {
-		sysJobService.pause(jobIds);
-		return success();
+	public ResponseData changeStatus(SysJobEntity job) throws SchedulerException{
+		SysJobEntity newJob = sysJobService.getById(job.getId());
+		newJob.setStatus(job.getStatus());
+		return sysJobService.changeStatus(newJob)?success(): error("修改状态失败!");
 	}
 
 
@@ -159,18 +157,6 @@ public class SysJobController extends BaseController {
 		return urlPrefix + "/add";
 	}
 
-	/**
-	 * 恢复定时任务
-	 */
-	@BussinessLog(title = "定时任务", businessType = BusinessType.UPDATE)
-	@RequestMapping(value = "/resume", method = RequestMethod.POST)
-	@RequiresPermissions("sys:job:changeStatus")
-	@ResponseBody
-	@RepeatSubmit
-	public ResponseData resume(Long[] jobIds) {
-		sysJobService.resume(jobIds);
-		return success();
-	}
 
 
 	/**

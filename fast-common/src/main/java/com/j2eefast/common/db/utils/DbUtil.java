@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * <p>多源数据工具类</p>
  *
@@ -100,6 +102,31 @@ public class DbUtil {
 			int last = jdbcUrl.indexOf("?");
 			return jdbcUrl.substring(first, last);
 		}
+	}
+	
+	/**
+	* @Title: getDbType 
+	* @Description: 返回数据库的类型
+	* @param dbInfo
+	* @return  String 
+	* @author mfksn001@163.com
+	* @Date: 2020年5月29日
+	 */
+	public static String getDbType(String jdbcUrl) {
+
+		if (StringUtils.isBlank(jdbcUrl)) {
+			return "";
+		}
+		if (jdbcUrl.contains("oracle")) {
+			return "oracle";
+		} else if (jdbcUrl.contains("postgresql")) {
+			return "postgresql";
+		} else if (jdbcUrl.contains("sqlserver")) {
+			return "sqlserver";
+		} else if (jdbcUrl.contains("mysql")) {
+			return "mysql";
+		}
+		return "";
 	}
 
 }

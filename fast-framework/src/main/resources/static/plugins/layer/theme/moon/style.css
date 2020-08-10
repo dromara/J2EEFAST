@@ -57,10 +57,10 @@ body .layer-ext-moon .layui-layer-setwin {
 	top: 15px;
 	right: 15px;
 }
-body .layer-ext-moon .layui-layer-setwin a {
-	width: 16px;
-	height: 16px;
-}
+/*body .layer-ext-moon .layui-layer-setwin a {*/
+/*	width: 16px;*/
+/*	height: 16px;*/
+/*}*/
 body .layer-ext-moon .layui-layer-setwin .layui-layer-min cite:hover {
 	background-color: #56abe4;
 }
@@ -77,11 +77,17 @@ body .layer-ext-moon .layui-layer-setwin .layui-layer-maxmin:hover {
 	background: url(default.png) no-repeat -16px 0;
 }
 body .layer-ext-moon .layui-layer-setwin .layui-layer-close1,body .layer-ext-moon .layui-layer-setwin .layui-layer-close2 {
-	background: url(default.png) 0 0;
+	/*background: url(default.png) 0 0;*/
 }
-body .layer-ext-moon .layui-layer-setwin .layui-layer-close1:hover,body .layer-ext-moon .layui-layer-setwin .layui-layer-close2:hover {
+body .layer-ext-moon .layui-layer-setwin .layui-layer-close1:hover {
 	background: url(default.png) -48px 0;
 }
+
+body .layer-ext-moon .layui-layer-setwin .layui-layer-close2:hover {
+	 background-position:-180px -31px
+}
+
+
 body .layer-ext-moon .layui-layer-padding{padding-top: 24px;}
 body .layer-ext-moon .layui-layer-btn {
     text-align: right;
@@ -122,9 +128,9 @@ body .layer-ext-moon .layui-layer-btn .layui-layer-btn1 {
 	border-radius: 3px;
 }
 body .layer-ext-moon .layui-layer-btn .layui-layer-btn2 {
-	background: #f60;
-	color: #fff;
-	border: 1px solid #f60;
+	background: #fff;
+	color: #404a58;
+	border: 1px solid #c0c4cd;
 	border-radius: 3px;
 }
 body .layer-ext-moon .layui-layer-btn .layui-layer-btn3 {

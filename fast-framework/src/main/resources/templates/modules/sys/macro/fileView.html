@@ -1,0 +1,97 @@
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="true">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+    <title>J2eeFAST文件在线预览</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <#-- 其他地方代码都可以改,未获得作者许可此信息(以下三行代码)请不要修改。请尊重作者劳动成果! ™否则作者有权收回软件使用权ø -->
+    <meta name="keywords" content="PoweredByJ2eeFast"/>
+    <meta name="description" content="PoweredByJ2eeFast"/>
+    <meta name="author" content="J2eeFAST"/>
+    <#-------------------------------------------------------------------------------------------------->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+    <link href="${ctxStatic}/static/plugins/magnify/jquery.magnify.css" rel="stylesheet">
+    <script src="${ctxStatic}/static/libs/jquery.min.js"></script>
+    <script src="${ctxStatic}/static/plugins/magnify/jquery.magnify.min.js"></script>
+    <script src="${ctxStatic}/static/plugins/pdf/pdfobject.min.js"></script>
+</head>
+<body style="margin:0;background:#ececec;">
+<script language="javascript">
+    var extName = "${extName}", fileUrl = "${fileUrl}";
+    if(!startWith(fileUrl,"http://") || startWith(fileUrl,"https://")) {
+        if(startWith(fileUrl,"${ctxStatic}")){
+            fileUrl = "${basePath}" +  fileUrl.split("${ctxStatic}")[1];
+        }else{
+            fileUrl = "${basePath}" + fileUrl;
+        }
+    }
+    if (extName == 'pdf'){
+        if (PDFObject.supportsPDFs){
+            document.write('<div id="pdfViewer" class="box"></div>');
+            PDFObject.embed(fileUrl, "#pdfViewer" );
+        }else{
+            document.write('<div class="box" style="display:flex;align-items:center">'
+                + '<div style="flex:1;display:flex;justify-content:center">'
+                + '该文件不支持在线预览</div></div>');
+        }
+    }else if (extName == 'doc' || extName == 'xls' || extName == 'ppt' || extName == 'xlsx'){
+        document.write('<iframe id="mainFrame" name="mainFrame" class="box" style="border:0;"></iframe>');
+        <#if fileUrl?index_of("fileUploadView?fileId=") != -1>
+             var url = "${basePath}" + "/sys/comm/download?fileId=${fileUrl?keep_after_last("fileUploadView?fileId=")}";
+        <#else>
+             var url = fileUrl;
+        </#if>
+        $('#mainFrame').attr('src', 'https://view.officeapps.live.com/op/view.aspx?src='
+            + encodeURIComponent(url));
+    }else if (extName == 'txt' || extName == 'html'){
+        document.write('<iframe id="mainFrame" name="mainFrame" class="box" style="border:0;background:#fff;"></iframe>');
+        $('#mainFrame').attr('src', (fileUrl));
+    }else if (extName == 'img' || extName == 'png' || extName == "jpg"){
+        document.write('<div class="box" style="display:flex;align-items:center">'
+            + '<div style="flex:1;display:flex;justify-content:center">'
+            + '<a href="'+fileUrl+'"></a></div></div>');
+        $('.box a').magnify({headToolbar: [], footToolbar: [
+                'zoomIn', 'zoomOut', 'fullscreen', 'actualSize', 'rotateLeft', 'rotateRight' ],
+            title: false, initMaximized: true }).click();
+    }else if (extName == 'mp3' || extName == 'mp4' || extName == 'wav'){
+        document.write('<video class="box" style="background:#000;" controls autoplay>'
+            + '<source src="'+fileUrl+'"></video>');
+    }else{
+        document.write('<div class="box" style="display:flex;align-items:center">'
+            + '<div style="flex:1;display:flex;justify-content:center">'
+            + '该文件不支持在线预览</div></div>');
+    }
+    $(function(){
+        var win = window;
+        if (parent.$ && window.name != ''){
+            var iframe = parent.$('.layui-layer iframe[name='+window.name+']');
+            if (iframe && iframe.length >= 1){ win = iframe[0].contentWindow; }
+        }
+        var box = $('.box, .magnify-modal'), boxResize = function(){
+            box.height(win.innerHeight - 30).width(win.innerWidth);
+        };
+        $(window).resize(function(){
+            boxResize();
+            setTimeout(function(){
+                boxResize();
+            }, 500);
+        });
+        boxResize();
+    });
+
+    function startWith(value, start) {
+        var reg = new RegExp("^" + start);
+        return reg.test(value)
+    }
+</script>
+<div style="font-size:13px;position:absolute;bottom:8px;left:10px;z-index:100000;">
+    <#if fileUrl?index_of("fileUploadView?fileId=") != -1>
+        <a href="${ctxStatic}/sys/comm/download?fileId=${fileUrl?keep_after_last("fileUploadView?fileId=")}" style="color:#111;">下载文件到本地硬盘</a> &nbsp;
+    </#if>
+</div>
+</body>
+</html>
+</@pageTheme>

@@ -357,7 +357,7 @@
     font-size: 13px;
     transition: all .2s;
     -webkit-transition: all .2s;
-    border-right: solid 1px #eee;
+    border-right: solid 1px #f6f6f6;
     position: relative;
     line-height: 40px;
     min-width: 65px;
@@ -406,13 +406,13 @@
     font-weight: 400;
     text-align: center;
     vertical-align: middle;
-    border: 1px solid #ddd;
+    /*border: 1px solid #ddd;*/
     background-color: #eee;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    -ms-border-radius: 2px;
-    -o-border-radius: 2px;
-    border-radius: 2px;
+    /*-webkit-border-radius: 2px;*/
+    /*-moz-border-radius: 2px;*/
+    /*-ms-border-radius: 2px;*/
+    /*-o-border-radius: 2px;*/
+    /*border-radius: 2px;*/
     -webkit-box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
     -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
     box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
@@ -438,6 +438,7 @@
     -ms-animation: pace-spinner 400ms linear infinite;
     -o-animation: pace-spinner 400ms linear infinite;
     animation: pace-spinner 400ms linear infinite;
+    margin-right: 10px;
 }
 @keyframes pace-spinner {
     0% {

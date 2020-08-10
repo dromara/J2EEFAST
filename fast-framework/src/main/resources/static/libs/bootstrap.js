@@ -4,7 +4,7 @@
  * Licensed under the MIT license
  */
 /*!
- * 基于开源 Bootstrap v3.3.7  修改
+ * 基于开源 Bootstrap v3.3.7  修改popover
  * @author ZhouHuan
  * @version 2020-02-10
  */
@@ -1383,7 +1383,7 @@ if (typeof jQuery === 'undefined') {
     if (obj instanceof $.Event) {
       self.inState[obj.type == 'focusin' ? 'focus' : 'hover'] = true
     }
-    //修改popover
+    //TODO 修改popover
     if ((self.tip().hasClass('in') || self.hoverState == 'in') && !(self.type === 'popover' && self.inState.hover)) {
       self.hoverState = 'in'
       return
@@ -1394,7 +1394,7 @@ if (typeof jQuery === 'undefined') {
     self.hoverState = 'in'
 
     if (!self.options.delay || !self.options.delay.show) {
-      //修改popover
+      //TODO 修改popover
       if(self.type === 'popover' && self.inState.hover){
         $('[role="tooltip"]').each(function () {
             $(this).removeClass('in');

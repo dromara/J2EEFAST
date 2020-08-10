@@ -3,7 +3,12 @@ package com.j2eefast.framework.quartz.service;
 
 import java.util.Arrays;
 import java.util.Map;
+
+import com.j2eefast.framework.quartz.utils.JobInvokeUtil;
+import org.quartz.JobDataMap;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -56,37 +61,85 @@ public class SysJobService extends ServiceImpl<SysJobMapper,SysJobEntity>{
 	 * @date 2020-03-08 16:33
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void add(SysJobEntity sysJob) {
+	public boolean add(SysJobEntity sysJob) {
 
-		this.save(sysJob);
-
-		ScheduleUtils.createScheduleJob(scheduler, sysJob);
-	}
-	
-	/**
-	 * 更新任务
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public boolean updateSysJob(SysJobEntity sysJob) {
-		
-		if(this.updateById(sysJob)) {
-			ScheduleUtils.updateScheduleJob(scheduler, sysJob);
+		if(this.save(sysJob)){
+			ScheduleUtils.createScheduleJob(scheduler, sysJob);
 			return true;
 		}
-		
+
+		return false;
+	}
+
+	@Transactional
+	public boolean updateSysJob(SysJobEntity job) throws Exception {
+		SysJobEntity properties = this.getById(job.getId());
+		if (this.updateById(job)){
+			updateSchedulerJob(job, properties.getJobGroup());
+			return true;
+		}
+		return false;
+	}
+
+
+	/*** 更新任务
+     * @param job 任务对象
+     * @param jobGroup 任务组名
+     */
+	public void updateSchedulerJob(SysJobEntity job, String jobGroup) throws Exception{
+
+		Long jobId = job.getId();
+		// 判断是否存在
+		JobKey jobKey = ScheduleUtils.getJobKey(jobId, jobGroup);
+
+		if (scheduler.checkExists(jobKey)){
+			// 防止创建时存在数据问题 先移除，然后在执行创建操作
+			scheduler.deleteJob(jobKey);
+		}
+
+		ScheduleUtils.createScheduleJob(scheduler, job);
+	}
+
+	/**
+	 * 立即运行任务
+	 *
+	 * @param job 调度信息
+	 */
+	@Transactional
+	public void run(Long[] jobIds) throws SchedulerException{
+		for(Long id : jobIds){
+			SysJobEntity tmpObj = this.getById(id);
+			// 参数
+			JobDataMap dataMap = new JobDataMap();
+			dataMap.put(JobInvokeUtil.TASK_PROPERTIES, tmpObj);
+			scheduler.triggerJob(ScheduleUtils.getJobKey(id, tmpObj.getJobGroup()), dataMap);
+		}
+	}
+
+
+	/**
+	 * 删除任务后，所对应的trigger也将被删除
+	 * @param job 调度信息
+	 */
+	@Transactional
+	public boolean deleteJob(SysJobEntity job) throws SchedulerException {
+		Long jobId = job.getId();
+		String jobGroup = job.getJobGroup();
+		if (this.removeById(jobId)){
+			scheduler.deleteJob(ScheduleUtils.getJobKey(jobId, jobGroup));
+			return true;
+		}
 		return false;
 	}
 	
 	
-	@Transactional(rollbackFor = Exception.class)
-	public boolean deleteBatchByIds(Long[] jobIds) {
+	@Transactional
+	public void deleteBatchByIds(Long[] jobIds) throws SchedulerException {
 		
 		for (Long jobId : jobIds) {
-			ScheduleUtils.deleteScheduleJob(scheduler, jobId);
+			SysJobEntity job = this.getById(jobId);
+			deleteJob(job);
 		}
-
-		// 删除数据
-		return this.removeByIds(Arrays.asList(jobIds));
 	}
 	
 	
@@ -102,49 +155,58 @@ public class SysJobService extends ServiceImpl<SysJobMapper,SysJobEntity>{
 		
 	}
 
-	/**
-	 * 根居ID批量运行
-	 * @author zhouzhou
-	 * @date 2020-03-08 16:55
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public void run(Long[] jobIds) {
-		
-		for (Long jobId : jobIds) {
-			ScheduleUtils.run(scheduler, this.getById(jobId));
-		}
-		
-	}
-	
-	/**
-	 * 批量暂停
-	 * @author zhouzhou
-	 * @date 2020-03-08 16:59
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public void pause(Long[] jobIds) {
-		
-		for (Long jobId : jobIds) {
-			ScheduleUtils.pauseJob(scheduler, jobId);
-		}
-		
-		updateBatchStatus(jobIds, Constant.ScheduleStatus.PAUSE.getValue());
-	}
-	
 
 	/**
-	 * 批量恢复任务
-	 * @author zhouzhou
-	 * @date 2020-03-08 17:00
+	 * 修改状态
+	 * @param job
+	 * @return
+	 * @throws SchedulerException
 	 */
-	@Transactional(rollbackFor = Exception.class)
-	public void resume(Long[] jobIds) {
-		
-		for (Long jobId : jobIds) {
-			ScheduleUtils.resumeJob(scheduler, jobId);
+	@Transactional
+	public boolean changeStatus(SysJobEntity job) throws SchedulerException{
+		String status = job.getStatus();
+		if (Constant.ScheduleStatus.NORMAL.getValue().equals(status)) {
+			return resumeJob(job);
 		}
-		
-		updateBatchStatus(jobIds, Constant.ScheduleStatus.NORMAL.getValue());
+		else if (Constant.ScheduleStatus.PAUSE.getValue().equals(status)) {
+			return pauseJob(job);
+		}
+		return false;
+	}
+
+	/**
+	 * 恢复任务
+	 *
+	 * @param job 调度信息
+	 */
+	@Transactional
+	public boolean resumeJob(SysJobEntity job) throws SchedulerException {
+		Long jobId = job.getId();
+		String jobGroup = job.getJobGroup();
+		job.setStatus(Constant.ScheduleStatus.NORMAL.getValue());
+		if (this.updateById(job)){
+			scheduler.resumeJob(ScheduleUtils.getJobKey(jobId, jobGroup));
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 暂停服务
+	 * @param job
+	 * @return
+	 * @throws SchedulerException
+	 */
+	@Transactional
+	public boolean pauseJob(SysJobEntity job) throws SchedulerException {
+		Long jobId = job.getId();
+		String jobGroup = job.getJobGroup();
+		job.setStatus(Constant.ScheduleStatus.PAUSE.getValue());
+		if (this.updateById(job)){
+			scheduler.pauseJob(ScheduleUtils.getJobKey(jobId, jobGroup));
+			return true;
+		}
+		return false;
 	}
 	
 	

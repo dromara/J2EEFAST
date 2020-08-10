@@ -1,0 +1,99 @@
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="代码生成范例列表" bodyClass="gray-bg animated fadeInRight" isAnimation="false" libs=["table","zTree","layout-latest"]/>
+<div class="container-div">
+ <div class="row">
+  <div class="col-sm-12 search-collapse">
+    <@form.form id="test-form" class="form-inline">
+     <div class="select-list">
+      <ul>
+           <li>
+              <label> <@ctx.i18n text = "员工编号"/>：
+               <input type="text" placeholder="员工编号" name="code"/> </label>
+            </li>
+           <li>
+              <label> <@ctx.i18n text = "姓名"/>：
+               <input type="text" placeholder="姓名" name="name"/> </label>
+            </li>
+           <li>
+              <label> <@ctx.i18n text = "邮箱"/>：
+               <input type="text" placeholder="邮箱" name="email"/> </label>
+            </li>
+           <li>
+              <label> <@ctx.i18n text = "电话"/>：
+               <input type="text" placeholder="电话" name="phone"/> </label>
+            </li>
+        <li>
+          <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;&nbsp;<@ctx.i18n text = "查询"/></a>
+          <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+       </li>
+      </ul>
+   </div>
+  </@form.form>
+ </div>
+  <@table id="bootstrap-table">
+    <@shiro.hasPermission name="gen:test:add">
+        <a class="btn btn-success" onclick="opt.operate.addTab()"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
+    </@shiro.hasPermission>
+    <@shiro.hasPermission name="gen:test:edit">
+        <a class="btn btn-primary single disabled" onclick="opt.operate.editTab()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
+    </@shiro.hasPermission>
+    <@shiro.hasPermission name="gen:test:del">
+        <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">
+            <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>
+        </a>
+    </@shiro.hasPermission>
+   </@table>
+  <div>
+</div>
+<@footer>
+<script type="text/javascript">
+    var editFlag = "${permission.hasPermi("gen:test:edit")}";
+    var listFlag = "${permission.hasPermi("gen:test:add")}";
+    var delFlag = "${permission.hasPermi("gen:test:del")}";
+    var visible = ${permission.isPermitteds("gen:test:edit,gen:test:del,gen:test:add")?string('true', 'false')};
+    var sexDatas = ${dict.getDictListJson('sys_user_sex')};
+    var prefix = baseURL + "gen/test";
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            addUrl: prefix + "/add",
+            editUrl: prefix + "/edit/{id}",
+            delUrl: prefix + "/del",
+            modalName: "代码生成范例",
+            uniqueId:  'id',/* 唯一ID */
+            escape: true,/* 分页设置 */
+            showPageGo: true,/* 分页设置 */
+            pageSize: 10,/* 分页设置 */
+            pageList: [10, 30, 50],/* 分页设置 */
+            columns: [
+                {title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);
+                }}
+                ,{field : 'id',title : '<@ctx.i18n text = "id"/>',visible: false}
+              ,{field : 'code',title : '<@ctx.i18n text = "员工编号"/>'}
+              ,{field : 'name',title : '<@ctx.i18n text = "姓名"/>'}
+              ,{field : 'email',title : '<@ctx.i18n text = "邮箱"/>'}
+               ,{field : 'phone',title : '<@ctx.i18n text = "电话"/>'}
+               ,{field : 'sex',title : '<@ctx.i18n text = "性别"/>',formatter: function(value, row, index) {
+                            return $.table.selectDictLabels(sexDatas, value); }}
+              ,{field : 'age',title : '<@ctx.i18n text = "年龄"/>'}
+              ,{field : 'joinDate',title : '<@ctx.i18n text = "入职日期"/>'}
+               ,{field : 'compName',title : '<@ctx.i18n text = "归属公司"/>' }
+              ,{field : 'deptName',title : '<@ctx.i18n text = "归属部门"/>' }
+                       ,{title:"<@ctx.i18n text = "操作"/>",align: 'center',visible:visible,formatter: function(value, row, index) {
+                        var actions = [];
+                          actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.editTab(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+ 
+                        return actions.join('');
+                    }
+                }
+            ]};
+            $.table.init(options);
+        });
+
+</script>
+</@footer>
+</@pageTheme>

@@ -16,9 +16,9 @@ fast:
     demoMode:
         enabled: false
         #配置拦截规则
-        post: 'edit,del,remove,clean,updateAvatar,updateUser,add,resetPwd,updatePass,genCode,uploadLic,status'
+        post: 'edit,del,remove,clean,updateAvatar,updateUser,add,resetPwd,updatePass,genCode,uploadLic,status,insertAuthRoles,changeStatus,insertAuthUsers,cancel,upload'
         get: 'del,remove,clean,dirTreeData'
-        urlPatterns: '/sys/*,/tool/*,/file/ueditor/*,/bpm/procdef/*,/bpm/model/*,/app/rest/models,/bpm/processInstance/*'
+        urlPatterns: '/sys/*,/tool/*,/file/ueditor/*,/bpm/procdef/*,/bpm/model/*,/app/rest/models,/bpm/processInstance/*,/gen/test/*,/sys/comm/*'
         ip:
     #是否开启HTTPS false 则以server:port
     ssl:
@@ -50,8 +50,7 @@ license:
     #公钥位置 如果不是绝对地址 则会找项目资源路径
     publicKeysStorePath: license/publicCerts.keystore
 
-    ######生成许可证书信息 *此信息应当绝对保密 正式项目应该分离单独存放用于生成许证书*  你可以屏蔽###########
-    #私钥库别名
+    ######生成许可证书信息 *此信息应当绝对保密 正式项目应该分离单独存放用于生成许证书*  你可以屏蔽############私钥库别名
     privateAlias:
     #私钥库密码
     keyPass:
@@ -62,13 +61,14 @@ license:
 spring:
     datasource:
         #默认(主)数据库配置
-        default:
+        master:
             driverClassName: com.mysql.cj.jdbc.Driver
-            #url: jdbc:mysql://192.168.20.110:3306/fastdb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=CTT
-            url: ENC{6mrUX1SZ/wgmN11iXmMyqplOpIbLBTlo3wh3K7T9qieephrFWPxUeOeswsLG+HKDvzd1wbo0DONij81tZUjIIEX/2gADAjSoJewZaxIeuVD1foEoEjzB/US3uf3gJYkee3IJPFEhABPSefwJGthT4xceWx27axifRKC6SfDzl5A=}
+            url: jdbc:mysql://127.0.0.1:3306/fastdb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=CTT
+#            url: jdbc:mysql://192.168.20.110:3306/fastdb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=CTT
+            #url: ENC{6mrUX1SZ/wgmN11iXmMyqplOpIbLBTlo3wh3K7T9qieephrFWPxUeOeswsLG+HKDvzd1wbo0DONij81tZUjIIEX/2gADAjSoJewZaxIeuVD1foEoEjzB/US3uf3gJYkee3IJPFEhABPSefwJGthT4xceWx27axifRKC6SfDzl5A=}
             username: fast
             password: fast@123$
-            filters: wall,mergeStat
+            filters: mergeStat
 #             driverClassName: oracle.jdbc.driver.OracleDriver
 #             url: jdbc:oracle:thin:@192.168.20.112:1521/orcl
 #             username: fast
@@ -84,7 +84,8 @@ spring:
   #redis数据库服务器
     redis:
         database: 10
-        host: 192.168.20.110
+#        host: 192.168.20.110
+        host: 127.0.0.1
         port: 6379
         password: 123456     # 密码（默认为空）
         timeout: 6000ms  # 连接超时时长（毫秒）
@@ -96,7 +97,8 @@ spring:
             min-idle: 5       # 连接池中的最小空闲连接
     #消息队列
     rabbitmq:
-        addresses: 192.168.20.110:5672
+        #addresses: 192.168.20.110:5672
+        addresses: 127.0.0.1:5672
         # RabbitMQ 默认的用户名和密码都是guest 而虚拟主机名称是 "/"
         # 如果配置其他虚拟主机地址，需要预先用管控台或者图形界面创建 图形界面地址 http://主机地址:15672
         username: system

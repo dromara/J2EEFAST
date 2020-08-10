@@ -5,11 +5,16 @@ public interface CacheKey {
      * 角色名称(多个)
      */
     String ROLES_NAME = "roles_name_";
+//
+//    /**
+//     * 角色名称(单个)
+//     */
+//    String SINGLE_ROLE_NAME = "single_role_name_";
 
     /**
-     * 角色名称(单个)
+     * 角色d对象
      */
-    String SINGLE_ROLE_NAME = "single_role_name_";
+    String ROLE = "role_";
 
     /**
      * 角色Key

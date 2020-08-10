@@ -26,6 +26,7 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity> {
                                  @Param("mobile") String mobile,
                                  @Param("email") String email,
                                  @Param("compId") String compId,
+                                 @Param("deptId") String deptId,
                                  @Param("sql_filter") String sql_filter);
 
 
@@ -71,7 +72,7 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity> {
     /**
      * 查询用户的所有菜单ID
      */
-    List<Long> findAllMenuId(Long userId);
+    List<Long> findAllMenuId(Long id);
 
     /**
      * 修改用户密码
@@ -81,7 +82,7 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity> {
      * @param pwdSecurityLevel 密码安全等级
      * @return
      */
-    int updatePassWord(@Param("userId") Long userId,
+    int updatePassWord(@Param("id") Long userId,
                        @Param("password") String password,
                        @Param("salt") String salt,
                        @Param("pwdSecurityLevel") String pwdSecurityLevel);
@@ -92,7 +93,7 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity> {
      * @param avatar 头像路径
      * @return
      */
-    int updateAvatar(@Param("userId") Long userId,
+    int updateAvatar(@Param("id") Long userId,
                      @Param("avatar") String avatar);
 
 
@@ -102,7 +103,7 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity> {
      * @param status
      * @return
      */
-    int setStatus(@Param("userId") Long userId,
+    int setStatus(@Param("id") Long userId,
                   @Param("status") String status);
 
 
@@ -114,6 +115,15 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity> {
     SysUserEntity findUserByUserName(@Param("userName") String userName);
 
 
+    /**
+     * 免密登录通过第三方授权id查询用户情况
+     * @param username
+     * @return
+     */
+    SysUserEntity findAuthByUserName(@Param("username") String username);
+
+
+    SysUserEntity findAuthByUuid(@Param("uuid") String uuid);
     /**
      * 手机号码获取用户信息
      * @param mobile
@@ -132,16 +142,16 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity> {
 
     /**
      * 通过用户ID获取所属公司
-     * @param userId
+     * @param id
      * @return
      */
-    String findCompNameByUserId(@Param("userId") Long userId);
+    String findCompNameByUserId(@Param("id") Long id);
 
 
     /**
      * 通过用户ID获取完整用户信息
-    * @param userId
+    * @param id
      * @return
      */
-    SysUserEntity findUserByUserId(@Param("userId") Long userId);
+    SysUserEntity findUserByUserId(@Param("id") Long id);
 }

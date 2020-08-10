@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.j2eefast.framework.sys.mapper.SysAreaMapper">
+
+
+    
+    <resultMap type="SysAreaEntity" id="SysAreaResult">
+       <result property="id"    column="id"    />
+       <result property="parentId"    column="parent_id"    />
+       <result property="name"    column="name"    />
+       <result property="level"    column="level"    />
+       <result property="wholeName"    column="whole_name"    />
+       <result property="lon"    column="lon"    />
+       <result property="lat"    column="lat"    />
+       <result property="cityCode"    column="city_code"    />
+       <result property="zipCode"    column="zip_code"    />
+       <result property="areaCode"    column="area_code"    />
+       <result property="pinYin"    column="pin_yin"    />
+       <result property="simplePy"    column="simple_py"    />
+       <result property="perPinYin"    column="per_pin_yin"    />
+     </resultMap>
+    
+    <!--  实体栏位  --> 
+    <sql id="sysAreaColumns">
+          a.id as "id"   ,
+          a.parent_id as "parentId"   ,                 
+          a.name as "name"   ,                 
+          a.level as "level"   ,                 
+          a.whole_name as "wholeName"   ,                 
+          a.lon as "lon"   ,                 
+          a.lat as "lat"   ,                 
+          a.city_code as "cityCode"   ,                 
+          a.zip_code as "zipCode"   ,                 
+          a.area_code as "areaCode"   ,                 
+          a.pin_yin as "pinYin"   ,                 
+          a.simple_py as "simplePy"   ,                 
+          a.per_pin_yin as "perPinYin"                   
+      </sql>
+    
+     <!-- 外联表  --> 
+	<sql id="sysAreaJoins">
+		<!--  left join sys_comp c ON c.id = a.$c.columnName   关联查询后，需手动修改 sysAreaColumns 中属性值      -->
+    </sql>
+
+     <!--  根据获取实体List   -->
+     <select id="selectAreaList" resultType="com.j2eefast.framework.sys.entity.SysAreaEntity">
+		SELECT 
+			<include refid="sysAreaColumns"/>
+			,(a.`level` != 4) AS nodes
+         FROM sys_area a
+		<where>
+            <if test="name != null  and name != ''">
+                     and a.name LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{name}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{name}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+            <if test="level != null "> and a.level = #{level} </if>
+            <if test="parentId != null "> and a.parent_id = #{parentId} </if>
+            <if test="zipCode != null  and zipCode != ''"> and a.zip_code = #{zipCode} </if>
+            <if test="areaCode != null  and areaCode != ''"> and a.area_code = #{areaCode} </if>
+        </where>
+	 </select>
+	 
+	 
+	 
+	  <!--  根据获取实体 page   -->
+     <select id="findPage" resultType="com.j2eefast.framework.sys.entity.SysAreaEntity">
+		SELECT 
+			<include refid="sysAreaColumns"/>
+		FROM sys_area a
+		<include refid="sysAreaJoins"/>
+		<where>
+        
+               <if test="sysArea.name != null  and sysArea.name != ''">
+                     and a.name LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{sysArea.name}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{sysArea.name}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{sysArea.name},'%')</if>
+			</if>
+               <if test="sysArea.level != null "> and a.level = #{sysArea.level} </if>
+                   <if test="sysArea.zipCode != null  and sysArea.zipCode != ''"> and a.zip_code = #{sysArea.zipCode} </if>
+               <if test="sysArea.areaCode != null  and sysArea.areaCode != ''"> and a.area_code = #{sysArea.areaCode} </if>
+      		</where>
+	 </select>
+	   
+</mapper>

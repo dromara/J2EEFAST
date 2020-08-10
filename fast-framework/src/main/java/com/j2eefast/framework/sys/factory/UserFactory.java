@@ -23,10 +23,10 @@ public class UserFactory {
 		if (user == null) {
 			return loginUser;
 		}
-		loginUser.setId(user.getUserId());
+		loginUser.setId(user.getId());
 		loginUser.setUsername(user.getUsername());
 		loginUser.setDeptId(user.getDeptId());
-		loginUser.setCompName(ConstantFactory.me().getCompName(user.getUserId()));
+		loginUser.setCompName(ConstantFactory.me().getCompName(user.getId()));
 		loginUser.setCompId(user.getCompId());
 		loginUser.setName(user.getName());
 		loginUser.setPwdUpdateDate(user.getPwdUpdateDate());

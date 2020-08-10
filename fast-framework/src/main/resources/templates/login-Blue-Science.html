@@ -1,4 +1,4 @@
-<#include "/common/include.html">
+<#include "/common/defaultEngine.html">
 <@pageTheme mark="true">
 <!DOCTYPE html>
 <html>
@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="${ctxStatic}/static/css/animate.css?V=${config.getDvVersion()}"/>
     <#-- jQuery toast 提示框  -->
     <link rel="stylesheet" href="${ctxStatic}/static/css/jquery.toast.min.css?V=${config.getDvVersion()}">
-    <link rel="stylesheet" href="${ctxStatic}/static/css/style.min.css?V=${config.getDvVersion()}">
+    <link rel="stylesheet" href="${ctxStatic}/static/css/style.css?V=${config.getDvVersion()}">
     <link rel="stylesheet" href="${ctxStatic}/static/css/index.css?V=${config.getDvVersion()}">
     <link rel="stylesheet" type="text/css" href="${ctxStatic}/static/css/baidu/n.css">
     <link rel="stylesheet" href="${ctxStatic}/static/css/baidu/index_baidu.css">
@@ -134,9 +134,38 @@
                                         </p>
                                     </form>
                                 </div>
-                            <div class="tip-wrap">
-                                <p><strong>温馨提示：</strong><br>密码若错3次以上,才会需要提交验证码。</p>
-                            </div>
+                                <#if config.getKey("SYS_IS_OAUTH") == "0">
+                                <div class="social-auth-links text-center">
+                                    <div class="oauth-title">
+                                        <span class="text-muted"> 其他方式登录 </span>
+                                    </div>
+                                    <div class="oauth-list">
+                                        <div class="item" title="<@ctx.i18n text = "使用 Gitee 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                            <a href="${ctxStatic}/auth/gitee">
+                                                <img src="${ctxStatic}/static/img/gitee.svg"/>
+                                            </a>
+                                        </div>
+                                        <div class="item" title="<@ctx.i18n text = "使用 GitHub 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                            <a href="${ctxStatic}/auth/github">
+                                                <img src="${ctxStatic}/static/img/github.svg"/>
+                                            </a>
+                                        </div>
+                                        <div class="item" title="<@ctx.i18n text = "使用 OsChina 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                            <a href="${ctxStatic}/auth/oschina">
+                                                <img src="${ctxStatic}/static/img/oschina.svg"/>
+                                            </a>
+                                        </div>
+                                        <div class="item" title="<@ctx.i18n text = "功能开发中..."/>" data-toggle="tooltip" data-placement="top">
+                                            <a href="#">
+                                                <img src="${ctxStatic}/static/img/qq-no.svg"/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                </#if>
+                                <div class="tip-wrap">
+                                    <p><strong>温馨提示：</strong><br>密码若错3次以上,才会需要提交验证码。</p>
+                                </div>
                         </div>
                     </div>
                 </td>

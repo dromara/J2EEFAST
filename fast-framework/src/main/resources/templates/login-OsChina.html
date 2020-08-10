@@ -1,4 +1,4 @@
-<#include "/common/include.html">
+<#include "/common/defaultEngine.html">
 <@pageTheme mark="true">
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="${ctxStatic}/static/css/iCheck/all.css?V=${config.getDvVersion()}">
 <#-- jQuery toast 提示框  -->
 <link rel="stylesheet" href="${ctxStatic}/static/css/jquery.toast.min.css?V=${config.getDvVersion()}">
-<link rel="stylesheet" href="${ctxStatic}/static/css/style.min.css?V=${config.getDvVersion()}">
+<link rel="stylesheet" href="${ctxStatic}/static/css/style.css?V=${config.getDvVersion()}">
 <link rel="stylesheet" href="${ctxStatic}/static/css/index.css?V=${config.getDvVersion()}">
 <link type="text/css" rel="stylesheet" href="${ctxStatic}/static/css/oschina/oschina.css">
 <style>[v-cloak]{display:none !important;} .checkbox label{padding-left: 0px;}</style>
@@ -100,17 +100,10 @@
                                     <div class="form-tips">
                                     </div>
                                     <button type="button" class="btn btn-green block btn-login" @click="login" data-loading="正在验证登录，请稍后..."><@ctx.i18n text = "登 录"/></button>
-<#--                                    <div class="gitee-login">-->
-<#--                                        <a href="https://www.oschina.net/action/openid/before_bind?op=gitee&amp;goto=https%3A%2F%2Fwww.oschina.net%2F" title="使用 Gitee 帐号登录" class="span-box login-logo" style="display:flex;align-items:center;justify-content:center;margin-top:26px;">-->
-<#--                                            <svg width="32" height="32" viewBox="0 0 83 83" class="svg-icon-logo-gitee-dims">-->
-<#--                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-logo-gitee"></use>-->
-<#--                                            </svg>-->
-<#--                                            <span style="color:#323232;font-size:16px;padding-left:10px;">使用 Gitee 帐号登录</span>-->
-<#--                                        </a>-->
-<#--                                    </div>-->
                                 </div>
-                                <div class="form-item">
-                                    <div class="dropdown pull-right">
+                                <div class="form-item box vertical">
+                                    <div class="box-aw"></div>
+                                    <div class="dropdown box-fr">
                                         <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">
                                             <i class="fa fa-language"></i>&nbsp;<@ctx.i18n text = "中文(简体)"/>
                                         </a>
@@ -127,6 +120,37 @@
                                         </ul>
                                     </div>
                                 </div>
+                                <#if config.getKey("SYS_IS_OAUTH") == "0">
+                                <div class="form-item">
+                                    <div class="social-auth-links text-center">
+                                        <div class="oauth-title">
+                                            <span class="text-muted"> 其他方式登录 </span>
+                                        </div>
+                                        <div class="oauth-list">
+                                            <div class="item" title="<@ctx.i18n text = "使用 Gitee 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                                <a href="${ctxStatic}/auth/gitee">
+                                                    <img src="${ctxStatic}/static/img/gitee.svg"/>
+                                                </a>
+                                            </div>
+                                            <div class="item" title="<@ctx.i18n text = "使用 GitHub 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                                <a href="${ctxStatic}/auth/github">
+                                                    <img src="${ctxStatic}/static/img/github.svg"/>
+                                                </a>
+                                            </div>
+                                            <div class="item" title="<@ctx.i18n text = "使用 OsChina 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                                <a href="${ctxStatic}/auth/oschina">
+                                                <img src="${ctxStatic}/static/img/oschina.svg"/>
+                                                </a>
+                                            </div>
+                                            <div class="item" title="<@ctx.i18n text = "功能开发中..."/>" data-toggle="tooltip" data-placement="top">
+                                                <a href="#">
+                                                    <img src="${ctxStatic}/static/img/qq-no.svg"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </#if>
                             </div>
                         </form>
                     </div>

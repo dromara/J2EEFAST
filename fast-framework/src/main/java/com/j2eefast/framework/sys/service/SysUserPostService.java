@@ -23,6 +23,7 @@ import java.util.List;
 public class SysUserPostService  extends ServiceImpl<SysUserPostMapper, SysUserPostEntity> {
 
 	public void saveOrUpdate(Long userId, List<String> postCodes) {
+
 		// 先删除用户与角色关系
 		this.removeByMap(new MapUtil().put("user_id", userId));
 

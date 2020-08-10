@@ -8,6 +8,7 @@ import com.j2eefast.common.core.utils.*;
 import com.j2eefast.framework.log.entity.SysLoginInfoEntity;
 import com.j2eefast.framework.sys.constant.factory.ConstantFactory;
 import com.j2eefast.framework.sys.entity.SysModuleEntity;
+import com.j2eefast.framework.sys.entity.SysRoleEntity;
 import com.j2eefast.framework.sys.factory.UserFactory;
 import com.j2eefast.framework.sys.mapper.SysMenuMapper;
 import com.j2eefast.framework.sys.mapper.SysModuleMapper;
@@ -57,7 +58,7 @@ public class SysLoginService implements AuthService {
 
 		//用户错误次数大于设定数值直接拒绝
 		if( ToolUtil.isNotEmpty(number) && number >= Global.getLoginMaxCount()) {
-			AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,-1L, "50003","账户被锁定,"+Global.getLockTime()+" 分钟后解锁!"));
+			AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,-1L,-1L, "50003","账户被锁定,"+Global.getLockTime()+" 分钟后解锁!"));
 			throw new RxcException(ToolUtil.message("sys.login.failedNumLock",Global.getLockTime()),"50003");
 		}
 
@@ -76,7 +77,7 @@ public class SysLoginService implements AuthService {
 
 		//用户名或者密码为空
 		if(StrUtil.isBlankOrUndefined(username) || StrUtil.isBlankOrUndefined(password) ) {
-			AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,-1L, "50005","账号或密码错误,请重试."));
+			AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,-1L,-1L, "50005","账号或密码错误,请重试."));
 			throw new RxcException(ToolUtil.message("sys.login.failure"),"50005");
 		}
 
@@ -107,7 +108,7 @@ public class SysLoginService implements AuthService {
 		}
 
 		if(ToolUtil.isEmpty(user)){
-			AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,-1L, "50001","账号或密码错误,请重试."));
+			AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,-1L,-1L, "50001","账号或密码错误,请重试."));
 			throw new RxcException(ToolUtil.message("sys.login.failure"),"50001");
 		}
 
@@ -120,7 +121,7 @@ public class SysLoginService implements AuthService {
 				number++;
 				redisUtil.set(RedisKeys.getUserLoginKey(user.getUsername()), number, RedisUtil.MINUTE * Global.getLockTime());
 			}
-			AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,user.getCompId(), "50004","账号或密码不正确,输入错误"+number+" 次!"));
+			AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,user.getCompId(),user.getDeptId(), "50004","账号或密码不正确,输入错误"+number+" 次!"));
 			//错误次数大于设定
 			if(number >= Global.getLoginNumCode()) {
 				throw new RxcException(ToolUtil.message("sys.login.password.retry.limit.count",Global.getLoginMaxCount()),"50004");
@@ -135,12 +136,53 @@ public class SysLoginService implements AuthService {
 		LoginUserEntity loginUser = UserFactory.createLoginUser(user);
 
 		//设置授权
-		this.authorization(loginUser,user.getUserId());
+		this.authorization(loginUser,user.getId());
 
 		//设置登陆
-		this.setLoginDetails(loginUser,user.getUserId());
+		this.setLoginDetails(loginUser,user.getId(),"sys");
+
 		return loginUser;
 	}
+
+	/**
+	 * 免密授权登录
+	 * @param openId
+	 * @return
+	 */
+	@Override
+	public LoginUserEntity freeLoginVerify(String openId) {
+		//检查第三方账号是否有绑定用户ID
+		SysUserEntity user = this.sysUserMapper.findUserByUserName(openId);
+		if(ToolUtil.isEmpty(user)){
+			AsyncManager.me().execute(AsyncFactory.recordLogininfor(openId,-1L,-1L, "60001","第三方授权登录,系统没有绑定用户."));
+			throw new RxcException(ToolUtil.message("sys.login.failure"),"60001");
+		}
+
+		//获取登陆错误次数
+		Integer number = redisUtil.get(RedisKeys.getUserLoginKey(user.getUsername()),Integer.class);
+
+		//用户错误次数大于设定数值直接拒绝
+		if( ToolUtil.isNotEmpty(number) && number >= Global.getLoginMaxCount()) {
+			AsyncManager.me().execute(AsyncFactory.recordLogininfor(user.getUsername(),-1L,-1L, "50003","账户被锁定,"+Global.getLockTime()+" 分钟后解锁!"));
+			throw new RxcException(ToolUtil.message("sys.login.failedNumLock",Global.getLockTime()),"50003");
+		}
+
+		//清空错误登陆标志
+		redisUtil.delete(RedisKeys.getUserLoginKey(user.getUsername()));
+
+		//转换成用户登录信息
+		LoginUserEntity loginUser = UserFactory.createLoginUser(user);
+
+		//设置授权
+		this.authorization(loginUser,user.getId());
+
+
+		//设置登陆
+		this.setLoginDetails(loginUser,user.getId(),user.getSource());
+
+		return loginUser;
+	}
+
 
 	@Override
 	public List<String> findPermissionsByRoleId(Long roleId) {
@@ -155,13 +197,6 @@ public class SysLoginService implements AuthService {
 			List<Long> roleList = ConstantFactory.me().getRoleIds(userId);
 			List<String> roleNameList = new ArrayList<>();
 			List<String> roleKeyList = new ArrayList<>();
-			for (Long roleId : roleList) {
-				roleNameList.add(ConstantFactory.me().getSingleRoleName(roleId));
-				roleKeyList.add(ConstantFactory.me().getSingleRoleKey(roleId));
-			}
-			loginUser.setRoleList(roleList);
-			loginUser.setRoleNames(roleNameList);
-			loginUser.setRoleKey(roleKeyList);
 
 			//根居角色ID获取模块列表
 			List<SysModuleEntity> modules = this.sysModuleMapper.findModuleByRoleIds(roleList);
@@ -173,19 +208,34 @@ public class SysLoginService implements AuthService {
 			loginUser.setModules(results);
 			//设置权限列表
 			Set<String> permissionSet = new HashSet<>();
+			List<Map<Object,Object>> xzz = new ArrayList<>(roleList.size());
+
 			for (Long roleId : roleList) {
+				SysRoleEntity role = ConstantFactory.me().getRoleById(roleId);
 				List<String> permissions = this.findPermissionsByRoleId(roleId);
 				if (permissions != null) {
+					Map<Object, Object> map = new HashMap<>();
+					Set<String> tempSet = new HashSet<>();
 					for (String permission : permissions) {
 						if (ToolUtil.isNotEmpty(permission)) {
 							String[] perm = StrUtil.split(permission,",");
 							for(String s: perm){
 								permissionSet.add(s);
+								tempSet.add(s);
 							}
 						}
 					}
+					map.put(role,tempSet);
+					xzz.add(map);
 				}
+				roleNameList.add(role.getRoleName());
+				roleKeyList.add(role.getRoleKey());
 			}
+
+			loginUser.setRoleList(roleList);
+			loginUser.setRoleNames(roleNameList);
+			loginUser.setRoleKey(roleKeyList);
+			loginUser.setRolePerm(xzz);
 			loginUser.setPermissions(permissionSet);
 		}else{
 			//根居角色ID获取模块列表
@@ -206,11 +256,12 @@ public class SysLoginService implements AuthService {
 			Set<String> permissionSet = new HashSet<>();
 			permissionSet.add("*:*:*");
 			loginUser.setPermissions(permissionSet);
+//			loginUser.setDataScope("1");
 		}
 	}
 
 	@Override
-	public void setLoginDetails(LoginUserEntity loginUser, Long userId) {
+	public void setLoginDetails(LoginUserEntity loginUser, Long userId, String source) {
 
 		SysLoginInfoEntity loginInfo = ConstantFactory.me().getFirstLoginInfo(loginUser.getUsername());
 
@@ -229,8 +280,9 @@ public class SysLoginService implements AuthService {
 
 		//插入登陆表
 		AsyncManager.me().execute(AsyncFactory.recordLogininfor(loginUser.getUsername(),
-				loginUser.getCompId(), "00000","登陆成功!",loginUser.getNowLoginTime(),
-				loginUser.getNowLoginLocation(), loginUser.getLoginLocation()));
+				loginUser.getCompId(),loginUser.getDeptId(), "00000","登陆成功!",
+				loginUser.getNowLoginTime(),loginUser.getNowLoginLocation(),
+				source));
 
 	}
 }

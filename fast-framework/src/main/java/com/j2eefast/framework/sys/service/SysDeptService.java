@@ -28,7 +28,7 @@ public class SysDeptService extends ServiceImpl<SysDeptMapper,SysDeptEntity> {
 	@Resource
 	private SysDeptMapper sysDeptMapper;
 
-	@DataFilter(subDept = true, user = false, tableAlias="d")
+	@DataFilter(compAlias="c")
 	public List<SysDeptEntity> findPage(Map<String, Object> params) {
 		String type = (String) params.get("type");
 		return this.list(new QueryWrapper<SysDeptEntity>().eq("del_flag","0")
@@ -37,13 +37,13 @@ public class SysDeptService extends ServiceImpl<SysDeptMapper,SysDeptEntity> {
 				.apply(params.get(Constant.SQL_FILTER) != null, (String) params.get(Constant.SQL_FILTER)));
 	}
 
-	@DataFilter(subDept = true, tableAlias="d")
+	@DataFilter(compAlias="c")
 	public List<SysDeptEntity> findDeptList(Map<String, Object> params) {
 		return sysDeptMapper.findDeptList((String)params.get("name"),(String) params.get("type"),
 				(String) params.get(Constant.SQL_FILTER));
 	}
 
-	@DataFilter(subDept = true,  tableAlias="u")
+	@DataFilter(compAlias="c")
 	public List<SysDeptEntity> findByDeptNameId(Map<String, Object> params) {
 		return sysDeptMapper.findByDeptNameId((Long)params.get("compId"),
 				(String) params.get(Constant.SQL_FILTER));
@@ -73,10 +73,10 @@ public class SysDeptService extends ServiceImpl<SysDeptMapper,SysDeptEntity> {
 
 	public boolean checkDeptNameUnique(SysDeptEntity dept) {
 
-		Long deptId = ToolUtil.isEmpty(dept.getDeptId()) ? -1L : dept.getDeptId();
+		Long deptId = ToolUtil.isEmpty(dept.getId()) ? -1L : dept.getId();
 		SysDeptEntity info = this.getOne(new QueryWrapper<SysDeptEntity>().
 				eq("name", dept.getName()).eq("parent_id", dept.getParentId()));
-		if (ToolUtil.isNotEmpty(info) && info.getDeptId().longValue() != deptId.longValue()) {
+		if (ToolUtil.isNotEmpty(info) && info.getId().longValue() != deptId.longValue()) {
 			return false;
 		}
 		return true;
@@ -121,7 +121,7 @@ public class SysDeptService extends ServiceImpl<SysDeptMapper,SysDeptEntity> {
 		for (SysDeptEntity dept : deptList) {
 			if (Constant.DEPT_NORMAL.equals(dept.getStatus())) {
 				Ztree ztree = new Ztree();
-				ztree.setId(dept.getDeptId());
+				ztree.setId(dept.getId());
 				ztree.setpId(dept.getParentId());
 				ztree.setName(dept.getName());
 				ztree.setTitle(dept.getName());

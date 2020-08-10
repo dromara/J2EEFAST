@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -42,6 +43,12 @@ public class SysLoginInfoEntity implements Serializable {
 	 *  系统类型
 	 */
 	private String os;
+
+	/**
+	 * 账号登录类型 sys 系统账号 ,  gitee , oschina,  github,  qq
+	 */
+	private String loginType;
+
 	/**
 	 * 登录状态（0成功 1失败）
 	 */
@@ -63,5 +70,16 @@ public class SysLoginInfoEntity implements Serializable {
 	 * 公司ID
 	 */
 	private Long compId;
+
+	/**
+	 * 机构部门ID
+	 */
+	private Long deptId;
+
+	/**
+	 * 公司名称
+	 */
+	@TableField(exist = false)
+	private String compName;
 
 }

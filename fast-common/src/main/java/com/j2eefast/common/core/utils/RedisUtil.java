@@ -197,7 +197,18 @@ public class RedisUtil {
 		if(enabled) {
 			redisTemplate.delete(key);
 		}
-		
+	}
+
+	public boolean deletes(String key){
+		if(enabled) {
+			Set<String> keys = redisTemplate.keys(key);
+		  	return  redisTemplate.delete(keys) > 0;
+		}
+		return  false;
+	}
+
+	public boolean isEnabled(){
+		return enabled;
 	}
 
 	/**

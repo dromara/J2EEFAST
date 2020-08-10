@@ -1,9 +1,8 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
 <@header title="服务监控">
-	<link rel="stylesheet" href="${ctxStatic}/static/css/AdminLTE.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/static/css/AdminLTE.css?V=${config.getDvVersion()}"/>
 </@header>
-<body class="hold-transition skin-blue sidebar-mini" style="background-color: #ecf0f5;">
   <!-- Content Wrapper. Contains page content -->
 	<!-- Main content -->
     <section class="content" id="app" v-cloak>
@@ -235,7 +234,6 @@
         </div>
      </section>
     <!-- /.content -->
-</body>
 <@footer>
 <script type="text/javascript">
 		var vm = new Vue({
@@ -323,6 +321,5 @@
 			}
 		});
 </script>
-	</script>
 </@footer>
 </@pageTheme>

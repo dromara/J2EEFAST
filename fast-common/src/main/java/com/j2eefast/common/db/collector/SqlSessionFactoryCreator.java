@@ -1,5 +1,6 @@
 package com.j2eefast.common.db.collector;
 
+import cn.hutool.core.date.SystemClock;
 import com.baomidou.mybatisplus.extension.toolkit.JdbcUtils;
 import com.j2eefast.common.core.exception.RxcException;
 import com.j2eefast.common.db.context.DataSourceContext;
@@ -144,7 +145,7 @@ public class SqlSessionFactoryCreator {
 	public synchronized SqlSessionFactory createSqlSessionFactory(DataSource dataSource, String dbName){
 
 		//初始化本MybatisSqlSessionFactoryBean需要的配置，如果不初始化，则所有MybatisSqlSessionFactoryBean都用一套配置，会出现mapper语句差不不进去（因为mp的缓存）
-		MybatisConfiguration originConfiguration = properties.getConfiguration();
+		MybatisConfiguration originConfiguration =  properties.getConfiguration();
 		GlobalConfig originGlobalConfig = properties.getGlobalConfig();
 
 		//清空mapper的缓存
@@ -157,7 +158,6 @@ public class SqlSessionFactoryCreator {
 		//执行拷贝操作
 		BeanUtil.copyProperties(originConfiguration, mybatisConfiguration, CopyOptions.create().ignoreError());
 		BeanUtil.copyProperties(originGlobalConfig, globalConfig, CopyOptions.create().ignoreError());
-
 
 
 		mybatisConfiguration.setGlobalConfig(globalConfig);
@@ -250,6 +250,10 @@ public class SqlSessionFactoryCreator {
 			}else{
 				factory.setMapperLocations(resource);
 			}
+
+			DataSourceContext.addMapperLocations(dbName,resource);
+			DataSourceContext.addBeforeTime(dbName, SystemClock.now());
+			//
 		}
 
 		// TODO 对源码做了一定的修改(因为源码适配了老旧的mybatis版本,但我们不需要适配)

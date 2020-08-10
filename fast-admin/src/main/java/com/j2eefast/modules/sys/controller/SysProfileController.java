@@ -2,11 +2,7 @@ package com.j2eefast.modules.sys.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.j2eefast.common.core.base.entity.LoginUserEntity;
-import com.j2eefast.common.core.utils.AssertUtil;
-import com.j2eefast.common.core.utils.CheckPassWord;
-import com.j2eefast.common.core.utils.FileUploadUtil;
-import com.j2eefast.common.core.utils.ResponseData;
-import com.j2eefast.common.core.utils.ToolUtil;
+import com.j2eefast.common.core.utils.*;
 import com.j2eefast.common.core.business.annotaion.BussinessLog;
 import com.j2eefast.common.core.enums.BusinessType;
 import com.j2eefast.framework.annotation.RepeatSubmit;
@@ -18,11 +14,14 @@ import com.j2eefast.framework.utils.Global;
 import com.j2eefast.framework.utils.UserUtils;
 import cn.hutool.core.util.ReUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 /**
  * 个人资料
@@ -38,21 +37,42 @@ public class SysProfileController extends BaseController {
     @Autowired
     private SysUserService sysUserService;
 
+    @Autowired
+    private SysAuthUserService sysAuthUserService;
     /**
      * 个人信息
      */
     @GetMapping("/{active}")
     public String profile(@PathVariable("active") String active,ModelMap mmap) {
-        if(ToolUtil.isNotEmpty(active) && "info".equals(active)){
+        if(ToolUtil.isEmpty(active)){
             active = "info";
-        }else {
-            active = "password";
         }
         LoginUserEntity user = UserUtils.getUserInfo();
         mmap.put("user", user);
         mmap.put("active",active);
+        mmap.put("err",super.getPara("err","").equals("5001")?"您的第三方账号已经有绑定系统账号不能重复绑定!":"");
         return urlPrefix + "/profile";
     }
+
+    @RequestMapping("/oauth2/list")
+    @RequiresPermissions("sys:oauth2:list")
+    @ResponseBody
+    public ResponseData list(@RequestParam Map<String, Object> params) {
+        PageUtil page = sysAuthUserService.findPage(params);
+        return success(page);
+    }
+
+    @RequiresPermissions("sys:oauth2:del")
+    @RequestMapping( value = "/oauth2/del", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData delAuth(Long id) {
+         if (sysAuthUserService.removeById(id)){
+             return success();
+         }else {
+             return error("解绑失败!");
+         }
+    }
+
 
     /**
      * 修改头像

@@ -1,9 +1,12 @@
 package com.j2eefast.common.db.context;
 
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.j2eefast.common.core.config.properties.DruidProperties;
 import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.common.db.dao.SysDataBaseDao;
 import com.j2eefast.common.db.factory.AtomikosFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -16,11 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @web: http://www.j2eefast.com
  * @version: 1.0.1
  */
+@Slf4j
 public class DataSourceContext {
 	/**
 	 * 主数据源名称
 	 */
-	public static final String MASTER_DATASOURCE_NAME = "DEFAULT";
+	public static final String MASTER_DATASOURCE_NAME = "MASTER";//master
 
 	public static final String FLOWABLE_DATASOURCE_NAME = "FLOWABLE";
 
@@ -35,7 +39,11 @@ public class DataSourceContext {
 	private static Map<String, DruidProperties> DATA_SOURCES_CONF = new ConcurrentHashMap<>();
 
 
-
+	/**
+	 * xml资源文件 用于热加载
+	 */
+	private static Map<String, Resource[]>  MAPPERLOCATION  = new ConcurrentHashMap<>();
+	private static Map<String, Long>  MAPPERBEFORETIME = new ConcurrentHashMap<>();
 	/**
 	 * 初始化所有dataSource
 	 *
@@ -93,6 +101,22 @@ public class DataSourceContext {
 		DATA_SOURCES.put(dbName, dataSource);
 	}
 
+	public static void addMapperLocations(String dbName,Resource... mapperLocations) {
+		MAPPERLOCATION.put(dbName,mapperLocations);
+	}
+
+	public static Map<String, Resource[]> getMapperLocations() {
+		return MAPPERLOCATION;
+	}
+
+	public static void addBeforeTime(String dbName, Long time){
+		MAPPERBEFORETIME.put(dbName,time);
+	}
+
+	public static Map<String, Long> getBeforeTime() {
+		return MAPPERBEFORETIME;
+	}
+
 	public static void removeByName(String dbName){
 		if(!dbName.equalsIgnoreCase(MASTER_DATASOURCE_NAME)|| !dbName.equalsIgnoreCase(FLOWABLE_DATASOURCE_NAME) ) {
 			DATA_SOURCES_CONF.remove(dbName);
@@ -100,6 +124,7 @@ public class DataSourceContext {
 			SqlSessionFactoryContext.getSqlSessionFactorys().remove(dbName);
 		}
 	}
+
 
 	/**
 	 * 获取数据源
@@ -130,5 +155,18 @@ public class DataSourceContext {
 		DATA_SOURCES_CONF.put(dataSourceName, druidProperties);
 
 		return AtomikosFactory.create(dataSourceName, druidProperties);
+	}
+	
+	
+	/**
+	* @Title: getDefaultDataSource 
+	* @Description: 获取系统缺省的数据源
+	* @return  DataSource 
+	* @author mfksn001@163.com
+	* @Date: 2020年5月30日
+	 */
+	public static DataSource getDefaultDataSource() {
+		
+		return DATA_SOURCES.get(MASTER_DATASOURCE_NAME);
 	}
 }

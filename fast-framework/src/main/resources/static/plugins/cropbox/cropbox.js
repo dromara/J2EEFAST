@@ -1,3 +1,7 @@
+/**
+ * 
+ * J2eeFAST 二次封装,修复图片不存在显示异常情况
+ */
 "use strict";
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
@@ -125,6 +129,12 @@
         };
         obj.image.crossOrigin = 'Anonymous';
         obj.image.src = options.imgSrc;
+        /* J2eeFAST 处理图片地址不存在问题*/
+        obj.image.onerror = function(){
+        	var img=event.srcElement;
+        	img.src=baseURL+"static/img/user2-160x160.jpg"; 
+        	img.onerror=null;
+        };
         el.on('remove', function(){$(window).unbind('mouseup', imgMouseUp)});
 
         return obj;

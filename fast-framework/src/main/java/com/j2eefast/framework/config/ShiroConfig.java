@@ -4,21 +4,22 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
+import com.j2eefast.framework.shiro.realm.FreeRealm;
 import org.apache.commons.io.IOUtils;
+import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.io.ResourceUtils;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.SessionListener;
 import org.apache.shiro.session.mgt.SessionManager;
@@ -186,13 +187,29 @@ public class ShiroConfig {
 		return userRealm;
 	}
 
+	@Bean
+	public FreeRealm freeRealm(EhCacheManager cacheManager) {
+		FreeRealm freeRealm = new FreeRealm();
+		freeRealm.setCacheManager(cacheManager);
+		return freeRealm;
+	}
+
+
 	@Bean("securityManager")
-	public SecurityManager securityManager(UserRealm userRealm, SessionManager sessionManager) {
+	public SecurityManager securityManager(UserRealm userRealm,FreeRealm freeRealm,SessionManager sessionManager) {
 		
 		DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-		
+
+		securityManager.setAuthenticator(modularRealmAuthenticator());
+
+		List<Realm> realms = new ArrayList<>(2);
+		//密码登录realm
+		realms.add(userRealm);
+		//免密登录realm
+		realms.add(freeRealm);
+
 		// 设置realm.
-		securityManager.setRealm(userRealm);
+		securityManager.setRealms(realms);
 		
 		// 记住我
         securityManager.setRememberMeManager(rememberMeManager());
@@ -205,8 +222,19 @@ public class ShiroConfig {
 		return securityManager;
 	}
 
-	
-	
+	/**
+	 * 系统自带的Realm管理，主要针对多realm
+	 * */
+	@Bean()
+	public ModularRealmAuthenticator modularRealmAuthenticator(){
+		//自己重写的ModularRealmAuthenticator
+		UserModularRealmAuthenticator modularRealmAuthenticator = new UserModularRealmAuthenticator();
+		modularRealmAuthenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
+		return modularRealmAuthenticator;
+	}
+
+
+
 	/**
      * cookie 属性设置
      */
@@ -248,8 +276,11 @@ public class ShiroConfig {
 		filterMap.put("/webjars/**", "anon");
 		filterMap.put("/swagger-resources/**", "anon");
 		filterMap.put("/profile/fileUeditor/upload/image/**","anon");
+		filterMap.put("/sys/comm/download/**","anon");
 		filterMap.put("/static/**", "anon");
 		filterMap.put("/login", "anon");
+		filterMap.put("/auth/**", "anon");
+		filterMap.put("/404.html", "anon");
 		filterMap.put("/upbw/**", "anon");
 		filterMap.put("/sys/login", "anon");
 		filterMap.put("/favicon.ico", "anon");

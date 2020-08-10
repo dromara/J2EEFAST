@@ -85,11 +85,14 @@ public class BussinessLogAop {
 
 			operLog.setOperUrl(ServletUtil.getRequest().getRequestURI());
 			if (currentUser != null){
-
+				//当操作用户存在 保存用户相关信息
 				operLog.setOperName(currentUser.getName());
 				if (ToolUtil.isNotEmpty(currentUser.getCompName())){
 					operLog.setCompName(currentUser.getCompName());
 				}
+
+				operLog.setCompId(currentUser.getCompId());
+				operLog.setDeptId(currentUser.getDeptId());
 			}
 
 			if (ToolUtil.isNotEmpty(e)){

@@ -1,6 +1,7 @@
 package com.j2eefast;
 
 import com.j2eefast.common.core.io.PropertiesUtils;
+import com.j2eefast.framework.utils.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -20,7 +21,7 @@ import org.springframework.cache.annotation.EnableCaching;
 @SpringBootApplication (exclude = {
 		SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class})
 public class FastApplication extends SpringBootServletInitializer {
-	
+
 	static Logger log = LoggerFactory.getLogger(FastApplication.class);
 	
 	public static void main(String[] args) {
@@ -30,20 +31,24 @@ public class FastApplication extends SpringBootServletInitializer {
 			SpringApplication app = new SpringApplication(FastApplication.class);
 			app.setDefaultProperties(PropertiesUtils.getInstance().getProperties());
 			app.run(args);
-			System.out.println("-----------------------------------------------------\n"
-					+ "//             ┏┓   ┏┓					//\n"
-					+ "//            ┏┛┻━━━┛┻┓				        //\n"
-					+ "//  		   ┃   ☃   ┃					//\n"
-					+ "//            ┃ ┳┛ ┗┳ ┃				        //\n"
-					+ "//            ┃   ┻   ┃				        //\n"
-					+ "//            ┗━┓   ┏━┛				        //\n" 
-					+ "//              ┃   ┗━━━┓				//\n"
-					+ "//              ┃神兽保佑   ┣┓				//\n" 
-					+ "//              ┃启动成功!┏┛				//\n"
-					+ "//              ┗┓┓┏━┳┓┏┛				//\n" 
-					+ "//               ┃┫┫  ┃┫┫				//\n"
-					+ "//               ┗┻┛  ┗┻┛				//\n"
-					+ "------------------------------------------------------------------- \n");
+			//启动成功打印
+			if(!PropertiesUtils.getInstance().
+					getProperty(Constant.BANNER).equals(Constant.FALSE)){
+				System.out.println("-----------------------------------------------------\n"
+						+ "//             ┏┓   ┏┓					//\n"
+						+ "//            ┏┛┻━━━┛┻┓                  //\n"
+						+ "//            ┃   ☃   ┃				//\n"
+						+ "//            ┃ ┳┛ ┗┳ ┃                  //\n"
+						+ "//            ┃   ┻   ┃                  //\n"
+						+ "//            ┗━┓   ┏━┛                  //\n"
+						+ "//              ┃   ┗━━━┓				//\n"
+						+ "//              ┃神兽保佑┣┓            //\n"
+						+ "//              ┃启动成功!┏┛				//\n"
+						+ "//              ┗┓┓┏━┳┓┏┛				//\n"
+						+ "//               ┃┫┫  ┃┫┫				//\n"
+						+ "//               ┗┻┛  ┗┻┛				//\n"
+						+ "------------------------------------------------------------------- \n");
+			}
 		}catch (Exception e) {
 			log.error("项目启动异常:",e);
 		}

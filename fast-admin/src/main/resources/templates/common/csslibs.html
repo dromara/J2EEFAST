@@ -1,34 +1,72 @@
-<#-- 引用特殊样式-->
-<#macro ztree_css>
-<link rel="stylesheet" href="${ctxStatic}/static/plugins/ztree/3.5/css/metroStyle/metroStyle.css?V=${config.getDvVersion()}"/>
-</#macro>
-<#macro select2_css>
+<#--
+  Copyright (c) 2020-Now http://www.j2eefast.com All rights reserved.
+  CSS 样式封装
+  @author J2eeFAST
+  @date 2020-05-26
+  @version v1.0.1
+-->
+<#macro css Libs=""
+>
+<link rel="stylesheet" href="${ctxStatic}/static/css/font-awesome.min.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/static/css/Ionicons/css/ionicons.min.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/static/css/bootstrap.min.css?V=${config.getDvVersion()}"/>
 <link rel="stylesheet" href="${ctxStatic}/static/plugins/select2/select2.css?V=${config.getDvVersion()}"/>
-<link rel="stylesheet" href="${ctxStatic}/static/plugins/select2/select2-bootstrap.css?V=${config.getDvVersion()}"/>
-</#macro>
-<#macro jsonview_css>
-<link rel="stylesheet" href="${ctxStatic}/static/plugins/jsonview/jquery.jsonview.css?V=${config.getDvVersion()}"/>
-</#macro>
-<#macro bootstrap_select_css>
-<link rel="stylesheet" href="${ctxStatic}/static/plugins/bootstrap-select/bootstrap-select.css?V=${config.getDvVersion()}" />
-</#macro>
-<#macro cropbox_css>
-<link rel="stylesheet" href="${ctxStatic}/static/plugins/cropbox/cropbox.css?V=${config.getDvVersion()}" />
-</#macro>
-<#macro prism_css>
-<link rel="stylesheet" src="${ctxStatic}/static/plugins/prism/prism.css?V=${config.getDvVersion()}"></link>
-</#macro>
-<#macro selectpage_css>
-<link rel="stylesheet" src="${ctxStatic}/static/plugins/selectpage/selectpage.css?V=${config.getDvVersion()}"></link>
-</#macro>
+<link rel="stylesheet" href="${ctxStatic}/static/css/animate.css?V=${config.getDvVersion()}"/>
+<#compress>
+<#if !(Libs?is_string) && Libs?? && (Libs?size > 0) >
+    <#list Libs as x>
+        <#-- 对应CSS样式-->
+        <#if x == "table">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/select2/select2-bootstrap.css?V=${config.getDvVersion()}"/>
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/bootstrap-table/bootstrap-table.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "zTree">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/ztree/3.5/css/metroStyle/metroStyle.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "jsonview">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/jsonview/jquery.jsonview.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "bootstrapSelect">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/select2/select2-bootstrap.css?V=${config.getDvVersion()}"/>
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/bootstrap-select/bootstrap-select.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "cropbox">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/cropbox/cropbox.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "cropper">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/cropper/cropper.min.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "prism">
+            <#include "/common/code.html"/>
 
-<#macro summernote_css>
-<link href="${ctxStatic}/static/plugins/summernote/summernote.css?V=${config.getDvVersion()}" rel="stylesheet"/>
-<link href="${ctxStatic}/static/plugins/summernote/summernote-bs3.css?V=${config.getDvVersion()}" rel="stylesheet"/>
-</#macro>
-
-
-<#macro bpm_css>
-<link href="${ctxStatic}/flowable/modeler/display/jquery.qtip.min.css?V=${config.getDvVersion()}" rel="stylesheet"/>
-<link href="${ctxStatic}/flowable/modeler/display/displaymodel.css?V=${config.getDvVersion()}" rel="stylesheet"/>
+        </#if>
+        <#if x == "selectPage">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/selectpage/selectpage.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "summernote">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/summernote/summernote.css?V=${config.getDvVersion()}"/>
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/summernote/summernote-bs3.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "bmp">
+            <link rel="stylesheet" href="${ctxStatic}/flowable/modeler/display/jquery.qtip.min.css?V=${config.getDvVersion()}"/>
+            <link rel="stylesheet" href="${ctxStatic}/flowable/modeler/display/displaymodel.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "layout-latest">
+            <link rel="stylesheet" href="${ctxStatic}/static/plugins/jquery-layout/jquery.layout-latest.css?V=${config.getDvVersion()}"/>
+        </#if>
+        <#if x == "fileupload">
+          	<link rel="stylesheet" href="${ctxStatic}/static/plugins/webuploader/0.1.5/webuploader.ex.min.css?V=${config.getDvVersion()}"/>
+        </#if>
+    </#list>
+</#if>
+<#--<link rel="stylesheet" href="${ctxStatic}/static/css/all-skins.css?V=${config.getDvVersion()}">-->
+<link rel="stylesheet" href="${ctxStatic}/static/css/all-skins.min.css?V=${config.getDvVersion()}" />
+<#-- iCheck -->
+<link rel="stylesheet" href="${ctxStatic}/static/css/iCheck/all.css?V=${config.getDvVersion()}" />
+<#--  layui-->
+<link rel="stylesheet" href="${ctxStatic}/static/plugins/layui/css/layui.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/static/css/style.css?V=${config.getDvVersion()}" />
+<#--<link rel="stylesheet" href="${ctxStatic}/static/js/fast-ui.min.css?V=${config.getDvVersion()}"/>-->
+<link rel="stylesheet" href="${ctxStatic}/static/js/fast-ui.css?V=${config.getDvVersion()}" />
+</#compress>
 </#macro>

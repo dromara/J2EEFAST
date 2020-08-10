@@ -1,4 +1,4 @@
-<#include "/common/include.html">
+<#include "/common/defaultEngine.html">
 <@pageTheme mark="true">
 <!DOCTYPE html>
 <html lang="zh-CN" class="" xmlns="http://www.w3.org/1999/html">
@@ -77,9 +77,9 @@
                             </div>
                         </div>
                         <div class="session-sidebox__footer">
-                            <a href="https://gitee.com/zhouhuanOGP/J2EEFAST/wikis" target="_blank"><strong class="session-sidebox__icon-hot">帮助文档</strong>
+                            <a href="https://www.yuque.com/u1174484/j2eefast/tv3kee" target="_blank"><strong class="session-sidebox__icon-hot">帮助文档</strong>
                                 <span class="session-sidebox__divider">-</span>
-                                码云WiKi
+                                语雀 文档
                                 <i class="iconfont icon-arrow-circle-right "></i>
                             </a>
                         </div>
@@ -170,6 +170,7 @@
 <#--                                    </span>-->
 <#--                                </a>-->
                             </div>
+                            <#if config.getKey("SYS_IS_OAUTH") == "0">
                             <div class="session-login-oauth__container">
                                 <div class="field">
                                     <div class="ui horizontal divider session-login__oauth-title">
@@ -178,11 +179,30 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="text-center">
-                                    功能开发中...
+                                <div class="ui horizontal list session-oauth__list">
+                                    <div class="item" title="<@ctx.i18n text = "使用 Gitee 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                        <a href="${ctxStatic}/auth/gitee">
+                                            <img src="${ctxStatic}/static/img/gitee.svg"/>
+                                        </a>
+                                    </div>
+                                    <div class="item" title="<@ctx.i18n text = "使用 GitHub 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                        <a href="${ctxStatic}/auth/github">
+                                            <img src="${ctxStatic}/static/img/github.svg"/>
+                                        </a>
+                                    </div>
+                                    <div class="item" title="<@ctx.i18n text = "使用 OsChina 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                                        <a href="${ctxStatic}/auth/oschina">
+                                                <img src="${ctxStatic}/static/img/oschina.svg"/>
+                                        </a>
+                                    </div>
+                                    <div class="item" title="<@ctx.i18n text = "功能开发中..."/>" data-toggle="tooltip" data-placement="top">
+                                        <a href="#">
+                                            <img src="${ctxStatic}/static/img/qq-no.svg"/>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-
+                            </#if>
                         </div>
                     </div>
 

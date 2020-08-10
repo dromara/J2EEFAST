@@ -4,20 +4,55 @@
 <mapper namespace="com.j2eefast.framework.sys.mapper.SysCompMapper">
 
     <select id="findDetpIdList" resultType="long">
-		select comp_id from sys_comp where parent_id = #{parentId} and status = 0 and del_flag = 0
+		select id from sys_comp where parent_id = #{parentId} and status = 0 and del_flag = 0
 	</select>
 
 
-    <sql id="selectDeptVo">
-        SELECT d.comp_id, d.parent_id, d.name, d.order_num,d.status,d.create_time,
-		(SELECT NAME FROM sys_comp WHERE comp_id = d.parent_id) parent_name
-		FROM sys_comp d
+    <sql id="selectCompVo">
+        SELECT c.id, c.parent_id, c.name,c.type, c.order_num,c.status,c.create_time,c.full_name,c.area_ids,c.tenant_id,
+        c.tenant_name,c.parent_ids,
+		(SELECT NAME FROM sys_comp WHERE id = c.parent_id) parent_name
+		FROM sys_comp c
     </sql>
 
 
     <select id="findCompById" parameterType="Long" resultType="com.j2eefast.framework.sys.entity.SysCompEntity">
-        <include refid="selectDeptVo"/>
-        where d.comp_id = #{compId}
+        <include refid="selectCompVo"/>
+        where c.id = #{id}
     </select>
+
+    <select id="getDeptList" resultType="com.j2eefast.framework.sys.entity.SysCompEntity">
+        <include refid="selectCompVo"/>
+        where c.del_flag = '0'
+        <if test="parentId != null and parentId != ''">
+            AND c.parent_id = #{parentId}
+        </if>
+        <if test="id != null and id != ''">
+            AND (FIND_IN_SET(#{id},c.parent_ids) OR (c.id = #{id} AND c.del_flag = '0'))
+        </if>
+        <if test="name != null and name != ''">
+            AND c.name like concat('%', #{name}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND c.status = #{status}
+        </if>
+        <if test="type != null and type != ''">
+            AND c.type = #{type}
+        </if>
+        <!-- 数据范围过滤 -->
+        <if test = "sql_filter !=null and sql_filter!=''">
+            AND ${sql_filter}
+        </if>
+
+    </select>
+
+
+    <select id="selectRoleDeptTree" parameterType="Long" resultType="String">
+		select concat(d.id, d.name) as name
+		from sys_comp d
+			left join sys_role_dept rd on d.id = rd.dept_id
+		where d.del_flag = '0' and rd.role_id = #{roleId}
+		order by d.parent_id, d.order_num
+	</select>
 
 </mapper>

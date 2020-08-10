@@ -1,4 +1,4 @@
-<#include "/common/include.html">
+<#include "/common/defaultEngine.html">
 <@pageTheme mark="true">
 <!DOCTYPE html>
 <html lang="en">
@@ -32,9 +32,10 @@
 <#--  layui-->
 <link rel="stylesheet" href="${ctxStatic}/static/plugins/layui/css/layui.css?V=${config.getDvVersion()}"/>
 <link rel="stylesheet" href="${ctxStatic}/static/css/style.min.css?V=${config.getDvVersion()}">
-<link rel="stylesheet" href="${ctxStatic}/static/js/fast-ui.min.css?V=${config.getDvVersion()}"/>
-<#--<link rel="stylesheet" href="${ctxStatic}/static/css/index.css?V=${config.getDvVersion()}"/>-->
-<link rel="stylesheet" href="${ctxStatic}/static/css/index.min.css?V=${config.getDvVersion()}"/>
+<#--<link rel="stylesheet" href="${ctxStatic}/static/js/fast-ui.min.css?V=${config.getDvVersion()}"/>-->
+<link rel="stylesheet" href="${ctxStatic}/static/js/fast-ui.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/static/css/index.css?V=${config.getDvVersion()}"/>
+<#--<link rel="stylesheet" href="${ctxStatic}/static/css/index.min.css?V=${config.getDvVersion()}"/>-->
 <!-- jQuery toast 提示框  -->
 <link rel="stylesheet" href="${ctxStatic}/static/css/jquery.toast.min.css?V=${config.getDvVersion()}"/>
 <#--<link rel="stylesheet" src="${ctxStatic}/statics/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.css?V=${config.getDvVersion()}"/>-->
@@ -55,7 +56,7 @@
 </style>
 </head>
 <script>var baseURL = "${ctxStatic}/" , _username = "<@shiro.principal property="username"/>",_lang = "${config.getSysLang()}"
-			, _unlock="${_unlock?default("0")}" , LockScreen = ${config.getKey('SYS_LOCK_SCEREEN')}</script>
+			, _unlock="${_unlock?default("0")}" , LockScreen = ${config.getKey('SYS_LOCK_SCEREEN')}; function imgUserError(){var img=event.srcElement;img.src=baseURL+"static/img/user2-160x160.jpg"; img.onerror=null;}</script>
 <body class="fixed hold-transition ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')} sidebar-mini">
 <#include "/common/notice.html">
 <#include "/common/upgrade.html"><!-- 如果客户浏览器版本过低，则显示浏览器升级提示-->

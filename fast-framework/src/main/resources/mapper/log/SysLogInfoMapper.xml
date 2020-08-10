@@ -9,8 +9,30 @@
          mobile as "mobile", status as "status", msg as "msg", login_time as "loginTime", comp_id as "compId"
     </sql>
 
+    <!--  实体栏位  -->
+    <sql id="sysLoginInfoColumns">
+          DISTINCT a.id as "id"   ,
+          a.username as "username"   ,
+          a.ipaddr as "ipaddr"   ,
+          a.login_location as "loginLocation"   ,
+          a.browser as "browser"   ,
+          a.os as "os"   ,
+          a.mobile as "mobile"   ,
+          a.status as "status"   ,
+          a.msg as "msg"   ,
+          a.login_time as "loginTime"   ,
+          c.name as "compName"   ,
+          a.dept_id as "deptId"
+      </sql>
+
+    <!-- 外联表  -->
+    <sql id="sysLoginInfoJoins">
+        LEFT JOIN sys_comp c ON c.id = a.comp_id
+        LEFT JOIN (SELECT id,parent_ids FROM sys_comp) d  ON a.dept_id = d.id
+    </sql>
+
 	<update id="cleanLog">
-        truncate table sys_login_infor
+        DELETE FROM sys_login_infor
     </update>
 
     <select id="findFirstLoginInfo"  resultType="com.j2eefast.framework.log.entity.SysLoginInfoEntity">
@@ -25,6 +47,46 @@
             where username = #{username}  AND status = "00000" ORDER BY login_time
             DESC LIMIT 1
         </if>
+    </select>
+
+    <select id="findPage"  resultType="com.j2eefast.framework.log.entity.SysLoginInfoEntity">
+        SELECT
+        <include refid="sysLoginInfoColumns"/>
+        FROM sys_login_infor AS a
+        <include refid="sysLoginInfoJoins"/>
+        <where>
+            <if test="username != null and username != ''">
+                AND a.username LIKE
+                <if test="_databaseId == 'oracle'"> '%,'||#{username}||',%'</if>
+                <if test="_databaseId == 'mysql'"> CONCAT('%', #{username}, '%')</if>
+            </if>
+            <if test="ipaddr != null and ipaddr != ''">
+                AND a.ipaddr LIKE
+                <if test="_databaseId == 'oracle'"> '%,'||#{ipaddr}||',%'</if>
+                <if test="_databaseId == 'mysql'"> CONCAT('%', #{ipaddr}, '%')</if>
+            </if>
+            <if test="status != null and status != ''">
+                <if test="status == '-1'">
+                AND a.status != '00000'
+                </if>
+                <if test="status != '-1'">
+                    AND a.status != #{status}
+                </if>
+            </if>
+            <if test="deptId != null and deptId != ''">
+                AND  FIND_IN_SET(#{deptId},d.parent_ids) OR a.dept_id = #{deptId}
+            </if>
+            <if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(a.login_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+            </if>
+            <if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(a.login_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+            </if>
+            <!-- 数据范围过滤 -->
+            <if test = "sql_filter !=null and sql_filter!=''">
+                AND ${sql_filter}
+            </if>
+        </where>
     </select>
 
 </mapper>

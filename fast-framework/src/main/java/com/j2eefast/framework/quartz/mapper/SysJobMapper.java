@@ -16,8 +16,17 @@ public interface SysJobMapper extends BaseMapper<SysJobEntity>{
 	 * 批量更新状态
 	 */
 	int updateBatchStatus(@Param("status") String status,
-					@Param("jobIds") Long[] jobIds);
-	
+					@Param("ids") Long[] ids);
+
+	int updateStatus(@Param("status") String status,
+					  @Param("id") Long id);
+	/**
+	 * 根据Id删除
+	 * @param id
+	 * @return
+	 */
+	int deleteJobLogById(Long id);
+
 	/**
 	 * 更新
 	 * @author zhouzhou

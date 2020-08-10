@@ -10,6 +10,7 @@ import com.j2eefast.common.core.utils.MapUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.framework.sys.entity.SysUserRoleEntity;
 import com.j2eefast.framework.sys.mapper.SysUserRoleMapper;
+import com.j2eefast.framework.utils.UserUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +27,13 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 	private SysUserRoleMapper sysUserRoleMapper;
 
 	public void saveOrUpdate(Long userId, List<Long> roleIdList) {
+
 		// 先删除用户与角色关系
 		this.removeByMap(new MapUtil().put("user_id", userId));
 
 		if (ToolUtil.isEmpty(roleIdList)) {
 			return;
 		}
-
 		// 保存用户与角色关系
 //		List<SysUserRoleEntity> list = new ArrayList<>(roleIdList.size());
 		for (Long roleId : roleIdList) {
@@ -73,7 +74,12 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 	 * @return
 	 */
 	public boolean deleteByUserIdToRoleIdsBatch(Long roleId, Long[] userIds) {
-		return sysUserRoleMapper.deleteRoleIdByToUserIdsBatch(roleId,userIds) > 0;
+		if(sysUserRoleMapper.deleteRoleIdByToUserIdsBatch(roleId,userIds) > 0){
+			//清理权限缓存
+			UserUtils.clearCachedAuthorizationInfo();
+			return true;
+		}
+		return false;
 	}
 
 
@@ -83,6 +89,7 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 	 * @param userIds
 	 * @return
 	 */
+	@Transactional
 	public boolean addAuthUsers(Long roleId,  Long[] userIds) {
 		for(Long userId: userIds){
 			SysUserRoleEntity sysUserRoleEntity = new SysUserRoleEntity();
@@ -90,6 +97,8 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 			sysUserRoleEntity.setRoleId(roleId);
 			this.save(sysUserRoleEntity);
 		}
+		//清理权限缓存
+		UserUtils.clearCachedAuthorizationInfo();
 		return true;
 	}
 
@@ -110,6 +119,8 @@ public class SysUserRoleService  extends ServiceImpl<SysUserRoleMapper, SysUserR
 			sysUserRoleEntity.setRoleId(roleId);
 			this.save(sysUserRoleEntity);
 		}
+		//清理权限缓存
+		UserUtils.clearCachedAuthorizationInfo();
 		return true;
 	}
 }

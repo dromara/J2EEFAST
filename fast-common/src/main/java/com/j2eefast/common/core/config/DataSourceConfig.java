@@ -29,7 +29,7 @@ public class DataSourceConfig {
 	 */
 	@Bean
 	@Primary
-	@ConfigurationProperties(prefix = "spring.datasource.default")
+	@ConfigurationProperties(prefix = "spring.datasource.master")
     public DruidProperties defaultProperties() {
         return new DruidProperties();
     }

@@ -25,6 +25,13 @@
          enc_type, create_time, create_by, update_by, update_time, remark from sys_database
     </sql>
 
+
+    
+   <select id="getByName" resultType="com.j2eefast.common.db.entity.SysDatabaseEntity">   
+      <include refid="Base_Column_List"/>
+        where del_flag = '0'  AND db_name = #{dbName}
+    </select>
+
     <select id="findPage" resultType="com.j2eefast.common.db.entity.SysDatabaseEntity">
         <include refid="Base_Column_List"/>
         where del_flag = '0'

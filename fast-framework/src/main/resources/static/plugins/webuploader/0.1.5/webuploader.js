@@ -931,21 +931,24 @@
             this.options = $.extend({
                 container: document.body
             }, options );
+
             this.uid = Base.guid('rt_');
         }
     
         $.extend( Runtime.prototype, {
     
             getContainer: function() {
-                var opts = this.options,
-                    parent, container;
+                //var //opts = this.options,
+                //    parent, container;
     
                 if ( this._container ) {
                     return this._container;
                 }
-    
-                parent = $( opts.container || document.body );
-                container = $( document.createElement('div') );
+
+                //TODO J2eeFAST 修改多个控件按钮上传文件错位问题
+                //parent = $( opts.container || document.body );
+                var parent = $(this.options.id);
+                var container = $( document.createElement('div') );
     
                 container.attr( 'id', 'rt_' + this.uid );
                 container.css({
@@ -1071,7 +1074,6 @@
             };
     
             this.connectRuntime = function( opts, cb ) {
-    
                 // already connected.
                 if ( runtime ) {
                     throw new Error('already connected!');
@@ -1772,7 +1774,6 @@
                             button.outerHeight() : button.height(),
     
                     pos = button.offset();
-    
                 width && height && shimContainer.css({
                     bottom: 'auto',
                     right: 'auto',

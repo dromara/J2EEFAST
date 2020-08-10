@@ -45,8 +45,11 @@ public class AllTableListSql extends AbstractSql {
 
 	@Override
 	protected String oracle() {
-		return "select ut.table_name as tableName, co.comments as tableComment from user_tables ut\n" +
+	/*	return "select ut.table_name as tableName, co.comments as tableComment from user_tables ut\n" +
 				"left join user_tab_comments co on ut.table_name = co.table_name\n" +
-				"where tablespace_name is not null and  user= ?";
+				"where tablespace_name is not null and  user= ?";*/
+        return " SELECT  t.table_name AS tableName, c.comments AS tableComment ,uob.CREATED as createTime ,uob.LAST_DDL_TIME as updateTime"
+        		+ " FROM all_tables t LEFT JOIN user_tab_comments c ON t.table_name = c.table_name left join user_objects uob on  uob.object_name=t.table_name" 
+        		+" where  t.OWNER = ?  ORDER BY t.table_name "; 
 	}
 }

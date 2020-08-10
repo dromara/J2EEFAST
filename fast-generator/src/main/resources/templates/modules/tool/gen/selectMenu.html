@@ -1,15 +1,13 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-    <@header title="选择菜单"/>
-    <@addorEdit fromId="form-menu-add">
-        <input id="treeId" name="parentId" type="hidden" value="${gen_table.parentId}" />
+<@header title="选择菜单" bodyClass="white-bg" libs=["bootstrapSelect"]/>
+<div class="wrapper wrapper-content ibox-content">
+<@form.form id="form-menu-add" class="form-horizontal">
         <div class="form-group">
             <label class="col-sm-3 control-label "><@ctx.i18n text = "上级菜单"/>：</label>
             <div class="col-sm-8">
-                <div class="input-group">
-                    <input class="form-control" type="text" onclick="selectMenuTree()" id="treeName" readonly="true" value="${gen_table.parentName?default("")}" required>
-                    <span class="input-group-btn"><a  href="javascript:selectMenuTree();" class="btn btn-default"><i class="fa fa-fw fa-search"></i></a></span>
-                </div>
+                    <@form.treeselect value="${gen_table.parentId?default('0')}" name="parentId" boxTitle="上级菜单选择" url="sys/menu/menuTreeData"
+                    labelValue="${gen_table.parentName?default('')}"/>
             </div>
         </div>
         <div class="form-group">
@@ -21,21 +19,22 @@
         <div class="form-group">
             <label class="col-sm-3 control-label"><@ctx.i18n text = "所属模块"/>：</label>
             <div class="col-sm-8">
-                <#list modules>
-                    <#items as d>
-                        <#if d.status =='0' >
-                            <label>
-                                <#assign a=0 />
-                                <#list gen_table.moduleCodes?default("")?split(",") as x>
-                                    <#if x == d.moduleCode>
-                                        <#assign a=1 />
-                                    </#if>
-                                </#list>
-                                <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" <#if a== 1>checked</#if> required/><@ctx.i18n text = "${d.moduleName}" /></label>
-                            </label>
-                        </#if>
-                    </#items>
-                </#list>
+<#--                <#list modules>-->
+<#--                    <#items as d>-->
+<#--                        <#if d.status =='0' >-->
+<#--                            <label>-->
+<#--                                <#assign a=0 />-->
+<#--                                <#list gen_table.moduleCodes?default("")?split(",") as x>-->
+<#--                                    <#if x == d.moduleCode>-->
+<#--                                        <#assign a=1 />-->
+<#--                                    </#if>-->
+<#--                                </#list>-->
+<#--                                <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" <#if a== 1>checked</#if> required/><@ctx.i18n text = "${d.moduleName}" /></label>-->
+<#--                            </label>-->
+<#--                        </#if>-->
+<#--                    </#items>-->
+<#--                </#list>-->
+                <@form.checkbox name="moduleCodes" items=modules itemLabel="moduleName" value="${gen_table.moduleCodes}" itemValue="moduleCode" required=true/>
             </div>
         </div>
         <div class="form-group">
@@ -45,16 +44,17 @@
                     <i class="fa fa-question-circle-o" style="color: orange"></i></a>
             </label>
             <div class="col-sm-8">
-                <select id="menuTarget" name="menuTarget" class="form-control">
-                    <#list dict.getType('sys_menu_target')>
-                        <#items as d>
-                            <#if d.status =='0' >
-                                <option value="${d.dictValue}" <#if (d.isDefault =='Y' && gen_table.menuTarget == "") ||
-                                (gen_table.menuTarget ==d.dictValue ) >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
-                            </#if>
-                        </#items>
-                    </#list>
-                </select>
+<#--                <select id="menuTarget" name="menuTarget" class="form-control">-->
+<#--                    <#list dict.getType('sys_menu_target')>-->
+<#--                        <#items as d>-->
+<#--                            <#if d.status =='0' >-->
+<#--                                <option value="${d.dictValue}" <#if (d.isDefault =='Y' && gen_table.menuTarget == "") ||-->
+<#--                                (gen_table.menuTarget ==d.dictValue ) >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>-->
+<#--                            </#if>-->
+<#--                        </#items>-->
+<#--                    </#list>-->
+<#--                </select>-->
+                <@form.select name="menuTarget" dictType="sys_menu_target" />
             </div>
         </div>
         <div class="form-group">
@@ -70,103 +70,105 @@
                     <i class="fa fa-question-circle-o" style="color: orange"></i></a>
             </label>
             <div class="col-sm-8">
-                <div class="input-group">
-                    <span class="input-group-addon"><i id="menuIconIcon" class="fa fa-fw ${gen_table.menuIcon?default("")}"></i></span>
-                    <input id="icmenuIconon" name="icmenuIconon" type="text" value="${gen_table.menuIcon?default("")}" class="form-control" placeholder="选择图标">
-                    <span class="input-group-btn"><a id="menuIconButton" href="javascript:" class="btn btn-default"
-                        ><i class="fa fa-fw fa-search"></i></a></span>
-                </div>
+<#--                <div class="input-group">-->
+<#--                    <span class="input-group-addon"><i id="menuIconIcon" class="fa fa-fw ${gen_table.menuIcon?default("")}"></i></span>-->
+<#--                    <input id="icmenuIconon" name="icmenuIconon" type="text" value="${gen_table.menuIcon?default("")}" class="form-control" placeholder="选择图标">-->
+<#--                    <span class="input-group-btn"><a id="menuIconButton" href="javascript:"-->
+<#--                        ><i class="fa fa-fw fa-search"></i></a></span>-->
+<#--                </div>-->
+                <@form.iconselect name="icmenuIconon" placeholder="选择图标" value="${gen_table.menuIcon?default('')}"/>
             </div>
         </div>
-    </@addorEdit>
-    <@footer>
-        <script>
+</@form.form>
+</div>
+<@footer>
+<script type="text/javascript">
 
-            var prefix = baseURL + "sys/menu";
+        var prefix = baseURL + "sys/menu";
 
-            $("#form-menu-add").validate({
-                onkeyup: false,
-                rules:{
-                    menuType:{
-                        required:true,
-                    },
-                    name:{
-                        remote: {
-                            url: prefix + "/checkMenuNameUnique",
-                            type: "POST",
-                            dataType: "html",
-                            data: {
-                                "parentId": function() {
-                                    return $("input[name='parentId']").val();
-                                },
-                                "name" : function() {
-                                    return opt.common.trim($("#name").val());
-                                }
-                            },
-                            dataFilter: function(data, type) {
-                                return opt.validate.unique(data);
-                            }
-                        }
-                    },
-                    orderNum:{
-                        digits:true
-                    },
+        $("#form-menu-add").validate({
+            onkeyup: false,
+            rules:{
+                menuType:{
+                    required:true,
                 },
-                messages: {
-                    "name": {
-                        remote: "菜单已经存在"
+                name:{
+                    remote: {
+                        url: prefix + "/checkMenuNameUnique",
+                        type: "POST",
+                        dataType: "html",
+                        data: {
+                            "parentId": function() {
+                                return $("input[name='parentId']").val();
+                            },
+                            "name" : function() {
+                                return opt.common.trim($("#name").val());
+                            }
+                        },
+                        dataFilter: function(data, type) {
+                            return opt.validate.unique(data);
+                        }
                     }
                 },
-                focusCleanup: true
-            });
-
-            function submitHandler() {
-                if (opt.validate.form()) {
-                    return true;
-                }else{
-                    return false;
+                orderNum:{
+                    digits:true
+                },
+            },
+            messages: {
+                "name": {
+                    remote: "菜单已经存在"
                 }
-            }
+            },
+            focusCleanup: true
+        });
 
-            $(function() {
-                $("#menuIconButton").click(function(){
-                    var options = {
-                        url: prefix+'/iconSelect?value='+$("#menuIcon").val(),
-                        title:'<@ctx.i18n text = "图标选择"/>',
-                        callBack: doIconSubmit
-                    };
-                    opt.modal.openMainWin(options);
-                });
-            });
-
-            /*菜单管理-新增-选择菜单树*/
-            function selectMenuTree() {
-                var treeId = $("#treeId").val();
-                var menuId = treeId > 0 ? treeId : 1;
-                var url = prefix + "/selectMenuTree/" + menuId;
-                var options = {
-                    title: '菜单选择',
-                    width: "380",
-                    url: url,
-                    callBack: doSubmit
-                };
-                opt.modal.openOptions(options);
+        function submitHandler() {
+            if (opt.validate.form()) {
+                return true;
+            }else{
+                return false;
             }
+        }
 
-            function doSubmit(index, layero){
-                var body = layer.getChildFrame('body', index);
-                $("#treeId").val(body.find('#treeId').val());
-                $("#treeName").val(body.find('#treeName').val());
-                layer.close(index);
-            }
+        <#--$(function() {-->
+        <#--    $("#menuIconButton").click(function(){-->
+        <#--        var options = {-->
+        <#--            url: prefix+'/iconSelect?value='+$("#menuIcon").val(),-->
+        <#--            title:'<@ctx.i18n text = "图标选择"/>',-->
+        <#--            callBack: doIconSubmit-->
+        <#--        };-->
+        <#--        opt.modal.openMainWin(options);-->
+        <#--    });-->
+        <#--});-->
 
-            function doIconSubmit(index, layero,_layer){
-                var body = _layer.getChildFrame('body', index);
-                var icon = body.find('#icon').val();
-                $("#menuIconIcon").attr("class",'fa fa-fw '+icon);
-                $("#icmenuIconon").val(icon).change();
-                _layer.close(index);
-            }
-        </script>
-    </@footer>
+        <#--/*菜单管理-新增-选择菜单树*/-->
+        <#--function selectMenuTree() {-->
+        <#--    var treeId = $("#treeId").val();-->
+        <#--    var menuId = treeId > 0 ? treeId : 1;-->
+        <#--    var url = prefix + "/selectMenuTree/" + menuId;-->
+        <#--    var options = {-->
+        <#--        title: '菜单选择',-->
+        <#--        width: "380",-->
+        <#--        url: url,-->
+        <#--        callBack: doSubmit-->
+        <#--    };-->
+        <#--    opt.modal.openOptions(options);-->
+        <#--}-->
+
+        <#--function doSubmit(index, layero){-->
+        <#--    var body = layer.getChildFrame('body', index);-->
+        <#--    $("#treeId").val(body.find('#treeId').val());-->
+        <#--    $("#treeName").val(body.find('#treeName').val());-->
+        <#--    layer.close(index);-->
+        <#--}-->
+
+        <#--function doIconSubmit(index, layero,_layer){-->
+        <#--    var body = _layer.getChildFrame('body', index);-->
+        <#--    var icon = body.find('#icon').val();-->
+        <#--    $("#menuIconIcon").attr("class",'fa fa-fw '+icon);-->
+        <#--    $("#icmenuIconon").val(icon).change();-->
+        <#--    _layer.close(index);-->
+        <#--}-->
+    </script>
+</@footer>
 </@pageTheme>

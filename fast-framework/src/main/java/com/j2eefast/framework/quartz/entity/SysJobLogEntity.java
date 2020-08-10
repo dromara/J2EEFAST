@@ -23,7 +23,10 @@ public class SysJobLogEntity implements Serializable {
 	 * 日志id
 	 */
 	@TableId(type = IdType.ASSIGN_ID)
-	private Long logId;
+	private Long id;
+
+	/** 调用目标字符串 */
+	private String invokeTarget;
 
 	/**
 	 * 任务id
@@ -40,20 +43,7 @@ public class SysJobLogEntity implements Serializable {
 	 */
 	private String jobGroup;
 
-	/**
-	 * Spring Bean名称
-	 */
-	private String beanName;
 
-	/**
-	 * 方法名
-	 */
-	private String methodName;
-
-	/**
-	 * 参数
-	 */
-	private String params;
 
 	/**
 	 * 任务状态 0：成功 1：失败
@@ -77,12 +67,20 @@ public class SysJobLogEntity implements Serializable {
 	@TableField(value = "create_time", fill = FieldFill.INSERT)
 	private Date createTime;
 
-	public Long getLogId() {
-		return logId;
+	public Long getId() {
+		return id;
 	}
 
-	public void setLogId(Long logId) {
-		this.logId = logId;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getInvokeTarget() {
+		return invokeTarget;
+	}
+
+	public void setInvokeTarget(String invokeTarget) {
+		this.invokeTarget = invokeTarget;
 	}
 
 	public Long getJobId() {
@@ -107,30 +105,6 @@ public class SysJobLogEntity implements Serializable {
 
 	public void setJobGroup(String jobGroup) {
 		this.jobGroup = jobGroup;
-	}
-
-	public String getBeanName() {
-		return beanName;
-	}
-
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
-
-	public String getMethodName() {
-		return methodName;
-	}
-
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
-	}
-
-	public String getParams() {
-		return params;
-	}
-
-	public void setParams(String params) {
-		this.params = params;
 	}
 
 	public String getStatus() {

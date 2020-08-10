@@ -1,18 +1,63 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="用户个人信息"/>
-<body class="gray-bg animated fadeInRight">
+<@header title="用户个人信息" libs=["table"]>
+<style type="text/css">
+    .user-bind .third-app{
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        min-width: 80px;
+        float: left;
+    }
+    .user-bind{
+        font-size: 1rem;
+        text-align:start;
+        height: 50px;
+        margin-top: 10px;
+    }
+
+    .git-other-login-icon > img{
+        height: 32px;
+    }
+
+    a{
+        text-decoration: none;
+        cursor: pointer;
+        color: #005980;
+    }
+
+    .provider-desc{
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Liberation Sans", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti", SimHei, SimSun, "WenQuanYi Zen Hei Sharp", sans-serif;
+        font-size: 1.071rem;
+    }
+
+    td> img{
+        height: 20px;
+        width: 20px;
+        display: inline-block;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+</style>
+</@header>
     <input id="userId" name="userId" type="hidden" value="${user.id}" />
     <section class="section-content">
     <div class="row">
         <div class="col-sm-3 pr5">
             <div class="ibox float-e-margins">
-                <div class="ibox-title ibox-title-gray dashboard-header gray-bg">
+                <div class="ibox-title">
                     <h5><@ctx.i18n text = "个人资料"/></h5>
                 </div>
                 <div class="ibox-content animated fadeInDown">
                     <div class="text-center">
-                        <p><img onclick="avatar()" class="img-circle img-lg" src="${ctxStatic}${((user.avatar!'')?length>0)?string((user.avatar!''),"/statics/img/user2-160x160.jpg")}"></p>
+                        <p><img onclick="avatar()" class="img-circle img-lg" src="${ctxStatic}${((user.avatar!'')?length>0)?string((user.avatar!''),"/statics/img/user2-160x160.jpg")}" onerror="imgUserError();"/></p>
                         <p><a href="javascript:avatar()"><@ctx.i18n text = "修改头像"/></a></p>
                     </div>
                     <ul class="list-group list-group-striped">
@@ -55,7 +100,7 @@
         
         <div class="col-sm-9 about">
             <div class="ibox float-e-margins">
-                <div class="ibox-title ibox-title-gray dashboard-header">
+                <div class="ibox-title">
                     <h5><@ctx.i18n text = "基本资料"/></h5>
                 </div>
                 <div class="ibox-content">
@@ -64,9 +109,15 @@
                             <#if active=="info">
                                 <li class="active"><a href="#user_info" data-toggle="tab" aria-expanded="true"><@ctx.i18n text = "基本资料"/></a></li>
                                 <li><a href="#modify_password" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "修改密码"/></a></li>
+                                <#if config.getKey("SYS_IS_OAUTH") == "0"><li ><a href="#third_party_binding" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "第三方帐号绑定"/></a></li></#if>
                             <#elseif active=="password">
-                                <li ><a href="#user_info" data-toggle="tab" aria-expanded="true"><@ctx.i18n text = "基本资料"/></a></li>
-                                <li class="active"><a href="#modify_password" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "修改密码"/></a></li>
+                                <li ><a href="#user_info" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "基本资料"/></a></li>
+                                <li class="active"><a href="#modify_password" data-toggle="tab" aria-expanded="true"><@ctx.i18n text = "修改密码"/></a></li>
+                                <#if config.getKey("SYS_IS_OAUTH") == "0"><li ><a href="#third_party_binding" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "第三方帐号绑定"/></a></li></#if>
+                             <#elseif  active == "oauth2">
+                                <li ><a href="#user_info" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "基本资料"/></a></li>
+                                <li ><a href="#modify_password" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "修改密码"/></a></li>
+                                <#if config.getKey("SYS_IS_OAUTH") == "0"><li class="active"><a href="#third_party_binding" data-toggle="tab" aria-expanded="true"><@ctx.i18n text = "第三方帐号绑定"/></a></li></#if>
                              </#if>
                         </ul>
                         <div class="tab-content">
@@ -167,6 +218,35 @@
                                     </div>
                                 </form>
                             </div>
+
+                            <#if config.getKey("SYS_IS_OAUTH") == "0">
+                            <!-- 绑定第三方账号登录-->
+                            <div class="tab-pane <#if active=="oauth2"> active</#if>  animated fadeInDown" id="third_party_binding">
+                                <#if err != "">
+                                    <@form.tip class="danger" animated="">${err}</@form.tip>
+                                </#if>
+<#--                                <@form.tip class="info" animated="">使用以下任一方式都可以登录到J2eeFAST系统，避免由于某个帐号失效导致无法登录.</@form.tip>-->
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <@table id="bootstrap-table">
+                                            </@table>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div id="git-user-binding">
+                                            <h4 class="provider-desc">
+                                                你可以绑定以下第三方帐号用于J2eeFAST系统
+                                            </h4>
+                                            <div id="auth2list" class="user-bind">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </#if>
                         </div>
                     </div>
                 </div>
@@ -174,8 +254,76 @@
         </div>
     </div>
 	</section>
-    <@footer>
-    <script>
+<@footer>
+<script type="text/javascript">
+        <#if config.getKey("SYS_IS_OAUTH") == "0">
+        var auth2 = ["gitee","oschina","github","qq"];
+
+        $(function() {
+
+            /* 初始表格对象 */
+            var options = {
+                url: baseURL + 'sys/user/profile/oauth2/list',
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                pageSize: 5,
+                pageList: [5, 10, 15],
+                sortName: "createTime",
+                uniqueId: "id", /* 唯一ID */
+                responseHandler: function(data){
+                    if(data.code === opt.variable.web_status.SUCCESS){
+                        if(data.data.totalCount > 0){
+                            for(var i=0; i<data.data.list.length; i++){
+                                var value = opt.common.getJsonValue(data.data.list[i],"source");
+                                console.log(value);
+                                opt.common.remove(auth2,value);
+                            }
+                        }
+                    }
+                    var html = "";
+                    for(var i=0; i<auth2.length; i++){
+                        html += '<a class="third-app" href="#" onclick="authUrl(\''+auth2[i]+'\');" title="使用 '+auth2[i]+' 账号授权登录" data-toggle="tooltip" data-placement="top">'+
+                            '<div class="git-other-login-icon">'+
+                            <#--'<img src="${ctxStatic}/static/img/'+(auth2[i] === 'qq')?'qq-no':auth2[i]+'.svg"/>'+-->
+                            '<img src="${ctxStatic}/static/img/'+(auth2[i] == "qq"?'qq-no':auth2[i])+'.svg"/>'+
+                            '</div>'+
+                            '<span class="app-name">'+auth2[i]+'</span>'+
+                            '</a>';
+                    }
+                    $("#auth2list").html("").append(html);
+                },
+                columns:[
+                    {
+                        title: "<@ctx.i18n text = "序号"/>", width: 10, formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);
+                        }
+                    },
+                    {field: 'source', title: "<@ctx.i18n text = "绑定账号平台"/>"},
+                    {field: 'username', title:  "<@ctx.i18n text = "账号详情"/>",formatter: function (value,row,index) {
+                            return '<img src="'+row.avatar+'"/>'+'<span>'+value+'</span>';
+                    }},
+                    {field: 'createTime',title: "<@ctx.i18n text = "绑定时间"/>"},
+                    {title: "<@ctx.i18n text = "操作"/>", formatter: function (value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-danger btn-xs" href="javascript:void(0)" onclick="unlockAuth(\'' + row.id + '\')"><i class="fa fa-remove"></i>解除绑定</a>');
+                            return actions.join('');
+                        }
+                    }
+                ]
+            };
+            $.table.init(options);
+        });
+
+        function unlockAuth(id) {
+            opt.modal.confirm("您确定要解除此账号绑定?",function () {
+                opt.operate.post(baseURL+'sys/user/profile/oauth2/del',{"id":id},function(){
+                    location.reload();
+                })
+            })
+        }
+        </#if>
 	    /*用户管理-头像*/
 	    function avatar() {
 	        var url = baseURL + 'sys/user/profile/avatar';
@@ -297,6 +445,11 @@
 	        },
 	        focusCleanup: true
 		});
+
+	    function authUrl(type) {
+	        var  url =  "${ctxStatic}/auth/"+type;
+            top.location.href =url;
+        }
 		
 		function submitChangPassword () {
 	        if (opt.validate.form("form-user-resetPwd")) {

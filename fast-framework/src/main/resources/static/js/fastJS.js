@@ -4,7 +4,10 @@
  * @author ZhouHuan 二次封装 新增若干方法优化部分BUG
  * @date 2020-02-20
  *       2020-05-17 修复导出报表问题
- * @version v1.0.10
+ *       2020-06-24 修复表格控件 页面多表格 回调函数错乱问题
+ *       2020-07-22 修复表格首列多选勾选☑️ 字段名称必须state
+ *       2020-08-05 新增常用方法
+ * @version v1.0.12
  */
 if (typeof jQuery === "undefined") {
     throw new Error("fastJS JavaScript requires jQuery")
@@ -18,7 +21,7 @@ if (typeof jQuery === "undefined") {
             _tabIndex:-999,
             tindex:0,
             pushMenu:null,
-            version:'1.0.1',
+            version:'1.0.12',
             debug:true,
             //表格类型
             table_type : {
@@ -91,7 +94,7 @@ if (typeof jQuery === "undefined") {
                 }
             })
         },
-
+        
         debug: function (message) {
             if (window.console && opt.variable.debug) {
                 console.log(message)
@@ -282,11 +285,20 @@ if (typeof jQuery === "undefined") {
 
         //页面遮罩
         block: function(value,element){
-            if(opt.common.isNotEmpty(element)){
-                $(element).block({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + $.i18n.prop(value) + '</div>' });
+            if(opt.common.isEmpty(value)){
+                if(opt.common.isNotEmpty(element)){
+                    $(element).block();
+                }else{
+                    $.blockUI();
+                }
             }else{
-                $.blockUI({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + $.i18n.prop(value) + '</div>' });
+                if(opt.common.isNotEmpty(element)){
+                    $(element).block({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + $.i18n.prop(value) + '</div>' });
+                }else{
+                    $.blockUI({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + $.i18n.prop(value) + '</div>' });
+                }
             }
+
         },
 
         unblock: function(element){
@@ -570,13 +582,25 @@ if (typeof jQuery === "undefined") {
                 if (value == null) {
                     return "";
                 }
-                return value.toString().replace(/(^\s*)|(\s*$)|\r|\n/g, "");
+                if(typeof value === 'string'){
+                    return value.toString().replace(/(^\s*)|(\s*$)|\r|\n/g, "");
+                }else{
+                    return "-";
+                }
             },
-            hideStr:function(value,len){
+            hideStr:function(value,len, tag){
                 if (opt.common.isEmpty(value)) {
                     return "-";
                 }else{
-                    return "..."+value.substr(value.length-len,len);
+                    if(tag == 0){
+                        if(value.length > len){
+                            return value.substr(0,len) + "...";
+                        }else{
+                            return value;
+                        }
+                    }else{
+                        return "..."+value.substr(value.length-len,len);
+                    }
                 }
             },
             // 比较两个字符串（大小写敏感）
@@ -606,6 +630,7 @@ if (typeof jQuery === "undefined") {
                     }
                     return arg;
                 });
+
                 return flag ? str : '';
             },
             // 指定随机数返回
@@ -865,6 +890,29 @@ if (typeof jQuery === "undefined") {
                     audio.play();
                 }
             },
+            /**
+             * 通过下载地址 静默下载
+             * @param url
+             */
+            downLoadFile :function(url){
+                console.log(url);
+                var judgeDiv = document.getElementById("dwDiv");
+                if(judgeDiv!=null){
+                    document.body.removeChild(judgeDiv);
+                }
+                var divObj = document.createElement("div");
+                divObj.id="dwDiv";
+                var aObj = document.createElement("a");
+                aObj.href=encodeURI(url);
+                aObj.id = "hrefFile";
+                divObj.appendChild(aObj);
+                document.body.appendChild(divObj);
+                document.getElementById("hrefFile").click();
+                judgeDiv = document.getElementById("dwDiv");
+                if(judgeDiv!=null){
+                    document.body.removeChild(judgeDiv);
+                }
+            },
             digit: function(e, t) {
                 var i = "";
                 e = String(e),
@@ -882,10 +930,54 @@ if (typeof jQuery === "undefined") {
                 return t = t || "yyyy-MM-dd HH:mm:ss",
                     t.replace(/yyyy/g, a[0]).replace(/MM/g, a[1]).replace(/dd/g, a[2]).replace(/HH/g, o[0]).replace(/mm/g, o[1]).replace(/ss/g, o[2])
             },
-            escape: function(e) {
-                return String(e || "").replace(/&(?!#?[a-zA-Z0-9]+;)/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;")
+            //HTML转义
+            escape: function(html){
+                return String(html||'').replace(/&(?!#?[a-zA-Z0-9]+;)/g, '&amp;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
             },
-        },
+            //url编码
+            encodeUrl: function(a) {
+                return encodeURIComponent(a)
+            },
+            //url解码
+            decodeUrl: function(a) {
+                return decodeURIComponent(a)
+            },
+            /**
+             * 截取字符串考虑中文字符
+             * @param str 源字符
+             * @param len 长度
+             * @param hasDot 超过长度是否用...代替
+             * @returns 截取之后字符串
+             */
+            subString: function(str, len, hasDot) {
+                var newLength = 0;
+                var newStr = "";
+                var chineseRegex = /[^\x00-\xff]/g;
+                var singleChar = "";
+                var strLength = str.replace(chineseRegex,"**").length;
+                for(var i = 0;i < strLength;i++){
+                    singleChar = str.charAt(i).toString();
+                    if(singleChar.match(chineseRegex) != null)
+                    {
+                        newLength += 2;
+                    }
+                    else
+                    {
+                        newLength++;
+                    }
+                    if(newLength > len)
+                    {
+                        break;
+                    }
+                    newStr += singleChar;
+                }
+                if(hasDot && strLength > len){
+                    newStr += "...";
+                }
+                return newStr;
+            }
+},
         // 弹出层封装处理
         modal: {
             // 显示图标
@@ -959,7 +1051,7 @@ if (typeof jQuery === "undefined") {
             },
             // 成功提示
             alertInfo: function(content) {
-                opt.modal.alert(content, "3");
+                opt.modal.alert(content, "");
             },
             // 成功提示
             success: function(msg, callback) {
@@ -1050,7 +1142,7 @@ if (typeof jQuery === "undefined") {
              * @param callback 弹出窗口点击确定按钮回调 弹出本页函数 [非必输] 如果不输入 则回调弹出的页面submitHandler 方法
              * @param yes [非必输] 只有在传 true 则先回调弹出层submitHandler 方法如果此submitHandler方法返回true,则再回调 callback 方法
              */
-            open: function (title, url,width, height,callback,yes) {
+            open: function (title, url,width, height,callback,yes,type) {
                 //如果是移动端，就使用自适应大小弹窗
                 if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {
                     width = 'auto';
@@ -1067,6 +1159,9 @@ if (typeof jQuery === "undefined") {
                 }
                 if (opt.common.isEmpty(height)) {
                     height = ($(window).height() - 50);
+                }
+                if (opt.common.isEmpty(type)) {
+                    type = 2;
                 }
                 var full = false;
                 //自动适配窗口大小 如果传的大小比所在窗口大 则最大化
@@ -1105,7 +1200,7 @@ if (typeof jQuery === "undefined") {
                 opt.modal.loading($.i18n.prop("数据加载中，请稍后..."));
 
                 var index = opt.selfLayer.open({
-                    type: 2,
+                    type: type,
                     area: [width + 'px', height + 'px'],
                     fix: false,
                     //不固定
@@ -1130,6 +1225,9 @@ if (typeof jQuery === "undefined") {
                     },
                     cancel: function(index) {
                         return true;
+                    },
+                    end: function(){
+                        opt.modal.closeLoading();
                     }
                 });
 
@@ -1144,24 +1242,50 @@ if (typeof jQuery === "undefined") {
                 var _title = opt.common.isEmpty(options.title) ? $.i18n.prop("系统窗口") : $.i18n.prop(options.title);
                 var _width = opt.common.isEmpty(options.width) ? "800" : options.width;
                 var _height = opt.common.isEmpty(options.height) ? ($(window).height() - 50) : options.height;
-                var _btn = ['<i class="fa fa-check"></i> '+$.i18n.prop("确定"), '<i class="fa fa-close"></i> '+$.i18n.prop("取消")];
+                var _framData = opt.common.isEmpty(options.fromData) ? {} : options.fromData;
+                var _type = opt.common.isEmpty(options.type) ? 2 : options.type;
+                console.log("type:"+ _type)
+                var _btn = [];
+                if(options.clear){
+                    _btn = ['<i class="fa fa-check"></i> '+$.i18n.prop("确定"), '<i class="fa fa-trash-o"></i> '+$.i18n.prop("清除"),'<i class="fa fa-close"></i> '+$.i18n.prop("取消")];
+                }else{
+                    _btn = ['<i class="fa fa-check"></i> '+$.i18n.prop("确定"), '<i class="fa fa-close"></i> '+$.i18n.prop("取消")];
+                }
                 if (opt.common.isEmpty(options.yes)) {
                     options.yes = function(index, layero) {
                         options.callBack(index, layero,opt.selfLayer);
                     }
                 }
                 opt.selfLayer.open({
-                    type: 2,
+                    type: _type,
                     maxmin: true,
                     shade: 0.3,
                     title: _title,
                     fix: false,
                     area: [_width + 'px', _height + 'px'],
                     content: _url,
+                    fromData: _framData,
                     shadeClose: opt.common.isEmpty(options.shadeClose) ? true : options.shadeClose,
                     skin: options.skin,
                     btn: opt.common.isEmpty(options.btn) ? _btn : options.btn,
                     yes: options.yes,
+                    //取消或者清除
+                    btn2: function(index, layero){
+                        if(options.clear){
+                            options.clear(index, layero,opt.selfLayer);
+                        }else{
+                            if (!opt.common.isEmpty(options.cancel)) {
+                                options.cancel(index,layero);
+                            }
+                            opt.selfLayer.close(index);
+                        }
+                    },
+                    btn3: function(index, layero){
+                        if (!opt.common.isEmpty(options.cancel)) {
+                            options.cancel(index,layero);
+                        }
+                        opt.selfLayer.close(index);
+                    },
                     success: function(layero, index){
                         if (!opt.common.isEmpty(options.obj)) {
                             var iframeWin = layero.find('iframe')[0];
@@ -1173,7 +1297,10 @@ if (typeof jQuery === "undefined") {
                             }
                         }
                     },
-                    cancel: function () {
+                    cancel: function(index, layero){
+                        if (!opt.common.isEmpty(options.cancel)) {
+                            options.cancel(index,layero);
+                        }
                         return true;
                     }
                 });
@@ -1192,17 +1319,29 @@ if (typeof jQuery === "undefined") {
                 var _title = opt.common.isEmpty(options.title) ? $.i18n.prop("系统窗口") : $.i18n.prop(options.title);
                 var _width = opt.common.isEmpty(options.width) ? $(top.window).width() - 100 : options.width;
                 var _height = opt.common.isEmpty(options.height) ? $(top.window).height() - 100 : options.height;
+                var _framData = opt.common.isEmpty(options.fromData) ? {} : options.fromData;
                 if(opt.common.isEmpty(options.but)){
                     options.but = true;
                 }
                 if(options.but){
-                    var _btn = ['<i class="fa fa-check"></i> '+$.i18n.prop("确定"), '<i class="fa fa-close"></i> '+$.i18n.prop("取消")];
+                    if(options.clear){
+                        _btn = ['<i class="fa fa-check"></i> '+$.i18n.prop("确定"), '<i class="fa fa-trash-o"></i> '+$.i18n.prop("清除"),'<i class="fa fa-close"></i> '+$.i18n.prop("取消")];
+                    }else{
+                        _btn = ['<i class="fa fa-check"></i> '+$.i18n.prop("确定"), '<i class="fa fa-close"></i> '+$.i18n.prop("取消")];
+                    }
                     if (!opt.common.isEmpty(options.callBack)) {
                         options.yes = function(index, layero) {
-                            /**
-                             * 注意返回入参
-                             */
-                            options.callBack(index,layero,opt.layer);
+                            var iframeWin = layero.find('iframe')[0];
+                            if(typeof iframeWin.contentWindow.submitHandler == 'function'){
+                                if(iframeWin.contentWindow.submitHandler(index, layero)){
+                                    options.callBack(index,layero,opt.layer);
+                                }
+                            }else{
+                                /**
+                                 * 注意返回入参
+                                 */
+                                options.callBack(index,layero,opt.layer);
+                            }
                         }
                     }else{
                         options.yes = function(index, layero) {
@@ -1216,7 +1355,9 @@ if (typeof jQuery === "undefined") {
                         title: _title,
                         area: [_width+'px',
                             _height + 'px'],
+                        scrollbar: false,
                         content:_url,
+                        fromData: _framData,
                         success: function(layero, index){
                             var iframeWin = layero.find('iframe')[0];
                             //判断页面是否有
@@ -1226,7 +1367,22 @@ if (typeof jQuery === "undefined") {
                         },
                         btn: opt.common.isEmpty(options.btn) ? _btn : options.btn,
                         yes: options.yes,
-                        cancel: function () {
+                        //取消或者清除
+                        btn2: function(index, layero){
+                            if(options.clear){
+                                options.clear(index, layero,opt.layer);
+                            }else{
+                                opt.layer.close(index);
+                            }
+                        },
+                        btn3: function(index, layero){
+                            opt.layer.close(index);
+                        },
+                        cancel: function(index, layero){
+                            if (!opt.common.isEmpty(options.cancel)) {
+                                options.cancel(index,layero);
+                            }
+                            //opt.layer.close(index);
                             return true;
                         }
                     });
@@ -1291,6 +1447,30 @@ if (typeof jQuery === "undefined") {
                 });
                 opt.selfLayer.full(index);
             },
+            //预览文件
+            openView:function(name,url,width,height){
+                var url = baseURL + "sys/component/fileViwe?fileName="+ opt.common.encodeUrl(name) +
+                    "&fileUrl=" + opt.common.encodeUrl(url);
+                width = opt.common.isEmpty(width)? $(top.window).width() - 200:width;
+                height = opt.common.isEmpty(height)? $(top.window).height() - 50:height;
+                opt.layer? opt.layer.open({
+                    type: 2,
+                    maxmin: false,
+                    shadeClose: true,
+                    title: false,
+                    area: [width + "px", height + "px"],
+                    content: url
+                }):opt.modal.windowOpen(url);
+            },
+            windowOpen: function(url, title, width, height) {
+                width && height || (width = window.screen.width - 200,
+                    height = window.screen.height - 150);
+                var top = parseInt((window.screen.height - height) / 2 - 20, 10)
+                    , left = parseInt((window.screen.width - width) / 2, 10);
+                window.open(url, title, "location=no,menubar=no,toolbar=no," +
+                    "dependent=yes,minimizable=no,modal=yes,alwaysRaised=yes,resizable=yes," +
+                    "scrollbars=yes,width=" + width + ",height=" + height + ",top=" + top + ",left=" + left)
+            },
             // 选卡页方式打开
             openTab: function (title, url) {
                 opt.createMenuItem(url, title);
@@ -1324,12 +1504,11 @@ if (typeof jQuery === "undefined") {
             },
             // 打开遮罩层
             loading: function (message) {
-                // console.log(top.location != self.location);
-                // if(top.location != self.location){
-                //     $('.content-wrapper',  window.parent.document).block({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + message + '</div>' });
-                // }else{
+                if(opt.common.isEmpty(message)){
+                    $.blockUI();
+                }else{
                     $.blockUI({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + message + '</div>' });
-                // }
+                }
             },
             // 关闭遮罩层
             closeLoading: function () {
@@ -1719,7 +1898,9 @@ if (typeof jQuery === "undefined") {
                 } else if (result.code == opt.variable.web_status.SUCCESS && opt.table.options.type == opt.variable.table_type.bootstrapTreeTable) {
                     opt.success($.i18n.prop("操作成功!"))
                     $.treeTable.refresh();
-                } else if (result.code == opt.variable.web_status.WARNING) {
+                }else if (result.code == opt.variable.web_status.SUCCESS){
+                	 opt.success($.i18n.prop("操作成功!"))
+                }else if (result.code == opt.variable.web_status.WARNING) {
                     opt.modal.warning(result.msg)
                 }  else {
                     opt.modal.error(result.msg);
@@ -1763,7 +1944,7 @@ if (typeof jQuery === "undefined") {
                 }  else {
                     opt.modal.error(result.msg);
                 }
-                //opt.modal.enable();
+                opt.modal.enable();
             },
             // 选项卡成功回调执行事件（父窗体静默更新）
             successTabCallback: function(result) {
@@ -1882,6 +2063,8 @@ if (typeof jQuery === "undefined") {
         form: {
             // 表单重置
             reset: function(formId, tableId,notName) {
+
+                var notNames = opt.common.isEmpty(notName)?[]:notName.split(",");
                 opt.table.set(tableId);
                 // var currentId = opt.common.isEmpty(formId) ? $('form').attr('id') : formId;
                 var currentId;
@@ -1894,14 +2077,45 @@ if (typeof jQuery === "undefined") {
                 }else{
                     currentId = formId;
                 }
-                $("#" + currentId)[0].reset();
+                //$("#" + currentId)[0].reset();
+                var inpt = $("#" + currentId).find('input, select');
+                $.each(inpt, function() {
+                    if(this.tagName == "SELECT"){
+                        if(opt.common.isEmpty(notName)){
+                            $(this).val(null).trigger("change");
+                        }else{
+                            var temp = false;
+                            for(var i=0; i<notNames.length;i++){
+                                if($(this).attr("name") == notNames[i]){
+                                    temp = true;
+                                }
+                            }
+                            if(!temp){
+                                $(this).val(null).trigger("change");
+                            }
+                        }
+                    }
+                    else if(this.tagName == "INPUT"){
+                        //表单域输入框
+                        if(!(this.type == "hidden" && opt.common.isNotEmpty($(this).data("refresh"))
+                            && !$(this).data("refresh"))){
+                            this.value = "";
+                        }
+                    }
+                });
                 //重置表单select2
                 $("#" + currentId +" select").each(function(i) {
                     if(!opt.common.isEmpty($(this).attr("data-select2-id"))){
                         if(opt.common.isEmpty(notName)){
                             $(this).val(null).trigger("change");
                         }else{
-                            if(notName != $(this).attr("name")){
+                            var temp = false;
+                            for(var i=0; i<notNames.length;i++){
+                                if($(this).attr("name") == notNames[i]){
+                                    temp = true;
+                                }
+                            }
+                            if(!temp){
                                 $(this).val(null).trigger("change");
                             }
                         }
@@ -2216,9 +2430,9 @@ if (typeof jQuery === "undefined") {
         $('#scroll-up').toTop();
 
         //屏蔽鼠标右键
-        /*document.oncontextmenu = function() {
-            return false
-        }*/
+        //document.oncontextmenu = function() {
+        //    return false
+        //}
 
     });
 
@@ -2347,6 +2561,8 @@ if (typeof jQuery === "undefined") {
                     }
                 }
 
+
+
                 //
                 if(!opt.common.isEmpty(options.columns.length)){
                     for(var i=0; i<options.columns.length; i++ ){
@@ -2356,10 +2572,11 @@ if (typeof jQuery === "undefined") {
                         if(opt.common.isEmpty(opt.common.getJsonValue(options.columns[i],"halign"))){
                             options.columns[i].halign = 'center';
                         }
-
-
+                        // 表格首列有checkbox 勾选字段名称必须state - 记住我必须是字段state
+                        if(!opt.common.isEmpty(opt.common.getJsonValue(options.columns[i],"checkbox"))){
+                            options.columns[i].field = 'state';
+                        }
                     }
-
                     // if(row['checked']){
                     //
                     // }
@@ -2377,9 +2594,11 @@ if (typeof jQuery === "undefined") {
                     // }
                 }
                 opt.table.options = options;
+                console.log(options);
                 opt.table.config[options.id] = options;
                 $.table.initEvent();
                 $('#' + options.id).bootstrapTable({
+                    id: options.id,                                     // 对象ID
                     url: options.url,                                   // 请求后台的URL（*）
                     contentType: "application/x-www-form-urlencoded",   // 发送到服务器的数据编码类型
                     method: 'post',                                     // 请求方式（*）
@@ -2470,11 +2689,11 @@ if (typeof jQuery === "undefined") {
                 * */
                 var curParams = {
                     // 传递参数查询参数
-                    limit:       params.limit,
-                    page:        params.offset / params.limit + 1,
+                    __limit:       params.limit,
+                    __page:        params.offset / params.limit + 1,
                     searchValue:    params.search,
-                    sidx:           params.sort,
-                    order:          params.order
+                    __sidx:           params.sort,
+                    __order:          params.order
                 };
                 var currentId = opt.common.isEmpty(opt.table.options.formId) ? $('form').attr('id') : opt.table.options.formId;
                 return $.extend(curParams, opt.common.formToJSON(currentId));
@@ -2491,14 +2710,15 @@ if (typeof jQuery === "undefined") {
             },
             // 请求获取数据后处理回调函数
             responseHandler: function(res) {
-                if (typeof opt.table.options.responseHandler == "function") {
-                    opt.table.options.responseHandler(res);
+                if (typeof opt.table.get(this.id).responseHandler == "function") {
+                    opt.table.get(this.id).responseHandler(res);
                 }
                 if (res.code == 0) {
                     if (opt.common.isNotEmpty(opt.table.options.sidePagination) && opt.table.options.sidePagination == 'client') {
                         return res.rows;
                     } else {
                         if (opt.common.isNotEmpty(opt.table.options.rememberSelected) && opt.table.options.rememberSelected) {
+                            console.log("记住数据"+opt.table.rememberSelectedIds);
                             var column = opt.common.isEmpty(opt.table.options.uniqueId) ? opt.table.options.columns[1].field : opt.table.options.uniqueId;
                             $.each(res.data.list, function(i, row) {
                                 if(opt.table.rememberSelectedIds[opt.table.options.id]){
@@ -2618,8 +2838,8 @@ if (typeof jQuery === "undefined") {
             },
             // 当所有数据被加载时触发
             onLoadSuccess: function(data) {
-                if (typeof opt.table.options.onLoadSuccess == "function") {
-                    opt.table.options.onLoadSuccess(data);
+                if (typeof opt.table.get(this.id).onLoadSuccess == "function") {
+                    opt.table.get(this.id).onLoadSuccess(data);
                 }
                 // 浮动提示框特效
                 $("[data-toggle='tooltip']").tooltip();
@@ -2788,11 +3008,11 @@ if (typeof jQuery === "undefined") {
                             search[key] = data[key];
                         });
                     }
-                    search.limit = params.limit;
-                    search.page = params.offset / params.limit + 1;
+                    search.__limit = params.limit;
+                    search.__page = params.offset / params.limit + 1;
                     search.searchValue = params.search;
-                    search.sidx = params.sort;
-                    search.order = params.order;
+                    search.__sidx = params.sort;
+                    search.__order = params.order;
                     return search;
                 }
                 if(opt.common.isNotEmpty(tableId)){
@@ -2963,7 +3183,6 @@ if (typeof jQuery === "undefined") {
                     }
                     rows = $.table.affectedRowIds(rows);
                 }
-                opt.debug(rows);
                 return opt.common.uniqueFn(rows);
             },
             // 回显数据字典
@@ -2975,7 +3194,14 @@ if (typeof jQuery === "undefined") {
                         if(!opt.common.isEmpty(dict.cssClass)){
                             listClass = opt.common.isEmpty(dict.cssClass) ? "" : dict.cssClass;
                         }
-                        actions.push(opt.common.sprintf("<span class='%s'>%s</span>", listClass, $.i18n.prop(dict.dictLabel)));
+                        if(!opt.common.isEmpty(dict.cssStyle)){
+                            listClass = dict.cssStyle;
+                        }
+                        if(!opt.common.isEmpty(dict.cssStyle)){
+                            actions.push(opt.common.sprintf("<span style='%s'>%s</span>", listClass, $.i18n.prop(dict.dictLabel)));
+                        }else{
+                            actions.push(opt.common.sprintf("<span class='%s'>%s</span>", listClass, $.i18n.prop(dict.dictLabel)));
+                        }
                         return false;
                     }
                     //兼容客户端数据为空 -- 则匹配字典默认值
@@ -2989,6 +3215,35 @@ if (typeof jQuery === "undefined") {
                     }
                 });
                 return actions.join('');
+            },
+            // 回显数据字典 多个, 约定以逗号分割---用于复选框翻译回显 , values 值 字符串 如： 1,2,3,4  
+            selectDictLabels: function(datas, valueStr) {
+                var actions = [];
+                valueStr = valueStr || "";
+                var values = valueStr.split(",");
+                $.each(values ,function(index, value){
+	                $.each(datas, function(index, dict) {
+	                    if (dict.dictValue == ('' + value)) {
+	                        var listClass = opt.common.equals("default", dict.listClass) || opt.common.isEmpty(dict.listClass) ? "" : "badge badge-" + dict.listClass;
+	                        if(!opt.common.isEmpty(dict.cssClass)){
+	                            listClass = opt.common.isEmpty(dict.cssClass) ? "" : dict.cssClass;
+	                        }
+	                        actions.push(opt.common.sprintf("<span class='%s'>%s</span>", listClass, $.i18n.prop(dict.dictLabel)));
+	                        return false;
+	                    }
+	                    //兼容客户端数据为空 -- 则匹配字典默认值
+	                    if (opt.common.isEmpty(value) && dict.isDefault === "Y") {
+	                        var listClass = opt.common.equals("default", dict.listClass) || opt.common.isEmpty(dict.listClass) ? "" : "badge badge-" + dict.listClass;
+	                        if(!opt.common.isEmpty(dict.cssClass)){
+	                            listClass = opt.common.isEmpty(dict.cssClass) ? "" : dict.cssClass;
+	                        }
+	                        actions.push(opt.common.sprintf("<span class='%s'>%s</span>", listClass, $.i18n.prop(dict.dictLabel)));
+	                        return false;
+	                    }
+	                });
+                });
+                
+                return actions.join(',');
             },
             // 显示表格指定列
             showColumn: function(column, tableId) {
@@ -3018,6 +3273,9 @@ if (typeof jQuery === "undefined") {
                     height: 0,
                     rootIdValue: null,
                     ajaxParams: {},
+                    sortName: "",           //排序字段
+                    sortOrder: "asc",       //默认升序
+                    async: false,
                     toolbar: "toolbar",
                     striped: false,
                     expandColumn: 1,
@@ -3048,8 +3306,11 @@ if (typeof jQuery === "undefined") {
                     parentCode: options.parentCode,                     // 用于设置父子关系
                     type: 'post',                                       // 请求方式（*）
                     url: options.url,                                   // 请求后台的URL（*）
+                    async: options.async,                               // 是否异步加载数据
                     data: options.data,                                 // 无url时用于渲染的数据
                     ajaxParams: options.ajaxParams,                     // 请求数据的ajax的data属性
+                    sortName: options.sortName,                         // 排序字段
+                    sortOrder: options.sortOrder,                       // 默认升序
                     rootIdValue: options.rootIdValue,                   // 设置指定根节点id值
                     height: options.height,                             // 表格树的高度
                     expandColumn: options.expandColumn,                 // 在哪一列上面显示展开按钮
@@ -3088,6 +3349,9 @@ if (typeof jQuery === "undefined") {
                     opt.modal.error(data.msg);
                     return [];
                 } else {
+                    if (typeof opt.table.options.responseHandler == "function") {
+                        opt.table.options.responseHandler(data);
+                    }
                     return data;
                 }
             },
@@ -3106,23 +3370,27 @@ if (typeof jQuery === "undefined") {
             init: function(options) {
                 var defaults = {
                     id: "tree",                    // 属性ID
-                    expandLevel: 0,                // 展开等级节点
+                    expandLevel: 0,                // 展开等级节点 0-默认 1-展开根节点(不包含子节点) 2-展开所有节点
                     view: {
                         selectedMulti: false,      // 设置是否允许同时选中多个节点
                         nameIsHTML: true           // 设置 name 属性是否支持 HTML 脚本
                     },
                     check: {
-                        enable: false,             // 置 zTree 的节点上是否显示 checkbox / radio
-                        nocheckInherit: true,      // 设置子节点是否自动继承
+                        enable: true,             // 置 zTree 的节点上是否显示 checkbox / radio
+                        //radioType: "level",
+                        chkStyle: "radio",
+                        nocheckInherit: true      // 设置子节点是否自动继承
                     },
                     data: {
                         key: {
-                            title: "name"         // 节点数据保存节点提示信息的属性名称
+                            title: "name",         // 节点数据保存节点提示信息的属性名称
+                            name: "title"
                         },
                         simpleData: {
                             enable: true           // true / false 分别表示 使用 / 不使用 简单数据模式
                         }
                     },
+                    displayLen: 0
                 };
                 var options = $.extend(defaults, options);
                 $.tree._option = options;
@@ -3172,43 +3440,72 @@ if (typeof jQuery === "undefined") {
                         }
                     }
 
+                    if(options.displayLen != 0){
+                        for(var i=0; i<list.length; i++){
+                            for(var key  in list[i]){
+                                if(key == "title"){
+                                    list[i][key] = opt.common.hideStr(list[i][key],options.displayLen,0);
+                                }
+                            }
+                        }
+                    }
+
                     var treeId = $("#treeId").val();
                     tree = $.fn.zTree.init($("#" + options.id), setting, list);
                     $._tree = tree;
-                    var nodes = tree.getNodesByParam("level", options.expandLevel - 1);
-                    for (var i = 0; i < nodes.length; i++) {
-                        tree.expandNode(nodes[i], true, false, false);
+                    // var nodes = tree.getNodesByParam("level", options.expandLevel - 1);
+                    //
+                    // for (var i = 0; i < nodes.length; i++) {
+                    //     tree.expandNode(nodes[i], true, false, false);
+                    // }
+                    //展开根节点 不包含子节点
+                    if(options.expandLevel == 1){
+                        var node = tree.getNodesByFilter(function (node) { return node.level == 0 }, true);
+                        tree.expandNode(node, true, null, null);
                     }
-                    //全部展开
-                    //tree.expandAll(true);
-
+                    //展开所有节点
+                    if(options.expandLevel == 2){
+                        tree.expandAll(true);
+                    }
+                    //
                     if(options.check.enable){
                         if(!opt.common.isEmpty(options._list)){
                             var _l = options._list.split(",");
                             for(var i=0; i<_l.length; i++){
-                                var node = tree.getNodeByParam(options.data.simpleData.idKey,_l[i]);
+                                var node = tree.getNodeByParam(opt.common.isEmpty(options.data.simpleData.idKey)?
+                                    "id":options.data.simpleData.idKey, _l[i]);
                                 if(node !=null){
                                     tree.checkNode(node,true);
+                                    tree.selectNode(node);
                                 }
                             }
                         }
                         if(!opt.common.isEmpty(treeId)){
-                            var node = tree.getNodeByParam(opt.common.isEmpty(options.data.simpleData.idKey)?
-                                "id":options.data.simpleData.idKey, treeId);
-                            if(!opt.common.isEmpty(node)){
-                                tree.checkNode(node,true);
-                                if($.tree._option.check.chkStyle == 'radio') tree.selectNode(node);
+                            var _l = treeId.split(",");
+                            for(var i=0; i<_l.length; i++){
+                                var node = tree.getNodeByParam(opt.common.isEmpty(options.data.simpleData.idKey)?
+                                    "id":options.data.simpleData.idKey, _l[i]);
+                                if(node !=null){
+                                    tree.checkNode(node,true);
+                                    tree.selectNode(node);
+                                }
                             }
+                            // var node = tree.getNodeByParam(opt.common.isEmpty(options.data.simpleData.idKey)?
+                            //     "id":options.data.simpleData.idKey, treeId);
+                            // if(!opt.common.isEmpty(node)){
+                            //     tree.checkNode(node,true);
+                            //     if($.tree._option.check.chkStyle == 'radio') tree.selectNode(node);
+                            // }
                         }
                     }
 
-                    if(!opt.common.isEmpty(treeId) && !options.check.enable){
-                        var node = tree.getNodeByParam(opt.common.isEmpty(options.data.simpleData.idKey)?
-                            "id":options.data.simpleData.idKey, treeId);
-                        if(!opt.common.isEmpty(node)){
-                            tree.selectNode(node);
-                        }
-                    }
+                    // if(!opt.common.isEmpty(treeId) && !options.check.enable){
+                    //     var node = tree.getNodeByParam(opt.common.isEmpty(options.data.simpleData.idKey)?
+                    //         "id":options.data.simpleData.idKey, treeId);
+                    //     if(!opt.common.isEmpty(node)){
+                    //         tree.selectNode(node);
+                    //     }
+                    // }
                     //回调方法
                     if(typeof(options.callBack) === "function"){
                         callBack($._tree);
@@ -3275,6 +3572,16 @@ if (typeof jQuery === "undefined") {
                     $._tree.expandNode(parentNode, true, false, false);
                     treeNode = parentNode;
                 }
+            },
+            // 获取所有 节点所有的父节点
+            getParentIds: function(treeNode){
+                if(opt.common.isEmpty(treeNode)) return "";
+                var ids = treeNode.id;
+                var node = treeNode.getParentNode();
+                if(node != null){
+                    ids = ids + "," + $.tree.getParentIds(node);
+                }
+                return ids;
             },
             // 显示所有孩子节点
             showChildren: function(treeNode) {
@@ -3346,6 +3653,10 @@ if (typeof jQuery === "undefined") {
                 $('#btnHide').toggle();
                 $('#keyword').focus();
             },
+            //勾选 或 取消勾选 全部节点
+            checkAllNodes: function(checked){
+                $._tree.checkAllNodes(checked);
+            },
             // 折叠
             collapse: function() {
                 $._tree.expandAll(false);
@@ -3354,13 +3665,15 @@ if (typeof jQuery === "undefined") {
             expand: function() {
                 $._tree.expandAll(true);
             },
-            //处理回调之后获取id 与name
+            //处理回调之后获取id 与name 选取的所有父节点
             callBackTree:function (_p,_m) {
                 var tree = _p.find("iframe")[0].contentWindow.$._tree;
                 if ($.tree.notAllowParents(tree)) {
                     var body = layer.getChildFrame('body', _m);
                     var treeId = body.find('#treeId').val()
                     var treeName = body.find('#treeName').val();
+                    var parentIds = body.find('#parentIds').val();
+                    var type = body.find('#type').val();
                     if(opt.common.isEmpty(treeName)){
                         if(tree.setting.check.enable){
                             var _l = treeId.split(",");
@@ -3375,7 +3688,7 @@ if (typeof jQuery === "undefined") {
                             treeName = tree.getNodesByParam(tree.setting.data.simpleData.idKey, treeId, null)[0].name;
                         }
                     }
-                    var _n = "{\"id\":\""+treeId+"\",\"name\":\""+treeName+"\"}";
+                    var _n = "{\"id\":\""+treeId+"\",\"name\":\""+treeName+"\",\"parentIds\":\""+parentIds+"\",\"type\":\""+type+"\"}";
                     return $.parseJSON(_n);
                 }else{
                     return false;
@@ -3431,18 +3744,18 @@ if (typeof jQuery === "undefined") {
             return;
         }
     });*/
-    $.ajaxSetup({
-        complete: function(XMLHttpRequest, textStatus) {
-            if (textStatus == 'timeout') {
-                //window.opt.wclearInterval();
-                opt.outLogin("",$.i18n.prop('sys.login.out.error'));
-                return;
-            } else if (textStatus == "parsererror" || textStatus == "error") {
-                opt.outLogin("",$.i18n.prop('sys.login.out.error'));
-                return;
-            }
-        }
-    });
+    // $.ajaxSetup({
+    //     complete: function(XMLHttpRequest, textStatus) {
+    //         if (textStatus == 'timeout') {
+    //             //window.opt.wclearInterval();
+    //             opt.outLogin("",$.i18n.prop('sys.login.out.error'));
+    //             return;
+    //         } else if (textStatus == "parsererror" || textStatus == "error") {
+    //             opt.outLogin("",$.i18n.prop('sys.login.out.error'));
+    //             return;
+    //         }
+    //     }
+    // });
 }();
 /**
  * 页面模板引擎
@@ -3739,3 +4052,29 @@ if (typeof jQuery === "undefined") {
     });
   });
 }(jQuery);
+
+/**
+ * 表单序列号成对象 使用--> $('').serializeJson()
+ * 表单序列号成 字符串 使用-->$('').serialize()
+ */
+(function(window, $) {
+    $.fn.serializeJson = function() {
+        var serializeObj = {};
+        var array = this.serializeArray();
+        //var str = this.serialize();
+        $(array).each(
+            function() {
+                if (serializeObj[this.name]) {
+                    if ($.isArray(serializeObj[this.name])) {
+                        serializeObj[this.name].push(this.value);
+                    } else {
+                        serializeObj[this.name] = [
+                            serializeObj[this.name], this.value ];
+                    }
+                } else {
+                    serializeObj[this.name] = this.value;
+                }
+            });
+        return serializeObj;
+    };
+})(window, jQuery);

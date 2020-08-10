@@ -9,9 +9,9 @@ fast:
     demoMode:
         enabled: false
         #配置拦截规则
-        post: 'edit,del,remove,clean,updateAvatar,updateUser,add,resetPwd,updatePass,genCode,uploadLic,status'
+        post: 'edit,del,remove,clean,updateAvatar,updateUser,add,resetPwd,updatePass,genCode,uploadLic,status,insertAuthRoles'
         get: 'del,remove,clean,dirTreeData'
-        urlPatterns: '/sys/*,/tool/*,/file/ueditor/*,/bpm/procdef/*,/bpm/model/*,/bpm/processInstance/*'
+        urlPatterns: '/sys/*,/tool/*,/file/ueditor/*,/bpm/procdef/*,/bpm/model/*,/bpm/processInstance/*,/gen/test/*'
         ip:
     #是否开启HTTPS false 则以server:port
     ssl:
@@ -56,12 +56,12 @@ license:
 spring:
     datasource:
         #默认(主)数据库配置
-        default:
+        master:
             driverClassName: com.mysql.cj.jdbc.Driver
             url:
             username:
             password:
-            filters: wall,mergeStat
+            filters: mergeStat
         ###############工作流数据库配置
         flowable:
             driverClassName:

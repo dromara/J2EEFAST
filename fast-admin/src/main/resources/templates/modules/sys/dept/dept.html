@@ -1,89 +1,175 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="地区列表"/>
-<@search fromId="dept-form">
-    <div class="select-list">
-        <ul>
-            <li>
-                地区名称：<input type="text" name="name"/>
-            </li>
-            <li>
-                类型：
-                <select name="type">
-                    <option value=""><@ctx.i18n text = "所有"/></option>
-                    <#list dict.getType('sys_dept_line')>
-                        <#items as d>
-                            <#if d.status =='0' >
-                                <option value="${d.dictValue}" text="${d.dictLabel}">${d.dictLabel}</option>
-                            </#if>
-                        </#items>
-                    </#list>
-                </select>
-            </li>
-            <li>
-                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
-                <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
-            </li>
-        </ul>
+<@header title="组织部门列表" bodyClass="gray-bg animated fadeInRight" isAnimation="false" libs=["table","zTree","layout-latest"]/>
+<div class="ui-layout-west">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa icon-grid"></i> 组织机构
+            </div>
+            <div class="box-tools pull-right">
+                <a type="button" class="btn btn-box-tool" href="#" onclick="comp()" title="公司管理"><i class="fa fa-edit"></i></a>
+                <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i class="fa fa-chevron-up"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i class="fa fa-chevron-down"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class="ui-layout-content">
+            <div id="tree" class="ztree"></div>
+        </div>
     </div>
-</@search>
-<@table tableId="bootstrap-tree-table">
-    <@shiro.hasPermission name="sys:dept:add">
-        <a class="btn btn-success" onclick="opt.operate.add(1)"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
-    </@shiro.hasPermission>
-    <@shiro.hasPermission name="sys:dept:edit">
-        <a class="btn btn-primary" onclick="opt.operate.edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
-    </@shiro.hasPermission>
-    <a class="btn btn-info" id="expandAllBtn">
-        <i class="fa fa-exchange"></i> 展开/折叠
-    </a>
-</@table>
+</div>
+<div class="ui-layout-center">
+    <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <@form.form id="dept-form">
+                    <input type="hidden" id="id" name="id">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                机构名称：<input type="text" name="name"/>
+                            </li>
+                            <li>
+                                类型：
+                                <@form.select name="type" blankValue="" blankLabel="所有" dictType="sys_comp_type"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+                            </li>
+                        </ul>
+                    </div>
+                </@form.form>
+            </div>
+            <@table id="bootstrap-tree-table">
+                <@shiro.hasPermission name="sys:comp:add">
+                    <a class="btn btn-success" onclick="opt.operate.add(-1)"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
+                </@shiro.hasPermission>
+                <@shiro.hasPermission name="sys:comp:edit">
+                    <a class="btn btn-primary" onclick="opt.operate.edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
+                </@shiro.hasPermission>
+                <a class="btn btn-info" id="expandAllBtn">
+                    <i class="fa fa-exchange"></i> <@ctx.i18n text = "展开/折叠"/>
+                </a>
+            </@table>
+        </div>
+    </div>
+</div>
 <@footer>
-<script>
+<script type="text/javascript">
     var addFlag = "${permission.hasPermi('sys:dept:add')}";
     var editFlag = "${permission.hasPermi('sys:dept:edit')}";
     var deleFlag = "${permission.hasPermi('sys:dept:del')}";
     var visible = ${permission.isPermitteds("sys:dept:edit,sys:dept:del")?string('true', 'false')};
-    var datas = ${dict.getDictListJson('sys_dept_line')};
+    var datas = ${dict.getDictListJson('sys_comp_type')};
     var prefix = baseURL + "sys/dept";
 
     $(function() {
+        /*初始化页面布局*/
+        var panehHidden = false;
+        if ($(this).width() < 767) {
+            panehHidden = true;
+        }
+        $('body').layout({ initClosed: panehHidden, west__size: 200 });
+        /*加载 树、树表格*/
+        initZtreeTable();
+    });
+
+    /*初始化 页面树表格*/
+    function initZtreeTable(){
         var options = {
-            code: "deptId",
+            code: "id",
             parentCode: "parentId",
-            uniqueId: "deptId",
+            uniqueId: "id",
             url: prefix + "/list",
             expandAll:false,
             addUrl: prefix + "/add/{id}",
             editUrl: prefix + "/edit/{id}",
             delUrl: prefix + "/del/{id}",
-            modalName: "地区",
+            responseHandler: responseHandler,
+            modalName: "机构",
             columns: [
                 {field: 'selectItem', radio: true},
-                {field: 'name', title: "<@ctx.i18n text = "地区名称"/>", align: "left"},
-                {field: 'orderNum', title: "<@ctx.i18n text = "排序"/>", align: "left"},
-                {field: 'parentName', title: "<@ctx.i18n text = "上级"/>"},
-                {field: 'type', title: "<@ctx.i18n text = "类型"/>", align: "left", formatter: function(value, item, index) {
+                {field: 'name', title: "<@ctx.i18n text = "机构名称"/>"},
+                {field: 'orderNum', title: "<@ctx.i18n text = "排序"/>"},
+                {field: 'type', title: "<@ctx.i18n text = "类型"/>", formatter: function(value, item, index) {
                         return $.table.selectDictLabel(datas, item.type);}
                 },
-                {field: 'createTime', title: "<@ctx.i18n text = "创建时间"/>", align: "left"},
+                {field: 'createTime', title: "<@ctx.i18n text = "创建时间"/>"},
                 {title: "<@ctx.i18n text = "操作"/>", align: 'left', visible:visible,formatter: function(value, row, index) {
                         if (row.type == 0) {
                             var actions = [];
-                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.deptId + '\')"><i class="fa fa-edit"></i><@ctx.i18n text = "编辑"/></a> ');
-                            actions.push('<a class="btn btn-info  btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="opt.operate.add(\'' + row.deptId + '\')"><i class="fa fa-plus"></i><@ctx.i18n text = "新增"/></a> ');
-                            actions.push('<a class="btn btn-danger btn-xs ' + deleFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.deptId + '\')"><i class="fa fa-trash"></i><@ctx.i18n text = "删除"/></a>');
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i><@ctx.i18n text = "编辑"/></a> ');
+                            actions.push('<a class="btn btn-info  btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="opt.operate.add(\'' + row.id + '\')"><i class="fa fa-plus"></i><@ctx.i18n text = "新增"/></a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + deleFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.id + '\')"><i class="fa fa-trash"></i><@ctx.i18n text = "删除"/></a>');
                             return actions.join('');
                         } else {
                             var actions = [];
-                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.deptId + '\')"><i class="fa fa-edit"></i><@ctx.i18n text = "编辑"/></a> ');
-                            actions.push('<a class="btn btn-danger btn-xs ' + deleFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.deptId + '\')"><i class="fa fa-trash"></i><@ctx.i18n text = "删除"/></a>');
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i><@ctx.i18n text = "编辑"/></a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + deleFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.id + '\')"><i class="fa fa-trash"></i><@ctx.i18n text = "删除"/></a>');
                             return actions.join('');
                         }}
                 }]
         };
         $.treeTable.init(options);
+    }
+
+    var leftButTag = false;
+
+    /* 树表格加载完成 渲染左侧树机构*/
+    function responseHandler(){
+        if(!leftButTag){
+            initLeftZtree();
+        }
+        leftButTag = false;
+    }
+
+    /*初始化左侧树*/
+    function initLeftZtree() {
+        var options = {
+            url: baseURL+"sys/comp/treeData",
+            displayLen: 8,
+            expandLevel:1,
+            onClick : onClick,
+            check: {
+                enable: false
+            }
+        };
+        $.tree.init(options);
+    }
+
+    /* 点击左侧数节点 回调事件*/
+    function onClick(event, treeId, treeNode) {
+        leftButTag = true;
+        $("#id").val(treeNode.id);
+        $.treeTable.search();
+    }
+
+    /* 左侧数刷新事件*/
+    $('#btnRefresh').click(function() {
+        initLeftZtree();
     });
+
+    /* 左侧树展开事件 */
+    $('#btnExpand').click(function() {
+        $._tree.expandAll(true);
+        $(this).hide();
+        $('#btnCollapse').show();
+    });
+
+    /* 左侧树折叠事件 */
+    $('#btnCollapse').click(function() {
+        $._tree.expandAll(false);
+        $(this).hide();
+        $('#btnExpand').show();
+    });
+
+    function comp() {
+        var url = baseURL + "sys/comp";
+        opt.modal.openTab("公司管理", url);
+    }
+
 </script>
 </@footer>
 </@pageTheme>

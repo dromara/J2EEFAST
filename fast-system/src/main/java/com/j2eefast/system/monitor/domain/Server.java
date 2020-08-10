@@ -204,7 +204,12 @@ public class Server
             sysFile.setTotal(ToolUtil.convertFileSize(total));
             sysFile.setFree(ToolUtil.convertFileSize(free));
             sysFile.setUsed(ToolUtil.convertFileSize(used));
-            sysFile.setUsage(NumberUtil.mul(NumberUtil.div(used, total, 4), 100));
+            if(used==0 || total==0){
+                sysFile.setUsage(0);
+            }
+            else{
+                sysFile.setUsage(NumberUtil.mul(NumberUtil.div(used, total, 4), 100));
+            }
             sysFiles.add(sysFile);
         }
     }

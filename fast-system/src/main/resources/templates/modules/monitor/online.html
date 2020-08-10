@@ -1,32 +1,17 @@
-<#include "/common/include.html">
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="在线用户列表"/>
-<#--<@search fromId="online-form">-->
-<#--				<div class="select-list">-->
-<#--					<ul>-->
-<#--						<li>-->
-<#--							登录地址：<input type="text" name="ipaddr"/>-->
-<#--						</li>-->
-<#--						<li>-->
-<#--							登录名称：<input type="text" name="username"/>-->
-<#--						</li>-->
-<#--						<li>-->
-<#--							<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>-->
-<#--							<a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>-->
-<#--						</li>-->
-<#--					</ul>-->
-<#--				</div>-->
-<#--</@search>-->
-<body class="gray-bg skin-blue sidebar-mini ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')}">
+<@header title="在线用户列表" libs=["table"]/>
 <div class="container-div" id="_app">
 <div class="row">
-<@table tableId="bootstrap-table">
+<@table id="bootstrap-table">
 	<@shiro.hasPermission name="sys:online:forceLogout">
 		<a class="btn btn-danger multiple disabled" onclick="javascript:batchForceLogout()">
 			<i class="fa fa-sign-out"></i> 强退
 		</a>
 	</@shiro.hasPermission>
 </@table>
+</div>
+</div>
 <@footer>
 	<script>
 		var forceFlag = "${permission.hasPermi('sys:online:forceLogout')}";

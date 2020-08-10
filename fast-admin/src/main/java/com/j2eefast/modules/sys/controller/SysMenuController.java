@@ -8,12 +8,14 @@ import com.j2eefast.common.core.base.entity.Ztree;
 import com.j2eefast.common.core.business.annotaion.BussinessLog;
 import com.j2eefast.common.core.controller.BaseController;
 import com.j2eefast.common.core.enums.BusinessType;
+import com.j2eefast.framework.annotation.RepeatSubmit;
 import com.j2eefast.framework.sys.entity.SysModuleEntity;
 import com.j2eefast.framework.sys.entity.SysRoleEntity;
 import com.j2eefast.framework.sys.service.SysModuleService;
 import com.j2eefast.framework.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -58,11 +60,11 @@ public class SysMenuController extends BaseController {
 	public String add(@PathVariable("parentId") Long parentId, ModelMap mmap){
 		SysMenuEntity menu = null;
 		if (0L != parentId){
-			menu = sysMenuService.getById(parentId);
+			menu = sysMenuService.selectMenuByMenId(parentId);
 		}
 		else{
 			menu = new SysMenuEntity();
-			menu.setMenuId(0L);
+			menu.setId(0L);
 			menu.setName("主目录");
 		}
 		mmap.put("menu", menu);
@@ -79,7 +81,7 @@ public class SysMenuController extends BaseController {
 	 */
 	@GetMapping("/edit/{menuId}")
 	public String edit(@PathVariable("menuId") Long menuId, ModelMap mmap){
-		mmap.put("menu", sysMenuService.getById(menuId));
+		mmap.put("menu", sysMenuService.selectMenuByMenId(menuId));
 		List<SysModuleEntity>  modules = sysModuleService.list();
 		mmap.put("modules", modules);
 		return urlPrefix + "/edit";
@@ -112,13 +114,11 @@ public class SysMenuController extends BaseController {
 		if (!sysMenuService.checkMenuNameUnique(menu)){
 			return error("新增菜单'" + menu.getName()+ "'失败，菜单名称已存在");
 		}
-
-		UserUtils.clearCachedAuthorizationInfo(); //清理权限缓存
-
 		if(sysMenuService.updateById(menu)){
+			UserUtils.clearCachedAuthorizationInfo(); //清理权限缓存
 			return success();
 		}else {
-			return success();
+			return error("修改失败");
 		}
 	}
 
@@ -130,7 +130,7 @@ public class SysMenuController extends BaseController {
 	@RequiresPermissions("sys:menu:list")
 	@ResponseBody
 	public ResponseData list(SysMenuEntity menu) {
-		List<SysMenuEntity> menuList = sysMenuService.findMenuList(menu, UserUtils.getUserId());
+		List<SysMenuEntity> menuList = sysMenuService.findMenuList(menu, UserUtils.getUserInfo());
 		return success().put("list", menuList);
 	}
 
@@ -140,7 +140,7 @@ public class SysMenuController extends BaseController {
 	@GetMapping("/roleMenuTreeData")
 	@ResponseBody
 	public List<Ztree> roleMenuTreeData(SysRoleEntity role){
-		List<Ztree> ztrees = sysMenuService.roleMenuTreeData(role, UserUtils.getUserId());
+		List<Ztree> ztrees = sysMenuService.roleMenuTreeData(role, UserUtils.getUserInfo());
 		return ztrees;
 	}
 
@@ -152,7 +152,7 @@ public class SysMenuController extends BaseController {
 	@GetMapping("/roleModuleMenuTreeData")
 	@ResponseBody
 	public List<Ztree> roleModuleMenuTreeData(SysRoleEntity role){
-		List<Ztree> ztrees = sysMenuService.roleModuleMenuTreeData(role, UserUtils.getUserId());
+		List<Ztree> ztrees = sysMenuService.roleModuleMenuTreeData(role, UserUtils.getUserInfo());
 		return ztrees;
 	}
 
@@ -174,8 +174,7 @@ public class SysMenuController extends BaseController {
 	@GetMapping("/menuTreeData")
 	@ResponseBody
 	public List<Ztree> menuTreeData(){
-		Long userId = UserUtils.getUserId();
-		List<Ztree> ztrees = sysMenuService.menuTreeData(userId);
+		List<Ztree> ztrees = sysMenuService.menuTreeData(UserUtils.getUserInfo());
 		return ztrees;
 	}
 
@@ -200,7 +199,7 @@ public class SysMenuController extends BaseController {
 		List<SysMenuEntity> menuList = sysMenuService.findNotButtonList();
 		// 添加顶级菜单
 		SysMenuEntity root = new SysMenuEntity();
-		root.setMenuId(0L);
+		root.setId(0L);
 		root.setName("一级菜单");
 		root.setParentId(-1L);
 		menuList.add(root);
@@ -243,6 +242,7 @@ public class SysMenuController extends BaseController {
 	@BussinessLog(title = "菜单管理", businessType = BusinessType.DELETE)
 	@RequestMapping(value = "/del/{menuId}")
 	@RequiresPermissions("sys:menu:del")
+	@RequiresRoles(Constant.SU_ADMIN)
 	@ResponseBody
 	public ResponseData delete(@PathVariable("menuId") Long menuId) {
 		List<SysMenuEntity> menuList = sysMenuService.findListParentId(menuId);
@@ -251,6 +251,15 @@ public class SysMenuController extends BaseController {
 		}
 		UserUtils.clearCachedAuthorizationInfo(); //清理权限缓存
 		return sysMenuService.removeById(menuId)?success():error("删除失败!");
+	}
+
+	@BussinessLog(title = "菜单管理", businessType = BusinessType.CLEAN)
+	@RequestMapping(value = "/clearMenu", method = RequestMethod.GET)
+	@RequiresPermissions("sys:menu:clear")
+	@RepeatSubmit
+	@ResponseBody
+	public ResponseData clearConfig(){
+		return sysMenuService.clearMenuRedis()?success():error("清除失败!");
 	}
 
 	/**

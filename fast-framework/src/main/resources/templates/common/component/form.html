@@ -1,0 +1,1056 @@
+<#--
+  Copyright (c) 2020-Now http://www.j2eefast.com All rights reserved.
+  常用表单组件
+  @author J2eeFAST
+  @date 2020-05-20
+  @version v1.0.1
+  //修改ID适配页面传值特殊符号问题
+-->
+<#--获取动态传入参数值 -->
+<#macro getName value key>
+    <#list value?keys as attr>
+        <#if attr == key>
+            <#t>${value[attr]}<#t>
+        </#if>
+    </#list>
+</#macro>
+<#setting url_escaping_charset='utf-8'>
+<#--
+    // from表单
+-->
+<#macro form name ="" <#-- 表单的名称-->
+            id = ""
+            action = "" <#-- 当提交表单时向何处发送表单数据-->
+            method	= "" <#-- 用于发送 form-data 的 HTTP 方法-->
+            enctype = "" <#-- 发送表单数据之前如何对其进行编码-->
+            class = "" <#-- css 样式-->
+            style = "" <#-- 表单from style 样式-->
+>
+    <form id="<#if id=="">${name}<#else>${id}</#if>" name="<#if id == "">${name}<#else>${id}</#if>" <#if style!=""> style ="${style}"</#if> <#if class!=""> class ="${class}"</#if>  <#if action !=""> action = ${action}</#if> <#if method !=""> action = ${method}</#if> <#if enctype !=""> action = ${enctype}</#if>>
+    <#nested>
+    </form>
+</#macro>
+
+<#--
+    //form textarea
+-->
+<#macro textarea name
+             id = ""
+             class = "form-control"
+             value = ""
+             readOnly = false
+             rows = "5"
+             required = false
+>
+    <textarea id="<#if id == "">${name}<#else>${id}</#if>" name="<#if id == "">${name}<#else>${id}</#if>"  class="${class}" rows="${rows}" <#if readOnly>readOnly = "true"</#if> <#if required> required</#if>><#if value != "">${value}</#if></textarea>
+</#macro>
+
+<#--
+    //form 图标选择控件
+-->
+<#macro iconselect  name
+                    id=""
+                    placeholder="请输入值"
+                    class = "form-control" <#-- 输入框样式-->
+                    butClass = "fa fa-fw fa-search"
+                    required = false
+                    readonly = false
+                    value = ""
+                    width=""
+                    height=""
+                    type = "text"
+                    isClear = true <#-- 弹出是否出现清除按钮-->
+                    boxTitle = ""
+                    helpTip =""
+>
+    <#local  Assname="${id}"/>
+    <#if name != "">
+        <#local Assname="${name}"/>
+    </#if>
+    <#local AssId=""/>
+    <#if id == "">
+        <#local AssId="${Assname}"/>
+    <#else>
+        <#local AssId="${id}"/>
+    </#if>
+    <div class="input-group">
+        <span class="input-group-addon"><i id="menuIcon${AssId?replace(".","_")}" class="fa fa-fw ${value}"></i></span>
+        <input id="${AssId?replace(".","_")}" name="<#if id == "">${name}<#else>${AssId}</#if>" class="${class} iconselect" type="${type}" value="${value}" class="${class}" <#if readonly> readonly = "readonly"</#if> placeholder="${placeholder}" <#if required> required</#if>>
+        <span class="input-group-btn"><a id="menuIconButton${AssId?replace(".","_")}" href="javascript:"><i class="${butClass}"></i></a></span>
+        <#if helpTip!=""><span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>${helpTip}</span></#if>
+    </div>
+    <@compress single_line=true>
+    <script type="text/javascript">
+        $("#menuIconButton${AssId?replace(".","_")}").click(function(){
+            var var_${AssId?replace(".","_")}iconValue =  $("#${AssId?replace(".","_")}").val();
+            var options = {
+                title: <#if boxTitle =="">"<@ctx.i18n text = "图标选择"/>" <#else>"${boxTitle}"</#if>,
+                url: baseURL + "sys/component/iconselect",
+                width: "${width}",
+                <#if height != "">
+                height: ${height},
+                </#if>
+                <#-- POST提交组件控制类参数-->
+                fromData:{
+                    iconValue: var_${AssId?replace(".","_")}iconValue
+                },
+                callBack: func_${AssId?replace(".","_")}doSubmit,
+                cancel:  func_${AssId?replace(".","_")}cancel
+                <#if isClear>, clear: func_${AssId?replace(".","_")}clear</#if>
+            };
+            opt.modal.openMainWin(options);
+        });
+
+        function func_${AssId?replace(".","_")}doSubmit(index, layero,_layer) {
+            var body = _layer.getChildFrame('body', index);
+            var icon = body.find('#icon').val();
+            $("#<#if id == "">menuIcon${name}<#else>menuIcon${id}</#if>").attr("class",'fa fa-fw '+icon);
+            $("#<#if id == "">${name}<#else>${id}</#if>").val(icon).change();
+            _layer.close(index);
+            if(typeof iconCallback == 'function'){
+                iconCallback('${Assname?replace(".","_")}', 'ok', index, layero, icon);
+            }
+            _layer.close(index);
+        };
+        <#if isClear>
+        function func_${AssId?replace(".","_")}clear(index, layero,_layer) {
+            $("#<#if id == "">menuIcon${name}<#else>menuIcon${id}</#if>").attr("class",'fa fa-fw ');
+            var temp = opt.common.nullToStr($("#<#if id == "">${name}<#else>${id}</#if>").val(),"");
+            $("#<#if id == "">${name}<#else>${id}</#if>").val("").change();
+            if(typeof iconCallback == 'function'){
+                iconCallback('${Assname?replace(".","_")}', 'clear', index, layero, temp);
+            }
+            _layer.close(index);
+        };
+        </#if>
+
+
+        function func_${AssId?replace(".","_")}cancel(index, layero) {
+            if(typeof iconCallback == 'function'){
+                iconCallback('${Assname?replace(".","_")}', 'cancel', index, layero, '');
+            }
+        }
+    </script>
+    </@compress>
+</#macro>
+<#--
+    //弹窗树组件
+    treeCallback 回调页面函数
+-->
+<#macro treeselect name
+                   id = ""
+                   url = "sys/comp/treeData"
+                   boxTitle = ""
+                   width="380"
+                   height=""
+                   value=""
+                   labelValue=""
+                   checked=false
+                   radioType="all" <#-- 当checked=false 单选时 控制同级单选互斥还是整个树互斥 all 整个树互斥 level, checked=true 多选此值无效-->
+                   required=false <#-- 是否必输-->
+                   readonly=true <#-- 是否只读模式-->
+                   correlationId="" <#-- 关联ID-->
+                   correlationValue= "-1"  <#-- 关联默认值-->
+                   class = "form-control" <#-- 输入框样式-->
+                   butClass = "fa fa-fw fa-search"
+                   expandLevel = false <#--是否展开树 -->
+                   isParentIds = false <#-- 单选是否需要获取树的父节点集合-->
+                   parenName = "parentIds" <#-- 单选父节点集合Name-->
+                   parenIdsValue = "" <#-- 所有父节点集合默认值-->
+                   isSelectParent = false <#-- 是否只能选中叶子节点-->
+                   isInput = false <#-- 是否允许手动label框输入 -->
+                   isClear = true <#-- 弹出是否出现清除按钮-->
+                   placeholder="请输入值"
+                   helpTip = ""  <#--帮助提示 -->
+                   ext...>
+    <#local  Assname="${id}"/>
+    <#if name != "">
+        <#local Assname="${name}"/>
+    </#if>
+    <#local AssId=""/>
+    <#if id == "">
+        <#local AssId="${Assname}"/>
+    <#else>
+        <#local AssId="${id}"/>
+    </#if>
+    <input id="${AssId?replace(".","_")}" name="<#if name != "">${name}<#else>${AssId}</#if>"  type="hidden" value="${value}"/>
+    <#if isParentIds>
+        <input name="${parenName}" <#if parenIdsValue!="">value="${parenIdsValue}"</#if> type="hidden"/>
+    </#if>
+    <div class="input-group" id="${AssId?replace(".","_")}Div" data-url="${url}">
+        <input id="${AssId?replace(".","_")}Name" type="text" placeholder="${placeholder}" class="${class} inputZtree" value="${labelValue}" <#if readonly> readonly = "readonly"</#if> <#if required> required</#if>/>
+        <span class="input-group-btn" id="${AssId?replace(".","_")}But"><a  href="javascript:;"><i class="${butClass}"></i></a></span>
+    </div>
+    <#if helpTip!=""><span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>${helpTip}</span></#if>
+    <@compress single_line=true>
+    <script type="text/javascript">
+        $("#${AssId?replace(".","_")}But, #${AssId?replace(".","_")}Name").click(function(){
+            var treeId = $("#${AssId?replace(".","_")}").val();
+            var treeName =  $("#${AssId?replace(".","_")}Name").val();
+            <#if correlationId !="">
+            var correlationId = $("#${correlationId}").val() == "" ? "${correlationValue}": $("#${correlationId}").val();
+            <#else>
+            var correlationId = "";
+            </#if>
+            var options = {
+                title: <#if boxTitle =="">"<@ctx.i18n text = "请选择数据"/>" <#else>"${boxTitle}"</#if>,
+                width: "${width}",
+                <#if height != "">
+                height: ${height},
+                </#if>
+                url: baseURL + "sys/component/treeselect",
+                <#-- POST提交组件控制类参数-->
+                fromData:{
+                    url: $("#${AssId?replace(".","_")}Div").data("url"),
+                    treeId: treeId,
+                    treeName: treeName,
+                    expandLevel: "${expandLevel?string('true','false')}",
+                    isSelectParent: "${isSelectParent?string('true','false')}",
+                    correlationId: correlationId,
+                    checked: "${checked?c}",
+                    <#if isParentIds>
+                    parentIds: $('input[name="${parenName}"]').val(),
+                    </#if>
+                    radioType: "${radioType}"
+
+                },
+                callBack: func_${AssId?replace(".","_")}doSubmit,
+                cancel:  func_${AssId?replace(".","_")}cancel
+              <#if isClear>, clear: func_${AssId?replace(".","_")}clear</#if>
+            };
+            opt.modal.openOptions(options);
+        });
+
+        function func_${AssId?replace(".","_")}doSubmit(index, layero,selfLayer) {
+            var nodes = $.tree.callBackTree(layero,index);
+            $("#${AssId?replace(".","_")}").val(nodes.id).change(); /* 赋值主页面隐藏ID */
+            $("#${AssId?replace(".","_")}Name").val(nodes.name).change();/* 回显主页面控件 */
+            <#if isParentIds>
+            $('input[name="${parenName}"]').val(nodes.parentIds).change();
+            </#if>
+
+            if(typeof treeCallback == 'function'){
+                treeCallback('${Assname?replace(".","_")}', 'ok', index, layero, nodes);
+            }
+            selfLayer.close(index);
+        };
+        <#if isClear>
+        function func_${AssId?replace(".","_")}clear(index, layero,selfLayer) {
+            $("#${AssId?replace(".","_")}").val("").change();
+            $("#${AssId?replace(".","_")}Name").val("").change();
+            <#if isParentIds>
+            $('input[name="${parenName}"]').val("").change();
+            </#if>
+            if(typeof treeCallback == 'function'){
+                treeCallback('${Assname?replace(".","_")}', 'clear', index, layero, '');
+            }
+            selfLayer.close(index);
+        };
+        </#if>
+
+
+        function func_${AssId?replace(".","_")}cancel(index, layero) {
+            if(typeof treeCallback == 'function'){
+                treeCallback('${Assname?replace(".","_")}', 'cancel', index, layero, '');
+            }
+        }
+    </script>
+</@compress>
+</#macro>
+
+<#--
+    //form hidden 隐藏域标签
+-->
+<#macro hidden name
+             id = "" <#-- ID 如果ID 不传则跟name一致-->
+            value = ""
+            type = "hidden"
+            refresh = true <#-- 隐藏域在from 表单中能否被重置按钮清空-->
+>
+    <input id="<#if id=="">${name}<#else>${id}</#if>" name="<#if name != "">${name}<#else>${id}</#if>" <#if !refresh> data-refresh="false"</#if>  type="${type}" value="${value}"/>
+</#macro>
+
+<#--
+    //form input 输入框标签
+-->
+<#macro input name
+              id = "" <#-- ID 如果ID 不传则跟name一致-->
+              value = ""
+              type = "text"
+              dataFormat = "" <#-- 格式化-->
+              required=false <#-- 是否必输-->
+              class = "form-control" <#-- 输入框样式-->
+              placeholder=""
+              butClass = "" <#-- 是否带提示样式-->
+              helpTip = ""  <#--帮助提示 -->
+              readonly = false <#-- 不可编辑-->
+              maxlength = "" <#--输入最大长度 -->
+>
+    <#compress>
+    <#if butClass!="">
+        <div class="input-group">
+        <input id="<#if id =="">${name}<#else>${id}</#if>" name="<#if name != "">${name}<#else>${id}</#if>" <#if class != "">class="${class}"</#if><#rt>
+               type="${type}" value="${value}" <#if placeholder != "">placeholder="${placeholder}"</#if>   <#if maxlength !=""> maxlength = "${maxlength}"</#if> <#if readonly> readonly = true</#if> <#if required> required </#if>/>
+        <span class="input-group-addon"><i class="${butClass}"></i></span>
+        </div>
+        <#if helpTip!=""><span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>${helpTip}</span></#if>
+    <#else>
+        <input id="<#if id =="">${name}<#else>${id}</#if>" name="<#if name != "">${name}<#else>${id}</#if>" <#if class != "">class="${class}"</#if><#rt>
+               type="${type}" value="${value}" <#if placeholder != "">placeholder="${placeholder}"</#if>   <#if maxlength !=""> maxlength = "${maxlength}"</#if> <#if readonly> readonly = true</#if> <#if required> required </#if>/>
+        <#if helpTip!=""><span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>${helpTip}</span></#if>
+    </#if>
+    </#compress>
+</#macro>
+
+<#--
+    //form radio 单选按钮
+-->
+<#macro radio   name <#-- 如果name不传则于id一直-->
+                id = "" <#-- ID 如果ID 不传则跟name一致-->
+                value = ""
+                required=false <#-- 是否必输-->
+                class = "radio-box" <#-- 输入框样式-->
+                butClass = "" <#-- 是否带提示样式-->
+                helpTip = ""  <#--帮助提示 -->
+                dictType = "" <#-- 字典类型，从字典里获取 -->
+                items = "" <#-- 列表数据，可接受对象集合 -->
+>
+    <#if dictType !="">
+        <#list dict.getType('${dictType}')>
+            <#items as d>
+                <#if d.status =='0' >
+                    <#if value == "">
+                        <label class="${class}"><input type="radio" name="<#if id == "">${name}<#else>${id}</#if>" value="${d.dictValue}" <#if d.isDefault =='Y'>checked</#if>><@ctx.i18n text = "${d.dictLabel}"/></label>
+                    <#else>
+                        <label class="${class}"><input type="radio" name="<#if id == "">${name}<#else>${id}</#if>" value="${d.dictValue}" <#if d.dictValue ==value>checked</#if>><@ctx.i18n text = "${d.dictLabel}"/></label>
+                    </#if>
+                </#if>
+            </#items>
+        </#list>
+    </#if>
+    <#if helpTip!=""><span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>${helpTip}</span></#if>
+    <@compress single_line=true>
+    <script type="text/javascript">
+        $('input[name="<#if id == ''>${name}<#else>${id}</#if>"]').on('ifCreated ifChecked', function(event){
+            /* 选择redio 回调事件*/
+            if(typeof redioCallback == 'function'){
+                redioCallback("<#if id == ''>${name}<#else>${id}</#if>", this, event);
+            }
+        }).change();
+    </script>
+    </@compress>
+</#macro>
+
+<#--
+    //form checkbox 复选框
+-->
+<#macro checkbox name <#-- 如果name不传则于id一直-->
+                id = "" <#-- ID 如果ID 不传则跟name一致-->
+                value = ""
+                required=false <#-- 是否必输-->
+                class = "check-box" <#-- 输入框样式-->
+                butClass = "" <#-- 是否带提示样式-->
+                helpTip = ""  <#--帮助提示 -->
+                dictType = "" <#-- 字典类型，从字典里获取 -->
+                items = "" <#-- 列表数据，可接受对象集合  -->
+                itemLabel = ""	<#--  指定列表数据中的什么属性名作为option的标签名 -->
+	            itemValue =  ""	<#-- 指定列表数据中的什么属性名作为option的value值 -->
+                selectValue = "flag" <#-- 指定列表数据中选中属性值 -->
+                status = "status" <#-- 检测状态-->
+>
+    <#if dictType !="">
+        <#list dict.getType('${dictType}')>
+            <#items as d>
+                <#if status == "status">
+                    <#if d.status =='0' >
+                        <label class="${class}"><input type="checkbox" name="<#if id == "">${name}<#else>${id}</#if>" value="${d.dictValue}" <#if d.isDefault =='Y'>checked</#if>><@ctx.i18n text = "${d.dictLabel}"/></label>
+                    </#if>
+                <#else>
+                        <label class="${class}"><input type="checkbox" name="<#if id == "">${name}<#else>${id}</#if>" value="${d.dictValue}" <#if d.isDefault =='Y'>checked</#if>><@ctx.i18n text = "${d.dictLabel}"/></label>
+                </#if>
+            </#items>
+        </#list>
+    <#else>
+        <#list items>
+            <#items as d>
+                <#if status == "status">
+                    <#if d.status =='0' >
+                        <#if value == "">
+                            <label class="${class}"><input type="checkbox" name="<#if id == "">${name}<#else>${id}</#if>" value="${d['${itemValue}']}" <#if required> required</#if>/><@ctx.i18n text = "${d['${itemLabel}']}" /></label>
+                        <#else>
+                            <#assign a=0 />
+                            <#list value?split(",") as x>
+                                <#if x == d['${itemValue}']>
+                                    <#assign a=1 />
+                                </#if>
+                            </#list>
+                            <label class="${class}"><input type="checkbox" name="<#if id == "">${name}<#else>${id}</#if>" value="${d['${itemValue}']}" <#if a== 1>checked</#if> <#if required> required</#if>/><@ctx.i18n text = "${d['${itemLabel}']}" /></label>
+                        </#if>
+                    </#if>
+                <#else>
+                    <#if value == "">
+                        <label class="${class}"><input type="checkbox" name="<#if id == "">${name}<#else>${id}</#if>" value="${d['${itemValue}']}" <#if required> required</#if>/><@ctx.i18n text = "${d['${itemLabel}']}" /></label>
+                    <#else>
+                        <#assign a=0 />
+                        <#list value?split(",") as x>
+                            <#if x == "${d['${itemValue}']}">
+                                <#assign a=1 />
+                            </#if>
+                        </#list>
+                        <label class="${class}"><input type="checkbox" name="<#if id == "">${name}<#else>${id}</#if>" value="${d['${itemValue}']}" <#if a== 1>checked</#if> <#if required> required</#if>/><@ctx.i18n text = "${d['${itemLabel}']}" /></label>
+                    </#if>
+                </#if>
+            </#items>
+        </#list>
+    </#if>
+</#macro>
+
+<#--
+    //form switch 开关组件
+-->
+<#macro switch name
+               id = ""
+               value = "" <#-- 开关组件默认 0 1 值-->
+               default = true <#-- 默认开-->
+               judgeVlue = "0" <#-- 判断值默认0 开-->
+>
+    <#local  Assname="${id}"/>
+    <#if name != "">
+        <#local Assname="${name}"/>
+    </#if>
+    <#local AssId=""/>
+    <#if id == "">
+        <#local AssId="${Assname}"/>
+    <#else>
+        <#local AssId="${id}"/>
+    </#if>
+    <label class="toggle-switch switch-solid">
+        <input id="${AssId?replace(".","_")}" name="<#if name != "">${name}<#else>${AssId}</#if>" value="<#if value != "">${value}</#if>" type="hidden"/>
+        <input type="checkbox" id="__${AssId?replace(".","_")}swh" <#if value == "" && default>checked="true"</#if> <#if value != "" && value == judgeVlue>checked="true"</#if>/>
+        <span></span>
+    </label>
+    <@compress single_line=true>
+    <script type="text/javascript">
+        $('#__${AssId?replace(".","_")}swh').on('click',function(e){
+            var _value = "0";
+            if($(this).is(':checked') == true){
+                $('#${AssId?replace(".","_")}').val("0");
+            }else{
+                $('#${AssId?replace(".","_")}').val("1");
+                _value = "1";
+            }
+            if(typeof switchCallback == 'function'){
+                switchCallback("<#if name != "">${name}<#else>${AssId}</#if>", this, e,_value);
+            }
+        });
+    </script>
+    </@compress>
+</#macro>
+
+<#macro ueditor name
+                id = ""
+                value = ""
+                readonly = "false" 	<#-- 是否只读模式 -->
+                maxlength =  10000 <#-- 最大输入长度默认不限-->
+                height = 300 <#-- 高度-->
+                type = "html" <#--获取数据类型 html (整个html的内容), content (内容), txt(纯文本), plaintxt (带格式的纯文本)-->
+>
+    <#local  Assname="${id}"/>
+    <#if name != "">
+        <#local Assname="${name}"/>
+    </#if>
+    <#local AssId=""/>
+    <#if id == "">
+        <#local AssId="${Assname}"/>
+    <#else>
+        <#local AssId="${id}"/>
+    </#if>
+    <input id="${AssId?replace(".","_")}" name="<#if name != "">${name}<#else>${AssId}</#if>" value="<#if value != "">${value}</#if>" type="hidden"/>
+    <script id="${AssId?replace(".","_")}ContentUE" type="text/plain" style="width:100%;height:${height}px;"></script>
+    <script type="text/javascript">
+        $(function() {
+            var remarksUE = UE.getEditor('${AssId?replace(".","_")}ContentUE', {
+                maximumWords: ${maxlength},
+                readonly: ${readonly}, initialFrameHeight: ${height},
+            });
+            /* 更新编辑器内容  remarksUE.updateContent();*/
+            remarksUE.updateContent = function(){
+                var ${AssId?replace(".","_")}_html = "";
+                if (!remarksUE.hasContents()){
+                    $('#<#if id == "">${name}<#else>${id}</#if>').val("").change();
+                }else{
+                    <#if type == "html">
+                    ${AssId?replace(".","_")}_html = remarksUE.getAllHtml().replace('<!--HTML-->','');
+                    <#elseif type == "content">
+                    ${AssId?replace(".","_")}_html = remarksUE.getContent().replace('<!--HTML-->','');
+                    <#elseif type == "txt">
+                    ${AssId?replace(".","_")}_html = remarksUE.getContentTxt().replace('<!--HTML-->','');
+                    <#elseif type == "plaintxt">
+                    ${AssId?replace(".","_")}_html = remarksUE.getPlainTxt().replace('<!--HTML-->','');
+                    </#if>
+                    $('#${AssId?replace(".","_")}').val("<!--HTML-->" + ${AssId?replace(".","_")}_html).change();
+                }
+                if (typeof window.webuploaderRefresh == 'function'){
+                    window.webuploaderRefresh(${AssId?replace(".","_")}_html);
+                }
+            };
+            /* 编辑器加载完成事件*/
+            remarksUE.ready(function(){
+                remarksUE.execCommand('insertHtml', $("#${AssId?replace(".","_")}").val())
+                remarksUE.addListener('contentchange', function(){
+                    remarksUE.updateContent();
+                });
+            });
+        });
+    </script>
+</#macro>
+
+<#--
+    //form select 下拉框标签
+-->
+<#macro select  name <#--如果name不传则于id一直-->
+                id = "" <#-- ID 如果ID 不传则跟name一致-->
+                value = ""
+                required= false <#-- 是否必输-->
+                class = "form-control" <#-- 输入框样式-->
+                butClass = "" <#-- 是否带提示样式-->
+                helpTip = ""  <#--帮助提示 -->
+                dictType = "" <#-- 字典类型，从字典里获取 -->
+                items = "" <#-- 列表数据，可接受对象集合  -->
+                itemLabel = ""	<#--  指定列表数据中的什么属性名作为option的标签名 -->
+                itemValue =  ""	<#-- 指定列表数据中的什么属性名作为option的value值 -->
+                status = true <#-- 检测状态-->
+                multiple= false <#--  是否为多选框 -->
+                blankValue =  "false" <#-- 是否默认有个空白选择项目 -->
+	            blankLabel =  "" <#-- 空白选择默认值 -->
+                placeholder="请选择值"
+>
+    <#local  Assname="${id}"/>
+    <#if name != "">
+        <#local Assname="${name}"/>
+    </#if>
+    <#local AssId=""/>
+    <#if id == "">
+        <#local AssId="${Assname}"/>
+    <#else>
+        <#local AssId="${id}"/>
+    </#if>
+    <#if !multiple>
+        <select id="${AssId?replace(".","_")}" name="<#if id == "">${name}<#else>${AssId}</#if>" class="${class}" <#if required> required</#if>>
+        <#if blankValue !="false"><option value="${blankValue}"><@ctx.i18n text = "${blankLabel}"/></option></#if>
+        <#if dictType !="">
+            <#list dict.getType('${dictType}')>
+                <#items as d>
+                    <#if status  && d.status?default('') !=''>
+                        <#if d.status =='0' >
+                            <#if value == "" && blankValue == "false">
+                                <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                            <#else>
+                                <#assign a=0 />
+                                <#list value?split(",") as x>
+                                    <#if x == d.dictValue>
+                                        <#assign a=1 />
+                                    </#if>
+                                </#list>
+                                <option value="${d.dictValue}" <#if a == 1 >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                            </#if>
+                        </#if>
+                    <#else>
+                        <#if value == "" && blankValue == "false">
+                            <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                        <#else>
+                            <#assign a=0 />
+                            <#list value?split(",") as x>
+                                <#if x == d.dictValue>
+                                    <#assign a=1 />
+                                </#if>
+                            </#list>
+                            <option value="${d.dictValue}" <#if a == 1 >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                        </#if>
+                    </#if>
+                </#items>
+            </#list>
+        <#else>
+            <#list items>
+                <#items as d>
+                    <#if status && d.status?default('') !=''>
+                        <#if d.status =='0' >
+                            <#if value == "">
+                                <option value="${d['${itemValue}']}"><@ctx.i18n text = "${d['${itemLabel}']}"/></option>
+                            <#else>
+                                <#assign a=0 />
+                                <#list value?split(",") as x>
+                                    <#if x == d['${itemValue}']>
+                                        <#assign a=1 />
+                                    </#if>
+                                </#list>
+                                <option value="${d['${itemValue}']}" <#if a == 1 >selected="selected"</#if>><@ctx.i18n text = "${d['${itemLabel}']}"/></option>
+                            </#if>
+                        </#if>
+                    <#else>
+                        <#if value == "">
+                            <option value="${d['${itemValue}']}"><@ctx.i18n text = "${d['${itemLabel}']}"/></option>
+                        <#else>
+                            <#assign a=0 />
+                            <#list value?split(",") as x>
+                                <#if x == d['${itemValue}']>
+                                    <#assign a=1 />
+                                </#if>
+                            </#list>
+                            <option value="${d['${itemValue}']}" <#if a == 1 >selected="selected"</#if>><@ctx.i18n text = "${d['${itemLabel}']}"/></option>
+                        </#if>
+                    </#if>
+                </#items>
+            </#list>
+        </#if>
+        </select>
+        <@compress single_line=true>
+        <script type="text/javascript">
+            $(function() {
+                $("#${AssId?replace(".","_")}").on("change",function(e){
+                    /* 选择框回调事件*/
+                    if(typeof selectCallback == 'function'){
+                        var data = $("#${AssId?replace(".","_")}").select2("data");
+                        selectCallback('${Assname?replace(".","_")}', 'change', data);
+                    }
+                })
+            })
+        </script>
+        </@compress>
+    </#if>
+
+    <#if multiple>
+        <input id="${AssId?replace(".","_")}" type="hidden" name="<#if id == "">${name}<#else>${AssId}</#if>"/>
+        <select id="__${AssId?replace(".","_")}slt" class="${class}" multiple="true" <#if class= "selectpicker">data-none-selected-text="请选择"</#if> <#if required> required</#if>>
+            <#if blankValue !="false"><option value="${blankValue}"><@ctx.i18n text = "${blankLabel}"/></option></#if>
+            <#if dictType !="">
+                <#list dict.getType('${dictType}')>
+                    <#items as d>
+                        <#if status>
+                            <#if d.status =='0' >
+                                <#if value == "" && blankValue == "false">
+                                    <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                <#else>
+                                    <#assign a=0 />
+                                    <#list value?split(",") as x>
+                                        <#if x == d.dictValue>
+                                            <#assign a=1 />
+                                        </#if>
+                                    </#list>
+                                    <option value="${d.dictValue}" <#if a == 1 >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                                </#if>
+                            </#if>
+                        <#else>
+                            <#if value == "" && blankValue == "false">
+                                <option value="${d.dictValue}" <#if d.isDefault =='Y' >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                            <#else>
+                                <#assign a=0 />
+                                <#list value?split(",") as x>
+                                    <#if x == d.dictValue>
+                                        <#assign a=1 />
+                                    </#if>
+                                </#list>
+                                <option value="${d.dictValue}" <#if a == 1 >selected="selected"</#if>><@ctx.i18n text = "${d.dictLabel}"/></option>
+                            </#if>
+                        </#if>
+                    </#items>
+                </#list>
+            <#else>
+                <#list items>
+                    <#items as d>
+                        <#if status>
+                            <#if d.status =='0' >
+                                <#if value == "">
+                                        <option value="${d['${itemValue}']}"><@ctx.i18n text = "${d['${itemLabel}']}"/></option>
+                                <#else>
+                                    <#assign a=0 />
+                                    <#list value?split(",") as x>
+                                        <#if x == "${d['${itemValue}']}">
+                                            <#assign a=1 />
+                                        </#if>
+                                    </#list>
+                                    <option value="${d['${itemValue}']}" <#if a == 1 >selected="selected"</#if>><@ctx.i18n text = "${d['${itemLabel}']}"/></option>
+                                </#if>
+                            </#if>
+                        <#else>
+                            <#if value == "">
+                                <option value="${d['${itemValue}']}"><@ctx.i18n text = "${d['${itemLabel}']}"/></option>
+                            <#else>
+                                <#assign a=0 />
+                                <#list value?split(",") as x>
+                                    <#if x == "${d['${itemValue}']}">
+                                        <#assign a=1 />
+                                    </#if>
+                                </#list>
+                                <option value="${d['${itemValue}']}" <#if a == 1 >selected="selected"</#if>><@ctx.i18n text = "${d['${itemLabel}']}"/></option>
+                            </#if>
+                        </#if>
+                    </#items>
+                </#list>
+            </#if>
+        </select>
+        <@compress single_line=true>
+        <script type="text/javascript">
+            $(function() {
+                <#if value !="">
+                $("#${AssId?replace(".","_")}").val(opt.form.selectSelects("__${AssId?replace(".","_")}slt"));
+                </#if>
+                $("#__${AssId?replace(".","_")}slt").on("change",function(e){
+                    $("#${AssId?replace(".","_")}").val(opt.form.selectSelects("__${AssId?replace(".","_")}slt"));
+                    /* 选择框回调事件*/
+                    if(typeof selectCallback == 'function'){
+                        var data = $("#__${AssId?replace(".","_")}slt").select2("data");
+                        selectCallback('${Assname?replace(".","_")}', 'change', data);
+                    }
+                })
+            })
+        </script>
+        </@compress>
+    </#if>
+    <#if helpTip!=""><span class="help-block m-b-none"><i class="fa fa-info-circle" style="color: red"></i>${helpTip}</span></#if>
+</#macro>
+
+<#--
+    页面提示框组件
+-->
+<#macro tip class = "info" <#--样式 默认info -->
+            icon = "fa fa-info" <#-- 提示语句前的小图标-->
+            animated = "animated bounceInDown"
+            >
+    <div class="alert alert-dismissible callout callout-${class} ${animated}">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <p><i class="icon ${icon}"></i><#nested></p>
+    </div>
+</#macro>
+
+<#--
+    页面代码格式化组件
+    参数: codeType 不是必输 默认 html
+-->
+<#macro code codeType = "html">
+    <pre class="line-numbers">
+        <code  class="language-${codeType}">
+             <#nested>
+        </code>
+    </pre>
+</#macro>
+
+<#--
+   文件上传控件
+-->
+<#macro fileupload
+        name
+        id = ""
+        bizId = "" <#-- 业务ID-->
+        bizType = "" <#-- 业务类型-->
+        uploadType = "all" <#-- 上传文件类型-->
+        uploadUrl = "sys/comm/upload" <#-- 上传路径-->
+        fileListUrl = "sys/comm/fileList" <#-- 回显查询路径-->
+        downloadUrl = "sys/comm/download" <#--文件下载路径 -->
+        isLazy = true <#-- -->
+        preview = ""
+        maxUploadNum = "300"
+        >
+    <div id="<#if id == "">${name}<#else>${id}</#if>_wup" class="wup_container ">
+        <input id="<#if id == "">${name}<#else>${id}</#if>" name="<#if bizType == "">${name}<#else>${bizType}</#if>" value="" class="wup_input ${uploadType}"
+               data-msg-required="请上传图片"/>
+        <input id="<#if id == "">${name}<#else>${id}</#if>__del" name="<#if bizType == "">${name}<#else>${bizType}</#if>__del" value="" type="hidden"/>
+        <div class="area">
+            <div id="<#if id == "">${name}<#else>${id}</#if>_Uploader" class="wup_<#if uploadType=="image">img<#else>file</#if>">
+                <div class="statusBar" style="display:none;">
+                    <div class="progress">
+                        <span class="text">0%</span>
+                        <span class="percentage"></span>
+                    </div>
+                    <div class="info"></div>
+                    <div class="btns">
+                        <div id="<#if id == "">${name}<#else>${id}</#if>_filePicker2" class="webuploader-container"></div>
+                        <div class="uploadBtn state-pedding">开始上传</div>
+                    </div>
+                </div>
+                <div class="queueList">
+                    <#if uploadType=="image">
+                        <ul id="<#if id == "">${name}<#else>${id}</#if>_fileLists" class="filelist"></ul>
+                    <#else>
+                        <div class="table-responsive">
+                            <table class="table table-striped filetable table-hover">
+                                <tbody id="<#if id == "">${name}<#else>${id}</#if>_fileLists"></tbody>
+                            </table>
+                        </div>
+                    </#if>
+                    <div id="<#if id == "">${name}<#else>${id}</#if>dndArea" class="placeholder">
+                        <div id="<#if id == "">${name}<#else>${id}</#if>_filePicker" class="webuploader-container"></div>
+                        <p>或将<#if uploadType == "image">照片<#else>文件</#if>拖到这里，最多可选 ${maxUploadNum} <#if uploadType == "image">张<#else>个</#if></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            $('#<#if id == "">${name}<#else>${id}</#if>_Uploader').webUploadex({
+                id: '<#if id == "">${name}<#else>${id}</#if>',
+                bizId: '${bizId}',
+                bizType: '${bizType}',
+                readonly: false,
+                returnPath: false,
+                filePathInputId: '',
+                fileNameInputId: '',
+                uploadType: "${uploadType}",
+                maxFileSize: 100*1024*1024,
+                imageAllowSuffixes: '.gif,.bmp,.jpeg,.jpg,.ico,.png,.tif,.tiff,',
+                mediaAllowSuffixes: '.flv,.swf,.mkv,webm,.mid,.mov,.mp3,.mp4,.m4v,.mpc,.mpeg,.mpg,.swf,.wav,.wma,.wmv,.avi,.rm,.rmi,.rmvb,.aiff,.asf,.ogg,.ogv,',
+                fileAllowSuffixes: '.doc,.docx,.rtf,.xls,.xlsx,.csv,.ppt,.pptx,.pdf,.vsd,.txt,.md,.xml,.rar,.zip,7z,.tar,.tgz,.jar,.gz,.gzip,.bz2,.cab,.iso,.ipa,.apk,',
+                chunked: false,
+                chunkSize: 10485760,
+                threads: 1,
+                maxUploadNum: ${maxUploadNum},
+                imageMaxWidth: 1024,
+                imageMaxHeight: 768,
+                service: {
+                    upload: baseURL +'${uploadUrl}',
+                    download: baseURL + '${downloadUrl}',
+                    fileList: baseURL +'${fileListUrl}'
+                },
+                extendParams: {},
+                isLazy: ${isLazy?string('true','false')},
+                preview: "${preview}",
+                callback: function(id, act, $this, fileUploadId, fileUrl, fileName){
+                    if(typeof fileuploadCallback == 'function'){
+                        fileuploadCallback(id, act, $this, fileUploadId, fileUrl, fileName);
+                    }
+                }
+            });
+        })
+    </script>
+</#macro>
+
+<#macro imageclip
+        name <#-- 控件表单name-->
+        id = "" <#-- 控件ID 如果不传则与name一致-->
+        value =""
+        imageDefault = "${ctxStatic}/static/img/user2-160x160.jpg" <#-- 默认显示-->
+        boxTitle = "" <#-- 弹出框 标题-->
+        tipHelp = "修改图片"
+        ratio = "1/1" <#-- 图片裁剪比例-->
+        viewMode = 0 <#-- 显示模式 0 允许图片无限缩小 1不允许图片缩小到图片本身大小以下-->
+        isClear = true <#-- 是否有清除按钮-->
+        width = 120 <#-- 图片显示宽度-->
+        height = 120 <#-- 图片显示高度-->
+        >
+    <#local  Assname="${id}"/>
+    <#if name != "">
+        <#local Assname="${name}"/>
+    </#if>
+    <#local AssId=""/>
+    <#if id == "">
+        <#local AssId="${Assname}"/>
+    <#else>
+        <#local AssId="${id}"/>
+    </#if>
+    <div class="cropperImg">
+        <input type="hidden" name="${Assname}" id="<#if id == "">${name}<#else>${AssId}</#if>_inpt" value="" />
+        <p><img id="<#if id == "">${Assname}<#else>${AssId}</#if>_img" style="width: ${width}px; height: ${height};" class="img-circle" src="<#if value == "" || (value?index_of("avatar") == -1)>${imageDefault}<#else><#rt>
+<#if value?index_of("avatar") == -1>
+${value}
+<#else>
+${ctxStatic}/sys/comm/fileAvatarView?filePath=${value?url}
+</#if>
+</#if>" onerror="imgUserError();"/></p>
+        <p style="width: ${width}px;text-align: center;"><a href="javascript:" id="<#if id == "">${Assname}<#else>${AssId}</#if>_but"><@ctx.i18n text = "${tipHelp}"/></a></p>
+    </div>
+    <script type="text/javascript">
+        $("#<#if id="">${Assname}<#else>${AssId}</#if>_but,#<#if id=="">${Assname}<#else>${AssId}</#if>_img").click(function(){
+            var var_${AssId?replace(".","_")}_inpt =  $("#${AssId?replace(".","_")}_img").attr("src");
+            var options = {
+                title: "<li class='fa fa-fw fa icon-crop'></li>"+<#if boxTitle =="">"<@ctx.i18n text = "图片剪切"/>" <#else>"${boxTitle}"</#if>,
+                url: baseURL + "sys/component/cropperImg",
+                width: $(top.window).width() - 350,
+                height: $(top.window).height() - 160,
+                <#-- POST提交组件控制类参数-->
+                fromData:{
+                    imgValue: var_${AssId?replace(".","_")}_inpt,
+                    imageDefault: "${imageDefault}",
+                    ratio: "${ratio}",
+                    viewMode: "${viewMode}"
+                },
+                callBack: func_${AssId?replace(".","_")}doSubmit,
+                cancel:  func_${AssId?replace(".","_")}cancel
+                <#if isClear>, clear: func_${AssId?replace(".","_")}clear</#if>
+            };
+            opt.modal.openMainWin(options);
+        });
+
+        function func_${AssId?replace(".","_")}doSubmit(index, layero,_layer) {
+            var body = _layer.getChildFrame('body', index);
+            var imageBase64 = body.find('#imageBase64').val();
+            $("#<#if id == "">${Assname}<#else>${AssId}</#if>_img").attr("src",imageBase64);
+            $("#<#if id == "">${Assname}<#else>${AssId}</#if>_inpt").val(imageBase64).change();
+            if(typeof iconCallback == 'function'){
+                imageclipCallback('${Assname?replace(".","_")}', 'ok', index, layero, icon);
+            }
+            _layer.close(index);
+        };
+        <#if isClear>
+        function func_${AssId?replace(".","_")}clear(index, layero,_layer) {
+            $("#<#if id == "">${Assname}<#else>${AssId}</#if>_img").attr("src","${imageDefault}");
+            var temp = opt.common.nullToStr($("#<#if id == "">${Assname}<#else>${AssId}</#if>_inpt").val(),"");
+            $("#<#if id == "">${Assname}<#else>${AssId}</#if>_inpt").val("").change();
+            if(typeof iconCallback == 'function'){
+                imageclipCallback('${Assname?replace(".","_")}', 'clear', index, layero, temp);
+            }
+            _layer.close(index);
+        };
+        </#if>
+
+        function func_${AssId?replace(".","_")}cancel(index, layero) {
+            if(typeof iconCallback == 'function'){
+                imageclipCallback('${Assname?replace(".","_")}', 'cancel', index, layero, '');
+            }
+        }
+    </script>
+</#macro>
+
+
+<#macro selectLinkage
+        name <#-- 表单控件Name-->
+        id = ""
+        linkNum = 3 <#-- 多级联动联动等级 默认三级 最大5级 最小2级-->
+        items = ["选择省份","选择市","选择地区"]
+        url = "sys/area/load" <#--联动数据请求URL -->
+        split = "," <#--数据分割符-->
+        readOnly = false
+        value = ""
+        >
+    <#local  Assname="${id}"/>
+    <#if name != "">
+        <#local Assname="${name}"/>
+    </#if>
+    <#local AssId=""/>
+    <#if id == "">
+        <#local AssId="${Assname}"/>
+    <#else>
+        <#local AssId="${id}"/>
+    </#if>
+    <div class="col-sm-<#if linkNum gt 3>12<#else>10</#if> pl0">
+        <input type="hidden" name="${Assname}" id="<#if id == "">${name}<#else>${AssId}</#if>" value="<#if value !="">${value}</#if>"/>
+        <#list items as x>
+            <div class="col-md-4 pl0">
+                <input id="<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}" class="form-control" type="text" value="<#if value != ""><#rt>
+            <#list value?split("${split}") as a>
+                <#if x?index == a?index>
+                    <#lt>${a}<#rt>
+               <#lt></#if>
+            <#lt></#list><#rt>
+        <#lt></#if>" placeholder="${x}" />
+            </div>
+        </#list>
+    </div>
+    <@compress single_line=true>
+    <script type="text/javascript">
+        var<#rt>
+        <#list items as x>
+                _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}value = "<#if value != ""><#rt>
+                                <#list value?split("${split}") as a>
+                                    <#if x?index == a?index>
+                                        <#lt>${a}<#rt>
+                                   <#lt></#if>
+                                <#lt></#list><#rt>
+                            <#lt></#if>",
+                _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}name = ""
+            <#if x?has_next>
+                ,<#rt>
+            <#else>
+                ;<#rt>
+            </#if>
+        </#list>
+        $(function() {
+            <#list items as x>
+                $('#<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}').selectPage({
+                    showField: 'name',
+                    keyField: 'id',
+                    data: baseURL+"${url}",
+                    params:  function(){
+                            <#if x?index == 0>
+                                return { '__seletPage':'true','type':'${x?index + 1}' }
+                            <#else>
+                                if (_<#if id == "">${name}<#else>${AssId}</#if>${x?index}value != ''){
+                                    return {'__seletPage':'true','type':'${x?index + 1}','pId':_<#if id == "">${name}<#else>${AssId}</#if>${x?index}value}
+                                }else{
+                                    return {'__seletPage':'true','type':'-1'}
+                                }
+                            </#if>
+                    },
+                    eAjaxSuccess: function (res) {
+                        var result = "";
+                        if (res.code == opt.variable.web_status.SUCCESS) {
+                             result =  {"pageNumber": res.data.currPage,"pageSize":res.data.pageSize,
+                                "totalRow":res.data.totalCount,"totalPage":res.data.totalPage,"list":res.data.list};
+                        }else{
+                             result =  {"pageNumber": 0,"pageSize":0,
+                                "totalRow":0,"totalPage":0,"list":[]};
+                        }
+                        if(typeof selectLinkageCallback == 'function'){
+                            selectLinkageCallback('${Assname?replace(".","_")}',"<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}", 'load', result);
+                        }
+                        return  result;
+                    },
+                    eSelect: function (data) {/*选择时*/
+                        if (data){
+                            _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}value = data.id;
+                            _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}name = data.name;
+                            <#list items as t>
+                                <#if (t?index + 1) gt (x?index + 1)>
+                                    $('#<#if id == "">${name}<#else>${AssId}</#if>${t?index + 1}').selectPageClear();
+                                </#if>
+                            </#list>
+                            var value = "";
+                            var name = "";
+                            <#list items as x>
+                                if(_<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}value){
+                                    value += _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}value + "${split}";
+                                    name += _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}name + "${split}";
+                                }
+                            </#list>
+                            value = opt.common.isEmpty(value)?"":value.substring(0,value.length-1);
+                            name = opt.common.isEmpty(name)?"":name.substring(0,name.length-1);
+                            $("#<#if id == "">${name}<#else>${AssId}</#if>").val(value);
+                            if(typeof selectLinkageCallback == 'function'){
+                                selectLinkageCallback('${Assname?replace(".","_")}',"<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}", 'select', {"id":value,"name":name});
+                            }
+                        }
+                    },
+                    eClear: function () {/*清空时*/
+                        _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}value = '';
+                        _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}name = '';
+                        <#list items as t>
+                        <#if (t?index + 1) gt (x?index + 1)>
+                        $('#<#if id == "">${name}<#else>${AssId}</#if>${t?index + 1}').selectPageClear();
+                        _<#if id == "">${name}<#else>${AssId}</#if>${t?index + 1}value = '';
+                        _<#if id == "">${name}<#else>${AssId}</#if>${t?index + 1}name = '';
+                        </#if>
+                        </#list>
+                        var value = "";
+                        var name = "";
+                        <#list items as x>
+                        if(_<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}value){
+                            value += _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}value + "${split}";
+                            name += _<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}name + "${split}";
+                        }
+                        </#list>
+                        value = opt.common.isEmpty(value)?"":value.substring(0,value.length-1);
+                        name = opt.common.isEmpty(name)?"":name.substring(0,name.length-1);
+                        $("#<#if id == "">${name}<#else>${AssId}</#if>").val(value);
+                        if(typeof selectLinkageCallback == 'function'){
+                            selectLinkageCallback('${Assname?replace(".","_")}',"<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}", 'clear', {"id":value,"name":name});
+                        }
+                    }
+                });
+                <#if readOnly>
+                    $('#<#if id == "">${name}<#else>${AssId}</#if>${x?index + 1}').selectPageDisabled(true);
+                </#if>
+            </#list>
+        })
+    </script>
+    </@compress>
+</#macro>

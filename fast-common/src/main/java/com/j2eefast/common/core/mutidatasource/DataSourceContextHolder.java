@@ -1,5 +1,7 @@
 package com.j2eefast.common.core.mutidatasource;
 
+import cn.hutool.core.util.StrUtil;
+
 /**
  * datasource的上下文
  * @author zhouzhou
@@ -7,7 +9,7 @@ package com.j2eefast.common.core.mutidatasource;
  */
 public class DataSourceContextHolder {
 	
-	private static final ThreadLocal<String> CONTEXT_HOLDER 		   = new ThreadLocal<String>();
+	private static final ThreadLocal<String> CONTEXT_HOLDER  = new ThreadLocal<String>();
 	
     /**
      * 设置数据源类型
@@ -29,6 +31,8 @@ public class DataSourceContextHolder {
      * 清除数据源类型
      */
     public static void clearDataSourceType() {
-    	CONTEXT_HOLDER.remove();
+    	if (StrUtil.isNotBlank(CONTEXT_HOLDER.get())) {
+    		CONTEXT_HOLDER.remove();
+    	}
     }
 }

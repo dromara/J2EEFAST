@@ -11,7 +11,24 @@ import cn.hutool.system.SystemUtil;
 import cn.hutool.system.oshi.OshiUtil;
 import com.j2eefast.common.core.constants.ConfigConstant;
 import com.j2eefast.common.core.crypto.EnctryptTools;
+import me.zhyd.oauth.cache.AuthStateCache;
+import me.zhyd.oauth.config.AuthConfig;
+import me.zhyd.oauth.exception.AuthException;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
+import me.zhyd.oauth.request.*;
+import me.zhyd.oauth.utils.AuthStateUtils;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import cn.hutool.core.util.NumberUtil;
@@ -26,6 +43,7 @@ import oshi.hardware.NetworkIF;
 public class ToolUtil{
 
 	private static int 							counter 							= 0;
+
 	
 	/**
      * 获取随机字符,自定义长度
@@ -236,7 +254,7 @@ public class ToolUtil{
 	 * 通过Hutool工具类获取系统硬件信息
 	 * @throws Exception
 	 */
-	public static void  getFastServerInfos() throws Exception {
+	public static void  getFastServerInfos(){
         if(ToolUtil.isEmpty(ConfigConstant.FAST_OS_SN)){
 			NetworkIF[] netwoeks = OshiUtil.getHardware().getNetworkIFs();
 			String macAddress = "";
@@ -365,11 +383,20 @@ public class ToolUtil{
 	 * @param s 分隔符
 	 * @return 拼装之后的字符串
 	 */
-    public static String conversion(Long[] value, String s){
+    public static String conversion(Object value, String s){
     	String src = "";
-    	for(Long l: value){
-			src += l+s;
-		}
+    	if(value instanceof  Long[]){
+    	    Long[] a = (Long[]) value;
+            for(Long l: a){
+                src += l+s;
+            }
+        }
+    	if(value instanceof List){
+            List<String> a = (List) value;
+            for(int i=0; i< a.size(); i++){
+                src += a.get(i)+s;
+            }
+        }
 		return  src.substring(0,src.length()-s.length());
 	}
 
@@ -385,4 +412,260 @@ public class ToolUtil{
     		return false;
 		}
 	}
+
+	public static AuthRequest getAuthRequest(String source,String clientId,String clientSecret,String redirectUri, AuthStateCache authStateCache) {
+        AuthRequest authRequest = null;
+        switch (source.toLowerCase()) {
+            case "dingtalk":
+                authRequest = new AuthDingTalkRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "baidu":
+                authRequest = new AuthBaiduRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "github":
+                authRequest = new AuthGithubRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(), authStateCache);
+                break;
+            case "gitee":
+                authRequest = new AuthGiteeRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(), authStateCache);
+                break;
+            case "weibo":
+                authRequest = new AuthWeiboRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "coding":
+                authRequest = new AuthCodingRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .codingGroupName("")
+                        .build(),authStateCache);
+                break;
+            case "oschina":
+                authRequest = new AuthOschinaRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "alipay":
+                // 支付宝在创建回调地址时，不允许使用localhost或者127.0.0.1，所以这儿的回调地址使用的局域网内的ip
+                authRequest = new AuthAlipayRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .alipayPublicKey("")
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "qq":
+                authRequest = new AuthQqRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "wechat_open":
+                authRequest = new AuthWeChatOpenRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "csdn":
+                authRequest = new AuthCsdnRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "taobao":
+                authRequest = new AuthTaobaoRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+//            case "google":
+//                authRequest = new AuthGoogleRequest(AuthConfig.builder()
+//                        .clientId(clientId)
+//                        .clientSecret(clientSecret)
+//                        .redirectUri(redirectUri)
+//                        // 针对国外平台配置代理
+//                        .httpConfig(HttpConfig.builder()
+//                                .timeout(15000)
+//                                .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 10080)))
+//                                .build())
+//                        .build(),authStateCache);
+//                break;
+//            case "facebook":
+//                authRequest = new AuthFacebookRequest(AuthConfig.builder()
+//                        .clientId(clientId)
+//                        .clientSecret(clientSecret)
+//                        .redirectUri(redirectUri)
+//                        // 针对国外平台配置代理
+//                        .httpConfig(HttpConfig.builder()
+//                                .timeout(15000)
+//                                .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 10080)))
+//                                .build())
+//                        .build(),authStateCache);
+//                break;
+            case "douyin":
+                authRequest = new AuthDouyinRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "linkedin":
+                authRequest = new AuthLinkedinRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "microsoft":
+                authRequest = new AuthMicrosoftRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "mi":
+                authRequest = new AuthMiRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "toutiao":
+                authRequest = new AuthToutiaoRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "teambition":
+                authRequest = new AuthTeambitionRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "pinterest":
+                authRequest = new AuthPinterestRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "renren":
+                authRequest = new AuthRenrenRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "stack_overflow":
+                authRequest = new AuthStackOverflowRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .stackOverflowKey("")
+                        .build(),authStateCache);
+                break;
+            case "huawei":
+                authRequest = new AuthHuaweiRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "wechat_enterprise":
+                authRequest = new AuthWeChatEnterpriseRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .agentId("")
+                        .build(),authStateCache);
+                break;
+            case "kujiale":
+                authRequest = new AuthKujialeRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "gitlab":
+                authRequest = new AuthGitlabRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "meituan":
+                authRequest = new AuthMeituanRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "eleme":
+                authRequest = new AuthElemeRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build());
+                break;
+//            case "twitter":
+//                authRequest = new AuthTwitterRequest(AuthConfig.builder()
+//                        .clientId(clientId)
+//                        .clientSecret(clientSecret)
+//                        .redirectUri(redirectUri)
+//                        // 针对国外平台配置代理
+//                        .httpConfig(HttpConfig.builder()
+//                                .timeout(15000)
+//                                .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 10080)))
+//                                .build())
+//                        .build(),authStateCache);
+//                break;
+            case "wechat_mp":
+                authRequest = new AuthWeChatMpRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            case "aliyun":
+                authRequest = new AuthAliyunRequest(AuthConfig.builder()
+                        .clientId(clientId)
+                        .clientSecret(clientSecret)
+                        .redirectUri(redirectUri)
+                        .build(),authStateCache);
+                break;
+            default:
+                break;
+        }
+        if (null == authRequest) {
+            throw new AuthException("未获取到有效的Auth配置");
+        }
+        return authRequest;
+    }
 }

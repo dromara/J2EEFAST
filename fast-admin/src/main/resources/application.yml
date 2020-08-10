@@ -1,6 +1,9 @@
 # 产品或项目名称
 productName: J2eeFast Demo
 
+# 当前版本
+version: V2.0.8
+
 server:
     tomcat:
         uri-encoding: UTF-8
@@ -28,6 +31,9 @@ spring:
     # 环境 Dev|Test|Prod
     profiles:
         active: Dev
+    main:
+        #是否打印LOGO log 打印到日志, console 打印控制台, off 关闭
+        banner-mode: log
     servlet:
         multipart:   #设置上传文件大小
             max-file-size: 200MB  #单个文件的大小
@@ -36,19 +42,13 @@ spring:
     freemarker:
         suffix: .html
         request-context-attribute: request
-        #cache: false
+        #cache: true
     # 资源信息
     messages:
         # 国际化资源文件路径
         basename: i18n/i18n
         #默认语言（4.1.3+）
         defaultLocale: zh_CN
-    #JTA 分布式事务
-    jta:
-        atomikos:
-            properties:
-                max-actives: -1
-                log-base-dir: logs/
 framework:
     redis:
         open: true  # 是否开启redis缓存  true开启   false关闭
@@ -80,8 +80,6 @@ mybatis-plus:
         field-strategy: 2
         #驼峰下划线转换
         db-column-underline: true
-        #刷新mapper 调试神器
-        refresh-mapper: true
         #数据库大写下划线转换
         capital-mode: true
         # Sequence序列接口实现类配置

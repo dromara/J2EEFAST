@@ -17,45 +17,67 @@ import java.util.List;
  */
 public interface GenTableMapper extends BaseMapper<GenTableEntity> {
 
-	GenTableEntity findGenTableByName(@Param("tableName") String tableName);
+	GenTableEntity findByName(@Param("tableName") String tableName);
 
-	GenTableEntity findGenTableById(@Param("tableId")  Long tableId);
-
-	GenTableEntity findGenTableMenuById(@Param("tableId")  Long tableId);
+	GenTableEntity findGenTableMenuById(@Param("id")  Long id);	
+	
+	GenTableEntity findByTableId(Long id);
 
 	int updateGenTable(GenTableEntity genTable);
 
-	/**
-	 * 主据库列表
-	 *
-	 * @return 数据库表集合
-	 */
-	List<GenTableEntity> findDbTableList();
-
-	/**
-	 * 从数据库
-	 * @return
-	 */
-	List<GenTableEntity> findSlaveDbTableList();
-
-	List<GenTableEntity> findDbNotTableList(@Param("dbType") String dbType);
-
-	List<GenTableEntity>  selectDbTablePage(IPage<?> params,
-											@Param("tableName") String tableName,
-											@Param("tableComment") String tableComment);
-
-	List<GenTableEntity>  selectNotDbTablePage(IPage<?> params,
-											 @Param("tableName") String tableName,
-											 @Param("tableComment") String tableComment,
-											 @Param("notList") List<String> notList);
-	/**
-	 * 查询据库列表
-	 *
-	 * @param tableNames 表名称组
-	 * @return 数据库表集合
-	 */
-	List<GenTableEntity> selectDbTableListByNames(String[] tableNames);
 
 	int deleteGenTableByIds(Long[] ids);
+
+	/** 
+	* @Title: findDbTableList 
+	* @Description: 获取数库的表名列表
+	* @param dbType 数据类型： mysql,oracle...
+	* @param dbTableName  表名用名收索
+	* @param schema mysql:database Name  , oracle: 用户名(大写)
+	* @return  List<GenTableEntity> 
+	* @author mfksn001@163.com
+	* @Date: 2020年5月30日
+	*/
+	List<GenTableEntity> generateTableList(@Param("dbType") String dbType ,
+			                               @Param("schema") String schema ,
+			                               @Param("tableName")  String tableName,  
+			                               @Param("tableComment") String tableComment,
+										   @Param("notList") List<String> notList);
+	
+	/**
+	* @Title: generateTableListByNames 
+	* @Description: 根据表名List 列出表名List
+	* @param dbType
+	* @param schema
+	* @param tableNames
+	* @return  List<GenTableEntity> 
+	* @author mfksn001@163.com
+	* @Date: 2020年6月1日
+	 */
+	List<GenTableEntity> generateTableListByNames(@Param("dbType") String dbType ,
+                                                  @Param("schema") String schema,
+                                                  @Param("tableNames") String[] tableNames);
+	
+	
+	/** 
+	* @Title: generateTablePage 
+	* @Description: 获取数库的表名列表page
+	* @param dbType 数据类型： mysql,oracle...
+	* @param dbTableName  表名用名收索
+	* @param schema mysql:database Name  , oracle: 用户名(大写)
+	* @return  List<GenTableEntity> 
+	* @author mfksn001@163.com
+	* @Date: 2020年5月30日
+	*/
+	List<GenTableEntity> generateTablePage(IPage<?> params,
+											@Param("dbType") String dbType ,
+											@Param("schema") String schema,
+								            @Param("tableName")  String tableName,  
+								            @Param("tableComment") String tableComment,
+										    @Param("notList") List<String> notList);
+	
+	
+
+	
 
 }

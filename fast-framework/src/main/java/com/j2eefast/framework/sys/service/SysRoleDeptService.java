@@ -11,6 +11,7 @@ import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.framework.sys.entity.SysRoleDeptEntity;
 import com.j2eefast.framework.sys.mapper.SysRoleDeptMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -24,6 +25,7 @@ public class SysRoleDeptService  extends ServiceImpl<SysRoleDeptMapper,SysRoleDe
 	@Resource
 	private SysRoleDeptMapper sysRoleDeptMapper;
 
+	@Transactional(rollbackFor = Exception.class)
 	public void saveOrUpdate(Long roleId, List<Long> deptIdList) {
 		// 先删除角色与部门关系
 		this.removeByMap(new MapUtil().put("role_id",roleId));

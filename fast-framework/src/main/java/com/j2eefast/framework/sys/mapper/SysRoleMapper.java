@@ -19,10 +19,28 @@ import java.util.List;
 public interface SysRoleMapper extends BaseMapper<SysRoleEntity> {
 
 
+    /**
+     * 页面分页查询
+     * @param params
+     * @param roleName
+     * @param roleKey
+     * @param sql_filter
+     * @return
+     */
     Page<SysRoleEntity> findPage(IPage<?> params,
                                  @Param("roleName") String roleName,
                                  @Param("roleKey") String roleKey,
                                  @Param("sql_filter") String sql_filter);
+
+
+    /**
+     * 查询角色权限所有数据
+     * @param sql_filter
+     * @return
+     */
+    List<SysRoleEntity> getRoleList(@Param("roleName") String roleName,
+                                    @Param("roleKey") String roleKey,
+                                    @Param("sql_filter") String sql_filter);
 
     /**
      * 通过用户ID获取角色

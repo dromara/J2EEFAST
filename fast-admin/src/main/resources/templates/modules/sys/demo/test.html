@@ -1,0 +1,705 @@
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="组件调试页面" bodyClass="white-bg">
+<style>
+    /** 步骤条模块 date:2020-02-16   License By http://easyweb.vip */
+    .layui-tab.layui-steps {
+        margin: 0 auto
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title {
+        height: auto;
+        border: 0;
+        margin: 0 auto;
+        text-align: center;
+        overflow: auto!important;
+        -webkit-transition: none;
+        transition: none;
+        display: -webkit-box;
+        display: -moz-box;
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flexbox;
+        display: flex
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>.layui-tab-bar {
+        display: none
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li {
+        min-width: 130px;
+        text-align: left;
+        line-height: 24px;
+        padding: 0 0 0 44px;
+        white-space: initial;
+        box-sizing: border-box;
+        -webkit-transition: none;
+        transition: none;
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li:last-child {
+        -webkit-box-flex: 0;
+        -webkit-flex: none;
+        -ms-flex: none;
+        flex: none
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li>.layui-icon {
+        color: #5fb878;
+        position: absolute;
+        top: 3px;
+        left: 10px;
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        display: inline-block;
+        box-sizing: border-box;
+        -moz-transition: color .3s,background-color .3s;
+        -webkit-transition: color .3s,background-color .3s;
+        transition: color .3s,background-color .3s
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li>.layui-steps-title {
+        color: #8c8c8c;
+        font-weight: 600;
+        padding-right: 6px;
+        position: relative;
+        display: inline-block;
+        background-color: #fff;
+        -moz-transition: color .3s;
+        -webkit-transition: color .3s;
+        transition: color .3s
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li>.layui-steps-content {
+        color: #999;
+        display: block;
+        font-size: 12px;
+        line-height: initial;
+        -moz-transition: color .3s;
+        -webkit-transition: color .3s;
+        transition: color .3s
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li:after {
+        display: none
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li:before {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 15px;
+        left: 44px;
+        height: 1px;
+        background-color: #5fb878;
+        -moz-transition: background-color .3s;
+        -webkit-transition: background-color .3s;
+        transition: background-color .3s
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li:last-child:before,.layui-tab.layui-steps[overflow]>.layui-tab-title>li:nth-last-child(2):before {
+        display: none
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li>.layui-icon.layui-icon-ok {
+        border: 1px solid #5fb878;
+        border-radius: 50%;
+        font-size: 0
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li>.layui-icon.layui-icon-ok:before {
+        font-size: 14px
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li.layui-this ~ li>.layui-icon {
+        color: #ccc;
+        border-color: #ccc!important
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li.layui-this:before,.layui-tab.layui-steps>.layui-tab-title>li.layui-this ~ li:before {
+        background-color: #e8eaec
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li.layui-this>.layui-icon.layui-icon-ok,.layui-tab.layui-steps>.layui-tab-title>li.layui-this ~ li>.layui-icon.layui-icon-ok {
+        font-size: 14px
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li.layui-this>.layui-icon.layui-icon-ok:before,.layui-tab.layui-steps>.layui-tab-title>li.layui-this ~ li>.layui-icon.layui-icon-ok:before {
+        display: none
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li.layui-this>.layui-icon.layui-icon-ok {
+        color: #fff;
+        background-color: #5fb878
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li.layui-this>.layui-steps-title {
+        color: #595959
+    }
+
+    .layui-tab.layui-steps>.layui-tab-title>li.layui-this>.layui-steps-content {
+        color: #595959
+    }
+
+    .layui-tab.layui-steps.layui-steps-small>.layui-tab-title>li>.layui-icon {
+        top: 3px;
+        left: 8px;
+        width: 18px;
+        height: 18px;
+        line-height: 16px
+    }
+
+    .layui-tab.layui-steps.layui-steps-small>.layui-tab-title>li>.layui-steps-title {
+        font-size: 13px
+    }
+
+    .layui-tab.layui-steps.layui-steps-small>.layui-tab-title>li:before {
+        top: 12px;
+        left: 34px
+    }
+
+    .layui-tab.layui-steps.layui-steps-small>.layui-tab-title>li {
+        padding-left: 34px;
+        min-width: 100px
+    }
+
+    .layui-tab.layui-steps.layui-steps-small>.layui-tab-title>li>.layui-icon.layui-icon-ok:before {
+        font-size: 12px
+    }
+
+    .layui-tab.layui-steps.layui-steps-small>.layui-tab-title>li.layui-this>.layui-icon.layui-icon-ok,.layui-tab.layui-steps.layui-steps-small>.layui-tab-title>li.layui-this ~ li>.layui-icon.layui-icon-ok {
+        font-size: 12px
+    }
+
+    .layui-tab.layui-steps.layui-steps-vertical>.layui-tab-title>li>.layui-icon {
+        background-color: #fff;
+        position: relative;
+        left: 0
+    }
+
+    .layui-tab.layui-steps.layui-steps-vertical>.layui-tab-title>li>.layui-steps-title {
+        background-color: transparent;
+        padding-right: 0;
+        margin-top: 6px;
+        display: block
+    }
+
+    .layui-tab.layui-steps.layui-steps-vertical>.layui-tab-title>li:before {
+        left: 50%;
+        right: -50%
+    }
+
+    .layui-tab.layui-steps.layui-steps-vertical>.layui-tab-title>li {
+        padding-left: 0;
+        text-align: center
+    }
+
+    .layui-tab.layui-steps.layui-steps-vertical>.layui-tab-title>li:last-child {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li {
+        color: #fff;
+        height: 26px;
+        line-height: 26px;
+        font-size: 12px;
+        min-width: 120px;
+        padding: 0 10px 0 24px;
+        background-color: #9fd4ae;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        -webkit-transition: background-color .3s;
+        -moz-transition: background-color .3s;
+        -ms-transition: background-color .3s;
+        -o-transition: background-color .3s;
+        transition: background-color .3s
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li:first-child {
+        padding-left: 10px
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li.layui-this {
+        background-color: #5fb878
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li.layui-this ~ li {
+        background-color: #c9c9c9
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li:after,.layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li:before {
+        content: "";
+        position: absolute;
+        top: 0!important;
+        left: 0!important;
+        right: auto!important;
+        bottom: auto!important;
+        border: 13px solid!important;
+        border-color: transparent transparent transparent #9fd4ae!important;
+        background-color: transparent!important;
+        border-radius: 0!important;
+        display: block!important;
+        height: auto!important;
+        width: auto!important;
+        -webkit-transition: border-left-color .3s;
+        -moz-transition: border-left-color .3s;
+        -ms-transition: border-left-color .3s;
+        -o-transition: border-left-color-color .3s;
+        transition: border-left-color .3s
+    }
+
+    body .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li:before {
+        left: 1px!important;
+        border-color: transparent transparent transparent #fff!important
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li.layui-this ~ li:after {
+        border-color: transparent transparent transparent #c9c9c9!important
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li.layui-this+li:after {
+        border-color: transparent transparent transparent #5fb878!important
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li:first-child:after,.layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li:first-child:before {
+        display: none!important
+    }
+
+    .layui-tab.layui-steps.layui-steps-simple>.layui-tab-title>li:last-child {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1
+    }
+
+    .layui-tab.layui-steps.layui-steps-readonly>.layui-tab-title>li {
+        pointer-events: none!important
+    }
+</style>
+</@header>
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-tab layui-steps layui-steps-simple">
+                <ul class="layui-tab-title">
+                    <li>1.填写注册手机号</li>
+                    <li>2.获取短信验证码</li>
+                    <li class="layui-this">3.修改登录密码</li>
+                    <li>4.完成密码修改</li>
+                </ul>
+                <div class="layui-tab-content" style="max-width: 600px;margin: auto">
+                    <div class="layui-tab-item layui-show">
+                        <form class="layui-form" style="padding: 35px 35px 10px 60px;">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label"><span style="color: red; ">*</span>输入框组件：</label>
+                                        <div class="col-sm-9">
+                                            <@form.input name="username" placeholder="请输入登录账号"  butClass="fa fa-envelope-open" required=true helpTip="登录账号数字加字母组合,至少3位"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="btn btn-primary btn-rounded btn-sm"
+                                            lay-filter="stepDemoFormSubmit1" onclick="b.print()">下一步
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="layui-tab-item">内容2</div>
+                    <div class="layui-tab-item">内容3</div>
+                    <div class="layui-tab-item">内容4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-card-body">
+        <div class="layui-tab layui-steps layui-steps-readonly" lay-filter="stepsDemoForget"
+             style="max-width: 600px;">
+            <ul class="layui-tab-title">
+                <li class="layui-this">
+                    <i class="layui-icon layui-icon-ok">1</i>
+                    <span class="layui-steps-title">第一步</span>
+                    <span class="layui-steps-content">填写注册手机号</span>
+                </li>
+                <li>
+                    <i class="layui-icon layui-icon-ok">2</i>
+                    <span class="layui-steps-title">第二步</span>
+                    <span class="layui-steps-content">获取短信验证码</span>
+                </li>
+                <li>
+                    <i class="layui-icon layui-icon-ok">3</i>
+                    <span class="layui-steps-title">第三步</span>
+                    <span class="layui-steps-content">修改登录密码</span>
+                </li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">手机号:</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" placeholder="请输入手机号"/>
+                            </div>
+                        </div>
+                                <a class="layui-btn layui-btn-fluid layui-btn-radius"
+                                        lay-filter="stepDemoFormSubmit1" onclick="b.print()">下一步
+                                </a>
+                </div>
+                </div>
+                <div class="layui-tab-item">
+                    <form class="layui-form" style="padding: 35px 150px 10px 60px;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">验证码:</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" placeholder="请输入验证码"/>
+                                <button style="position: absolute;right: 0;top: 0;" type="button"
+                                        id="demoStepsFormBtn1" class="layui-btn layui-btn-primary">获取验证码
+                                </button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button data-steps="prev" type="button"
+                                        class="layui-btn layui-btn-primary layui-btn-radius">上一步
+                                </button>
+                                <button class="layui-btn layui-btn-radius" lay-filter="stepDemoFormSubmit2"
+                                        lay-submit>下一步
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-tab-item">
+                    <form class="layui-form" style="padding: 35px 150px 10px 60px;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新密码:</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" placeholder="请输入新密码"/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">确认密码:</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" placeholder="请再次输入新密码"/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button data-steps="next" type="button"
+                                        class="layui-btn layui-btn-primary layui-btn-radius">取消修改
+                                </button>
+                                <button class="layui-btn layui-btn-radius" lay-filter="stepDemoFormSubmit3"
+                                        lay-submit>修改密码
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<@footer>
+<script type="text/javascript">
+    $(document).off("click.steps").on("click.steps", "[data-steps]", function() {
+        var g = $(this);
+        var f = g.parents(".layui-steps").first().attr("lay-filter");
+        var e = g.data("steps");
+        if (e === "next") {
+            //a.next(f)
+        } else {
+            // if (e === "prev") {
+            //     a.prev(f)
+            // } else {
+            //     if (e === "go") {
+            //         a.go(f, g.data("go"))
+            //     }
+            // }
+        }
+    });
+
+
+        var f = "hide-print";
+        var c = "printing";
+        var e = '<object id="WebBrowser" classid="clsid:8856F961-340A-11D0-A96B-00C04FD705A2" width="0" height="0"></object>';
+        var b = {
+            isIE: function() {
+                return (!!window.ActiveXObject || "ActiveXObject"in window)
+            },
+            isEdge: function() {
+                return navigator.userAgent.indexOf("Edge") !== -1
+            },
+            isFirefox: function() {
+                return navigator.userAgent.indexOf("Firefox") !== -1
+            }
+        };
+        b.print = function(h) {
+            window.focus();
+            h || (h = {});
+            var j = h.hide;
+            var g = h.horizontal;
+            var l = h.iePreview;
+            var i = h.blank;
+            var o = h.close;
+            (l === undefined) && (l = true);
+            (i === undefined && window !== top && l && b.isIE()) && (i = true);
+            (o === undefined && i && !b.isIE()) && (o = true);
+            $("#page-print-set").remove();
+            if (g !== undefined) {
+                var p = '<style type="text/css" media="print" id="page-print-set">';
+                p += ("     @page { size: " + (g ? "landscape" : "portrait") + "; }");
+                p += "   </style>";
+                $("body").append(p)
+            }
+            b.hideElem(j);
+            var k;
+            if (i) {
+                k = window.open("", "_blank");
+                k.focus();
+                var n = k.document;
+                n.open();
+                var m = "<!DOCTYPE html>" + document.getElementsByTagName("html")[0].innerHTML;
+                if (l && b.isIE()) {
+                    m += e;
+                    m += ("<script>window.onload = function(){ WebBrowser.ExecWB(7, 1); " + (o ? "window.close();" : "") + " }<\/script>")
+                } else {
+                    m += ("<script>window.onload = function(){ window.print(); " + (o ? "window.close();" : "") + " }<\/script>")
+                }
+                n.write(m);
+                n.close()
+            } else {
+                k = window;
+                if (l && b.isIE()) {
+                    ($("#WebBrowser").length === 0) && ($("body").append(e));
+                    WebBrowser.ExecWB(7, 1)
+                } else {
+                    k.print()
+                }
+            }
+            b.showElem(j);
+            return k
+        }
+        ;
+        b.printHtml = function(i) {
+            i || (i = {});
+            var k = i.html;
+            var j = i.blank;
+            var p = i.close;
+            var g = i.print;
+            var h = i.horizontal;
+            var m = i.iePreview;
+            (g === undefined) && (g = true);
+            (m === undefined) && (m = true);
+            (j === undefined && b.isIE()) && (j = true);
+            (p === undefined && j && !b.isIE()) && (p = true);
+            var l, o;
+            if (j) {
+                l = window.open("", "_blank");
+                o = l.document
+            } else {
+                var n = document.getElementById("printFrame");
+                if (!n) {
+                    $("body").append('<iframe id="printFrame" style="display: none;"></iframe>');
+                    n = document.getElementById("printFrame")
+                }
+                l = n.contentWindow;
+                o = n.contentDocument || n.contentWindow.document
+            }
+            l.focus();
+            if (k) {
+                k += ("<style>" + b.getCommonCss(true) + "</style>");
+                if (h !== undefined) {
+                    k += '<style type="text/css" media="print">';
+                    k += ("  @page { size: " + (h ? "landscape" : "portrait") + "; }");
+                    k += "</style>"
+                }
+                if (m && b.isIE()) {
+                    k += e;
+                    if (g) {
+                        k += ("<script>window.onload = function(){ WebBrowser.ExecWB(7, 1); " + (p ? "window.close();" : "") + " }<\/script>")
+                    }
+                } else {
+                    if (g) {
+                        k += ("<script>window.onload = function(){ window.print(); " + (p ? "window.close();" : "") + " }<\/script>")
+                    }
+                }
+                o.open();
+                o.write(k);
+                o.close()
+            }
+            return l
+        }
+        ;
+        b.printPage = function(l) {
+            l || (l = {});
+            var g = l.htmls;
+            var x = l.horizontal;
+            var w = l.style;
+            var p = l.padding;
+            var n = l.blank;
+            var q = l.close;
+            var k = l.print;
+            var s = l.width;
+            var r = l.height;
+            var h = l.iePreview;
+            var t = l.debug;
+            (k === undefined) && (k = true);
+            (h === undefined) && (h = true);
+            (n === undefined && b.isIE()) && (n = true);
+            (q === undefined && n && !b.isIE()) && (q = true);
+            var j, o;
+            if (n) {
+                j = window.open("", "_blank");
+                o = j.document
+            } else {
+                var y = document.getElementById("printFrame");
+                if (!y) {
+                    $("body").append('<iframe id="printFrame" style="display: none;"></iframe>');
+                    y = document.getElementById("printFrame")
+                }
+                j = y.contentWindow;
+                o = y.contentDocument || y.contentWindow.document
+            }
+            j.focus();
+            var m = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>打印窗口</title>';
+            w && (m += w);
+            m += b.getPageCss(p, s, r);
+            if (x !== undefined) {
+                m += '<style type="text/css" media="print">';
+                m += ("  @page { size: " + (x ? "landscape" : "portrait") + "; }");
+                m += "</style>"
+            }
+            m += "</head><body>";
+            if (g) {
+                var v = t ? " page-debug" : "";
+                m += '<div class="print-page' + v + '">';
+                for (var u = 0; u < g.length; u++) {
+                    m += '<div class="print-page-item">';
+                    m += g[u];
+                    m += "</div>"
+                }
+                m += "</div>"
+            }
+            if (h && b.isIE()) {
+                m += e;
+                if (k) {
+                    m += ("<script>window.onload = function(){ WebBrowser.ExecWB(7, 1); " + (q ? "window.close();" : "") + " }<\/script>")
+                }
+            } else {
+                if (k) {
+                    m += ("<script>window.onload = function(){ window.print(); " + (q ? "window.close();" : "") + " }<\/script>")
+                }
+            }
+            m += "</body></html>";
+            o.open();
+            o.write(m);
+            o.close();
+            return j
+        }
+        ;
+        b.getPageCss = function(j, h, g) {
+            var i = "<style>";
+            i += "body {";
+            i += "    margin: 0 !important;";
+            i += "} ";
+            i += ".print-page .print-page-item {";
+            i += "    page-break-after: always !important;";
+            i += "    box-sizing: border-box !important;";
+            i += "    border: none !important;";
+            j && (i += ("padding: " + j + ";"));
+            h && (i += ("  width: " + h + ";"));
+            g && (i += (" height: " + g + ";"));
+            i += "} ";
+            i += ".print-page.page-debug .print-page-item {";
+            i += "    border: 1px solid red !important;";
+            i += "} ";
+            i += b.getCommonCss(true);
+            i += "</style>";
+            return i
+        }
+        ;
+        b.hideElem = function(g) {
+            $("." + f).addClass(c);
+            if (!g) {
+                return
+            }
+            if (g instanceof Array) {
+                for (var h = 0; h < g.length; h++) {
+                    $(g[h]).addClass(f + " " + c)
+                }
+            } else {
+                $(g).addClass(c)
+            }
+        }
+        ;
+        b.showElem = function(g) {
+            $("." + f).removeClass(c);
+            if (!g) {
+                return
+            }
+            if (g instanceof Array) {
+                for (var h = 0; h < g.length; h++) {
+                    $(g[h]).removeClass(f + " " + c)
+                }
+            } else {
+                $(g).removeClass(c)
+            }
+        }
+        ;
+        b.getCommonCss = function(h) {
+            var g = ("." + f + "." + c + " {");
+            g += "        visibility: hidden !important;";
+            g += "   }";
+            g += "   .print-table {";
+            g += "        border: none;";
+            g += "        border-collapse: collapse;";
+            g += "        width: 100%;";
+            g += "   }";
+            g += "   .print-table td, .print-table th {";
+            g += "        color: #333;";
+            g += "        padding: 9px 15px;";
+            g += "        word-break: break-all;";
+            g += "        border: 1px solid #333;";
+            g += "   }";
+            if (h) {
+                g += ("." + f + " {");
+                g += "     visibility: hidden !important;";
+                g += "}"
+            }
+            return g
+        }
+        ;
+        b.makeHtml = function(k) {
+            var j = k.title;
+            var h = k.style;
+            var g = k.body;
+            j == undefined && (j = "打印窗口");
+            var i = '<!DOCTYPE html><html lang="en">';
+            i += '      <head><meta charset="UTF-8">';
+            i += ("        <title>" + j + "</title>");
+            h && (i += h);
+            i += "      </head>";
+            i += "      <body>";
+            g && (i += g);
+            i += "      </body>";
+            i += "   </html>";
+            return i
+        }
+        ;
+        $("head").append("<style>" + b.getCommonCss() + "</style>");
+
+</script>
+</@footer>
+</@pageTheme>

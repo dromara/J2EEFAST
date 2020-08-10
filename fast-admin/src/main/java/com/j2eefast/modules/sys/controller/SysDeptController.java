@@ -5,8 +5,11 @@ import java.util.*;
 import com.j2eefast.common.core.base.entity.Ztree;
 import com.j2eefast.common.core.business.annotaion.BussinessLog;
 import com.j2eefast.common.core.enums.BusinessType;
-import com.j2eefast.framework.sys.service.SysCompService;
-import com.j2eefast.framework.sys.service.SysUserDeptService;
+import com.j2eefast.common.core.utils.MapUtil;
+import com.j2eefast.common.core.utils.ValidatorUtil;
+import com.j2eefast.framework.sys.entity.SysCompEntity;
+import com.j2eefast.framework.sys.entity.SysUserEntity;
+import com.j2eefast.framework.sys.service.*;
 import com.j2eefast.framework.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,6 @@ import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.common.core.controller.BaseController;
 import com.j2eefast.framework.utils.Constant;
 import com.j2eefast.framework.sys.entity.SysDeptEntity;
-import com.j2eefast.framework.sys.service.SysCompDeptService;
-import com.j2eefast.framework.sys.service.SysDeptService;
 
 
 /**
@@ -39,6 +40,9 @@ public class SysDeptController extends BaseController {
 	private SysDeptService sysDeptService;
 
 	@Autowired
+	private SysUserService sysUserService;
+
+	@Autowired
 	private SysCompDeptService sysCompDeptService;
 
 	@Autowired
@@ -47,6 +51,8 @@ public class SysDeptController extends BaseController {
 	@Autowired
 	private SysUserDeptService sysUserDeptService;
 
+	@Autowired
+	private SysAreaService sysAreaService;
 
 	/**
 	 * 选择公司树
@@ -66,11 +72,11 @@ public class SysDeptController extends BaseController {
 	}
 
 	/**
-	 * 新增地区或者线路
+	 * 新增机构跳转页面
 	 */
 	@GetMapping("/add/{deptId}")
 	public String add(@PathVariable("deptId") Long deptId, ModelMap mmap){
-		mmap.put("dept",  sysDeptService.findDeptById(deptId));
+		mmap.put("dept",  sysCompService.findCompById(deptId));
 		return urlPrefix + "/add";
 	}
 
@@ -80,8 +86,8 @@ public class SysDeptController extends BaseController {
 	 */
 	@GetMapping("/edit/{deptId}")
 	public String edit(@PathVariable("deptId") Long deptId, ModelMap mmap){
-		SysDeptEntity dept = sysDeptService.findDeptById(deptId);
-		mmap.put("dept", dept);
+		SysCompEntity sysCompEntity = sysCompService.findCompById(deptId);
+		mmap.put("dept",  sysCompEntity);
 		return urlPrefix + "/edit";
 	}
 
@@ -102,13 +108,15 @@ public class SysDeptController extends BaseController {
 	@RequestMapping("/list")
 	@RequiresPermissions("sys:dept:list")
 	@ResponseBody
-	public List<SysDeptEntity> list(@RequestParam Map<String, Object> params) {
-		List<SysDeptEntity> deptList = sysDeptService.findDeptList(params);
-		return deptList;
+	public List<SysCompEntity> list(@RequestParam Map<String, Object> params) {
+		List<SysCompEntity> compList = sysCompService.getDeptList(params);
+		return compList;
 	}
 
+
+
 	/**
-	 * 加载部门列表树
+	 * 加载部门列表树// 0:表示地区，1：线路
 	 */
 	@GetMapping("/treeData/{type}")
 	@ResponseBody
@@ -128,7 +136,7 @@ public class SysDeptController extends BaseController {
 		// 添加一级部门
 		if (UserUtils.getUserId().equals(Constant.SUPER_ADMIN)) {
 			SysDeptEntity root = new SysDeptEntity();
-			root.setDeptId(0L);
+			root.setId(0L);
 			root.setName("一级地区");
 			root.setParentId(-1L);
 			root.setOpen(true);
@@ -143,10 +151,10 @@ public class SysDeptController extends BaseController {
 	/**
 	 * 校验部门名称
 	 */
-	@RequestMapping(value = "/checkDeptNameUnique", method = RequestMethod.POST)
+	@RequestMapping(value = "/checkCompNameUnique", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseData checkDeptNameUnique(SysDeptEntity dept){
-		 if(sysDeptService.checkDeptNameUnique(dept)){
+	public ResponseData checkCompNameUnique(SysCompEntity dept){
+		 if(sysCompService.checkCompNameUnique(dept)){
 			 return success();
 		 }else {
 			 return error("已经存在!");
@@ -154,25 +162,15 @@ public class SysDeptController extends BaseController {
 	}
 
 	/**
-	 * 选择部门(添加、修改菜单)
+	 * 选择部门 -- >> 通过组件联动获取指定公司下所有信息
 	 */
-	@RequestMapping("/select/{compId}")
+	@RequestMapping("/selectZtree")
 	@RequiresPermissions("sys:dept:select")
 	@ResponseBody
-	public ResponseData select(@PathVariable("compId") Long compId) {
-
-		if(compId == 1L){ //总公司
-			List<SysDeptEntity> deptList = sysDeptService.findPage(new HashMap<>());
-			return success().put("deptList", deptList);
-		}else{
-			//获取公司下所有子公司
-			List<Long> compIds = sysCompService.getSubDeptIdList(compId);
-			compIds.add(compId);
-			// 获取公司关联地区ID
-			List<Long> deptIds = sysCompDeptService.findDeptIdList(compIds.stream().toArray(Long[]::new));
-			List<SysDeptEntity> deptList = sysDeptService.list(new QueryWrapper<SysDeptEntity>().in("dept_id", deptIds));
-			return success().put("deptList", deptList);
-		}
+	public ResponseData selectZtree() {
+		Long compId = Long.parseLong(super.getPara("correlationId","-1"));
+		List<Ztree> ztrees = sysCompService.getCompIdToLeveAll(compId);
+		return success().put("deptList", ztrees);
 	}
 
 	/**
@@ -216,18 +214,16 @@ public class SysDeptController extends BaseController {
 	/**
 	 * 保存
 	 */
-	@BussinessLog(title = "地区管理", businessType = BusinessType.INSERT)
+	@BussinessLog(title = "机构管理", businessType = BusinessType.INSERT)
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@RequiresPermissions("sys:dept:add")
 	@ResponseBody
-	public ResponseData save(@Validated SysDeptEntity dept) {
+	public ResponseData save(@Validated SysCompEntity dept) {
 
-		if (!sysDeptService.checkDeptNameUnique(dept))
-		{
+		if (!sysCompService.checkCompNameUnique(dept)){
 			return error("新增地区'" + dept.getName() + "'失败,名称已存在");
 		}
-		sysDeptService.save(dept);
-		return success();
+		return sysCompService.save(dept)?success():error("保存失败");
 	}
 
 
@@ -238,9 +234,28 @@ public class SysDeptController extends BaseController {
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
 	@RequiresPermissions("sys:dept:edit")
 	@ResponseBody
-	public ResponseData update(@Validated SysDeptEntity dept) {
-		return sysDeptService.updateById(dept)?success(): error("修改失败!");
+	public ResponseData update(@Validated SysCompEntity dept) {
+		ValidatorUtil.validateEntity(dept);
+		if (!sysCompService.checkCompNameUnique(dept)) {
+			return error("修改公司'" + dept.getName() + "'失败,名称已存在");
+		}
+		if(sysCompService.update(dept)){
+			return success();
+		}else{
+			return error("修改失败!");
+		}
 	}
+
+	/**
+	 * 加载角色部门（数据权限）列表树
+	 */
+	@GetMapping("/roleDeptTreeData/{roleId}")
+	@ResponseBody
+	public List<Ztree> deptTreeData(@PathVariable("roleId") Long roleId) {
+		List<Ztree> ztrees = sysCompService.roleDeptTreeData(roleId);
+		return ztrees;
+	}
+
 
 	/**
 	 * 删除
@@ -250,16 +265,41 @@ public class SysDeptController extends BaseController {
 	@RequiresPermissions("sys:dept:del")
 	@ResponseBody
 	public ResponseData delete(@PathVariable("deptId") Long deptId) {
-		// 判断是否有子部门
-		List<Long> deptList = sysDeptService.findDetpIdList(deptId);
-		if (ToolUtil.isNotEmpty(deptList) && deptList.size() > 0) {
-			return error("存在下级地区,不允许删除");
+//		// 判断是否有子部门
+//		List<Long> deptList = sysDeptService.findDetpIdList(deptId);
+//		if (ToolUtil.isNotEmpty(deptList) && deptList.size() > 0) {
+//			return error("存在下级地区,不允许删除");
+//		}
+//		List<Long> userList = sysUserDeptService.findUserIdList(deptId);
+//		if(ToolUtil.isNotEmpty(userList) && userList.size() > 0) {
+//			return error("地区存在用户,不允许删除");
+//		}
+//		return sysDeptService.removeById(deptId)? success(): error("删除失败!");
+		if(UserUtils.getUserId().equals(Constant.SUPER_ADMIN) ||
+				UserUtils.hasRole(Constant.SU_ADMIN)){
+			// 先判断是否有子公司
+			List<SysCompEntity> list = sysCompService.listByMap(new MapUtil().put("parent_id", deptId));
+			if (ToolUtil.isNotEmpty(list) && list.size() > 0) {
+				return error("请先删除子部门");
+			}
+			// 在判断公司是否有分配到用户上面如果改公司已经分配到用户上,先删除用户在删
+			List<SysUserEntity> users = sysUserService.listByMap(new MapUtil().put("comp_id", deptId));
+			if (ToolUtil.isNotEmpty(users) && users.size() > 0) {
+				return error("请先删除关联用户");
+			}
+
+			// 删除
+			//sysCompDeptService.deleteBatch(new Long[] { compId });
+			//sysCompDeptService.removeByMap(new MapUtil().put("comp_id",compId));
+
+			if(sysCompService.removeById(deptId)){
+				return success();
+			}else{
+				return error("删除失败!");
+			}
+		}else{
+			return error(ToolUtil.message("sys.msg.permissions"));
 		}
-		List<Long> userList = sysUserDeptService.findUserIdList(deptId);
-		if(ToolUtil.isNotEmpty(userList) && userList.size() > 0) {
-			return error("地区存在用户,不允许删除");
-		}
-		return sysDeptService.removeById(deptId)? success(): error("删除失败!");
 	}
 
 }

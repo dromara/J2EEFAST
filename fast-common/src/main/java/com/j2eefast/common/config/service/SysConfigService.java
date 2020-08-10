@@ -16,7 +16,6 @@ import com.j2eefast.common.core.utils.RedisUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -143,5 +142,13 @@ public class SysConfigService extends ServiceImpl<SysConfigMapper, SysConfigEnti
             return  false;
         }
         return true;
+    }
+
+    /**
+     * 清空系统参数redis 缓存
+     * @return
+     */
+    public boolean clearConfigRedis(){
+          return  redisUtil.deletes(CONFIG_KEY+"*");
     }
 }

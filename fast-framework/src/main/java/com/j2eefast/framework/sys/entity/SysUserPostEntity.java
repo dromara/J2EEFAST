@@ -22,6 +22,8 @@ public class SysUserPostEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@TableId(type = IdType.ASSIGN_ID)
+	private Long id;
+
 	private Long  userId;
 
 	private String postCode;

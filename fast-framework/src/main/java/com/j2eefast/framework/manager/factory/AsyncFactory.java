@@ -55,8 +55,15 @@ public class AsyncFactory {
 	     * @param args 列表
 	     * @return 任务task
 	     */
-	    public static TimerTask recordLogininfor(final String username, final Long compId, final String status,
-												 final String message,final Date loginDate,final String location, final Object... args){
+	    public static TimerTask recordLogininfor(final String username,
+												 final Long compId,
+												 final Long deptId,
+												 final String status,
+												 final String message,
+												 final Date loginDate,
+												 final String location,
+												 final String loginType,
+												 final Object... args){
 			final UserAgent userAgent =   UserAgentUtil.parse(HttpContextUtil.getRequest().getHeader("User-Agent"));
 			final String ip = HttpContextUtil.getIp();
 	        return new TimerTask(){
@@ -74,8 +81,9 @@ public class AsyncFactory {
 	                logininfor.setBrowser(browser);
 	                logininfor.setOs(os);
 					logininfor.setCompId(compId);
+					logininfor.setDeptId(deptId);
 	                logininfor.setMsg(message);
-	                
+					logininfor.setLoginType(loginType);
 	                if(userAgent.isMobile()) {
 	                	logininfor.setMobile("0");
 	                }else {
@@ -100,7 +108,12 @@ public class AsyncFactory {
 	 * @param args 列表
 	 * @return 任务task
 	 */
-	public static TimerTask recordLogininfor(final String username,final Long compId, final String status, final String message, final Object... args){
+	public static TimerTask recordLogininfor(final String username,
+											 final Long compId,
+											 final Long deptId,
+											 final String status,
+											 final String message,
+											 final Object... args){
 		final UserAgent userAgent =   UserAgentUtil.parse(HttpContextUtil.getRequest().getHeader("User-Agent"));
 		final String ip = HttpContextUtil.getIp();
 		return new TimerTask(){
@@ -118,6 +131,7 @@ public class AsyncFactory {
 				logininfor.setBrowser(browser);
 				logininfor.setOs(os);
 				logininfor.setCompId(compId);
+				logininfor.setDeptId(deptId);
 				logininfor.setMsg(message);
 				if(userAgent.isMobile()) {
 					logininfor.setMobile("0");

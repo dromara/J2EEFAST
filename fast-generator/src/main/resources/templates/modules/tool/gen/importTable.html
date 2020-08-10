@@ -2,7 +2,7 @@
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
 <@header title="导入表结构"/>
 <@search fromId="gen-form">
-					<input id="dbType"   name="dbType"    type="hidden" value="${dbType}"/>
+					<input id="dbName"   name="dbName"    type="hidden" value="${dbName}"/>
 					<div class="select-list">
 						<ul>
 							<li>
@@ -40,7 +40,7 @@
 		function queryParams(params) {
 			console.log(params);
 			var search = $.table.queryParams(params);
-			search.dbType = $("#dbType").val();
+			search.dbName = $("#dbName").val();
 			return search;
 		}
 
@@ -101,7 +101,7 @@
        			opt.modal.alertWarning("请至少选择一条记录");
        			return;
        		}
-			var data = {"tables": rows.join(),"dbType": $("#dbType").val()};
+			var data = {"tables": rows.join(),"dbName": $("#dbName").val()};
 			opt.operate.save(prefix + "/importTable", data);
 		}
 	</script>

@@ -3,6 +3,7 @@ package com.j2eefast.framework.log.service;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.j2eefast.framework.annotation.DataFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,28 +23,22 @@ public class SysLoginInfoSerice extends ServiceImpl<SysLoginInfoMapper, SysLogin
 	/**
 	 * 页面展示查询翻页
 	 */
+	@DataFilter(deptAlias="d")
 	public PageUtil findPage(Map<String, Object> params) {
 		String username = (String) params.get("username");
 		String ipaddr = (String) params.get("ipaddr");
 		String status =  (String) params.get("status");
-		String nostus = null;
-		if(ToolUtil.isNotEmpty(status) && status.equals("-1")){
-			nostus = "00000";
-			status = null;
-		}
 		String beginTime = (String) params.get("beginTime");
 		String endTime = (String) params.get("endTime");
-		Page<SysLoginInfoEntity> page = this.baseMapper.selectPage(new Query<SysLoginInfoEntity>(params).getPage(),
-				new QueryWrapper<SysLoginInfoEntity>()
-						.like(ToolUtil.isNotEmpty(username), "username", username)
-						.like(ToolUtil.isNotEmpty(ipaddr),"ipaddr",ipaddr)
-						.eq(ToolUtil.isNotEmpty(status),"status",status)
-						.ne(ToolUtil.isNotEmpty(nostus),"status",nostus)
-						.apply(ToolUtil.isNotEmpty(beginTime)," date_format(login_time,'%y%m%d') >= date_format('"+beginTime+"','%y%m%d')")
-						.apply(ToolUtil.isNotEmpty(endTime)," date_format(login_time,'%y%m%d') <= date_format('"+endTime+"','%y%m%d')")
-						.apply(ToolUtil.isNotEmpty(params.get(Constant.SQL_FILTER)),
-								(String) params.get(Constant.SQL_FILTER))
-						);
+		String deptId = (String) params.get("deptId");
+		Page<SysLoginInfoEntity> page = this.baseMapper.findPage(new Query<SysLoginInfoEntity>(params).getPage(),
+																 username,
+																 ipaddr,
+																 status,
+																 beginTime,
+															     endTime,
+											                     deptId,
+											                     (String) params.get(Constant.SQL_FILTER));
 		return new PageUtil(page);
 	}
 	

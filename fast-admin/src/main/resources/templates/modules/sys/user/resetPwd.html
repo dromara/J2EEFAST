@@ -1,8 +1,9 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="用户重置密码"/>
-<@addorEdit fromId="form-user-resetPwd">
-	<input name="userId"  type="hidden"  value="${user.userId}" />
+<@header title="用户重置密码" bodyClass="white-bg"/>
+<div class="wrapper wrapper-content ibox-content">
+<@form.form id="form-user-resetPwd" class="form-horizontal">
+	<input name="id"  type="hidden"  value="${user.id}" />
 	<div class="form-group">
 		<label class="col-sm-3 control-label "><@ctx.i18n text = "登陆账号"/>：</label>
 		<div class="col-sm-8">
@@ -15,9 +16,10 @@
 			<input class="form-control" type="password" name="password" id="password" value="${config.getKey('SYS_USER_INITPASSWORD')}">
 		</div>
 	</div>
-</@addorEdit>
+</@form.form>
+</div>
 <@footer>
-<script>
+<script type="text/javascript">
 	$("#form-user-resetPwd").validate({
 		rules:{
 			password:{

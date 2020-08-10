@@ -1,9 +1,7 @@
-<#include "/common/include.html">
-<@pageTheme mark="${config.optimize()?string('true','false')}">
-<@header title="定时任务详细">
-</@header>
-<body class="white-bg">
-	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="定时任务详细" bodyClass="white-bg"/>
+<div class="wrapper wrapper-content ibox-content">
 	<#if name == 'jobLog'>
 		<form class="form-horizontal m-t" id="jobLogForm">
 			<div class="form-group">
@@ -72,7 +70,6 @@
 			</div>
 		</form>
 	</#if>
-    </div>
-</body>
+ </div>
 <@footer/>
 </@pageTheme>

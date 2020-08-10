@@ -50,18 +50,7 @@ public class SysModuleService  extends ServiceImpl<SysModuleMapper,SysModuleEnti
 	public boolean deleteBatchByIds(Long[] ids) {
 		return this.removeByIds(Arrays.asList(ids));
 	}
-	
-	
-	public List<SysModuleEntity> selectSysModules(LoginUserEntity user) {
-        List<SysModuleEntity> modules = null;
-        if(!user.getId().equals(Constant.SUPER_ADMIN)){
-            List<Long> rs =  user.getRoleList();
-            modules = this.baseMapper.findModuleByRoleIds(rs);
-        }else{
-            modules = this.list(new QueryWrapper<SysModuleEntity>().eq("status","0"));
-        }
-        return modules;
-    }
+
 	
 	 /**
      * 设置模块状态

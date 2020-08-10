@@ -55,24 +55,26 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 	 * @param params
 	 * @return
 	 */
-	@DataFilter(subComp = true, tableAlias = "c")
+	@DataFilter(compAlias="c",deptAlias = "d",userAlias = "u")
 	public PageUtil findPage(Map<String, Object> params) {
 		String username = (String) params.get("username");
 		String status = (String) params.get("status");
 		String mobile = (String) params.get("mobile");
 		String email = (String) params.get("email");
 		String compId = (String) params.get("compId");
+		String deptId = (String) params.get("deptId");
 		Page<SysUserEntity> page = sysUserMapper.findPage(	new Query<SysUserEntity>(params).getPage(),
 															StrUtil.nullToDefault(username,""),
 															StrUtil.nullToDefault(status,""),
 															StrUtil.nullToDefault(mobile,""),
 															StrUtil.nullToDefault(email,""),
 															StrUtil.nullToDefault(compId,""),
+															StrUtil.nullToDefault(deptId,""),
 															(String) params.get(Constant.SQL_FILTER));
 		return new PageUtil(page);
 	}
 
-	@DataFilter(subComp = true, tableAlias = "c")
+	@DataFilter(compAlias="c",deptAlias = "d",userAlias = "u")
 	public List<SysUserEntity> findList(Map<String, Object> params) {
 		String username = (String) params.get("username");
 		String status = (String) params.get("status");
@@ -93,7 +95,7 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 	 * @param params
 	 * @return
 	 */
-	@DataFilter(subComp = true, tableAlias = "c")
+	@DataFilter(compAlias="c",deptAlias = "d")
 	public PageUtil findUserByRolePage(Map<String, Object> params) {
 		String roleId = (String) params.get("roleId");
 		String username = (String) params.get("username");
@@ -113,7 +115,7 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 	}
 
 
-	@DataFilter(subComp = true, tableAlias = "c")
+	@DataFilter(compAlias="c",deptAlias = "d")
 	public PageUtil findUnallocatedList(Map<String, Object> params) {
 		String roleId = (String) params.get("roleId");
 		String username = (String) params.get("username");
@@ -156,11 +158,13 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 		if(this.save(user)){
 
 			// 保存用户与角色关系
-			sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
+			sysUserRoleService.saveOrUpdate(user.getId(), user.getRoleIdList());
+
+			//保存 用户与岗位 关系
+			sysUserPostService.saveOrUpdate(user.getId(), user.getPostCodes());
 
 			// 保存用户与公司地区关系
-			sysUserDeptService.saveOrUpdate(user.getUserId(), user.getDeptIdList());
-
+			// sysUserDeptService.saveOrUpdate(user.getId(), user.getDeptIdList());
 
 			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getAddUserHard(),JSONArray.toJSONString(user),
 					IdUtil.fastSimpleUUID(),RabbitInfo.EXCHANGE_NAME, RabbitInfo.KEY);
@@ -187,13 +191,13 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 		if(this.updateById(user)){
 
 			// 保存用户与角色关系
-			sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
+			sysUserRoleService.saveOrUpdate(user.getId(), user.getRoleIdList());
 
 			// 保存用户与公司地区关系
-			sysUserDeptService.saveOrUpdate(user.getUserId(), user.getDeptIdList());
+			//sysUserDeptService.saveOrUpdate(user.getId(), user.getDeptIdList());
 
 			//岗位关联
-			sysUserPostService.saveOrUpdate(user.getUserId(), user.getPostCodes());
+			sysUserPostService.saveOrUpdate(user.getId(), user.getPostCodes());
 
 
 			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getUpdateUserHard(),JSONArray.toJSONString(user),
@@ -209,7 +213,10 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 		// 删除 用户与角色 关联表
 		sysUserRoleService.deleteBatchByUserIds(ids);
 		// 删除 用户与地区 关联表
-		sysUserDeptService.deleteBatchByUserIds(ids);
+		//sysUserDeptService.deleteBatchByUserIds(ids);
+		//删除 用户与岗位 关联表
+		sysUserPostService.deleteBatchByUserIds(ids);
+
 		//删除 用户
 		if(this.removeByIds(Arrays.asList(ids))){
 			rabbitmqProducer.sendSimpleMessage(RabbitInfo.getDelUserHard(),ToolUtil.conversion(ids,","),
@@ -234,7 +241,7 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 		userEntity.setName(name);
 		userEntity.setMobile(phone);
 		userEntity.setEmail(email);
-		userEntity.setUserId(userId);
+		userEntity.setId(userId);
 		return this.updateById(userEntity);
 	}
 
@@ -252,16 +259,16 @@ public class SysUserService  extends ServiceImpl<SysUserMapper,SysUserEntity> {
 	}
 
 	public boolean checkMobileUnique(SysUserEntity user) {
-		Long userId = ToolUtil.isEmpty(user.getUserId())?-1L:user.getUserId();
+		Long userId = ToolUtil.isEmpty(user.getId())?-1L:user.getId();
 		SysUserEntity info = this.getOne(new QueryWrapper<SysUserEntity>().eq("mobile",user.getMobile()));
-		if(ToolUtil.isNotEmpty(info) && !info.getUserId().equals(userId)){
+		if(ToolUtil.isNotEmpty(info) && !info.getId().equals(userId)){
 			return  false;
 		}
 		return true;
 	}
 
 	public boolean changeStatus(SysUserEntity user) {
-		return sysUserMapper.setStatus(user.getUserId(),user.getStatus()) > 0;
+		return sysUserMapper.setStatus(user.getId(),user.getStatus()) > 0;
 	}
 
 	public SysUserEntity findUserByUserId(Long userId){

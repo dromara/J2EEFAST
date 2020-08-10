@@ -1,13 +1,7 @@
 package com.j2eefast.framework.sys.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-
 import javax.validation.constraints.NotBlank;
-
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.j2eefast.common.core.base.entity.BaseEntity;
 import lombok.Data;
 
@@ -22,8 +16,8 @@ public class SysRoleEntity extends BaseEntity {
 	/**
 	 * 角色ID
 	 */
-	@TableId(value = "role_id",type = IdType.ASSIGN_ID)
-	private Long roleId;
+	@TableId(value = "id",type = IdType.ASSIGN_ID)
+	private Long id;
 
 	/**
 	 * 角色名称

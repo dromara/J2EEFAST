@@ -4,7 +4,7 @@
 <mapper namespace="com.j2eefast.framework.sys.mapper.SysUserDeptMapper">
 
 	<select id="findListByUserId" resultType = "com.j2eefast.framework.sys.entity.SysUserDeptEntity">
-		select u.dept_id, s.name as name from sys_user_dept u LEFT JOIN sys_dept s ON u.dept_id = s.dept_id WHERE u.user_id  = #{userId}
+		select u.dept_id, s.name as name from sys_user_dept u LEFT JOIN sys_dept s ON u.dept_id = s.id WHERE u.user_id  = #{userId}
 	</select>
 
 	<select id="findDeptIdList" resultType="long">

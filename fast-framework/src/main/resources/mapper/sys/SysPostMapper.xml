@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.j2eefast.framework.sys.mapper.SysPostMapper">
     <resultMap type="SysPostEntity" id="SysPostResult">
-        <result property="postId"    column="post_id"    />
+        <result property="id"    column="id"    />
         <result property="postCode"    column="post_code"    />
         <result property="postName"    column="post_name"    />
         <result property="postSort"    column="post_sort"    />
@@ -16,4 +16,88 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
     </resultMap>
+
+    <!--  实体栏位  -->
+    <sql id="sysPostColumns">
+          DISTINCT a.id AS "id",
+          a.post_code AS "postCode",
+          a.post_name AS "postName",
+          a.post_sort AS "postSort",
+          a.post_type AS "postType",
+          a.status AS "status",
+          a.create_by AS "createBy",
+          a.create_time AS "createTime",
+          a.update_by AS "updateBy",
+          a.create_time AS "updateTime",
+          a.remark AS "remark"
+      </sql>
+
+    <!-- 外联表  -->
+    <sql id="sysPostJoins">
+        LEFT JOIN sys_user_post up ON up.post_code = a.post_code
+        LEFT JOIN sys_user u ON up.user_id = u.id
+        LEFT JOIN sys_comp c ON c.id = u.dept_id
+    </sql>
+
+    <select id="findPage" resultType="com.j2eefast.framework.sys.entity.SysPostEntity">
+        SELECT
+        <include refid="sysPostColumns"/>
+        FROM sys_post a
+        <include refid="sysPostJoins"/>
+        <where>
+            <if test="postName != null and postName != ''">
+                AND a.post_name LIKE
+                <if test="_databaseId  == 'oracle'"> '%,'||#{postName}||',%'</if>
+                <if test="_databaseId  == 'mysql'"> CONCAT('%', #{postName}, '%') </if>
+            </if>
+            <if test = "postCode !=null and postCode!=''">
+                AND a.post_code like
+                <if test="_databaseId  == 'oracle'"> '%,'||#{postCode}||',%'</if>
+                <if test="_databaseId  == 'mysql'"> CONCAT('%', #{postCode}, '%') </if>
+            </if>
+            <if test = "postType !=null and postType!=''">
+                AND a.post_type = #{postType}
+            </if>
+            <if test = "status !=null and status!=''">
+                AND a.status = #{status}
+            </if>
+            <if test = "sql_filter !=null and sql_filter!=''">
+                AND ${sql_filter}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getPostList" resultType="com.j2eefast.framework.sys.entity.SysPostEntity">
+        SELECT
+        <include refid="sysPostColumns"/>
+        FROM sys_post a
+        <include refid="sysPostJoins"/>
+        WHERE a.status = '0'
+        <if test="postName != null and postName != ''">
+            AND a.post_name LIKE
+            <if test="_databaseId  == 'oracle'"> '%,'||#{postName}||',%'</if>
+            <if test="_databaseId  == 'mysql'"> CONCAT('%', #{postName}, '%') </if>
+        </if>
+        <if test = "postCode !=null and postCode!=''">
+            AND a.post_code like
+            <if test="_databaseId  == 'oracle'"> '%,'||#{postCode}||',%'</if>
+            <if test="_databaseId  == 'mysql'"> CONCAT('%', #{postCode}, '%') </if>
+        </if>
+        <if test = "postType !=null and postType!=''">
+            AND a.post_type = #{postType}
+        </if>
+        <if test = "sql_filter !=null and sql_filter!=''">
+            AND ${sql_filter}
+        </if>
+    </select>
+
+    <select id="getPostByUserId" parameterType="Long" resultType="com.j2eefast.framework.sys.entity.SysPostEntity">
+        SELECT
+        <include refid="sysPostColumns"/>
+        FROM sys_post a
+        <include refid="sysPostJoins"/>
+        WHERE up.user_id = #{userId}
+    </select>
+
 </mapper>

@@ -9,7 +9,7 @@
 	</select>
 
 	<delete id="deleteDictDataByIds" parameterType="Long">
-		delete from sys_dict_data where dict_code in
+		delete from sys_dict_data where id in
 		<foreach collection="array" item="dictCode" open="(" separator="," close=")">
 			#{dictCode}
 		</foreach>

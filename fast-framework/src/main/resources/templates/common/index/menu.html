@@ -27,25 +27,29 @@
     </#list>
 </#macro>
 <div id="leftMenu">
+ <#if menuList?? && (menuList?size > 0) >
     <#list menuList?keys as key>
-        <ul class="sidebar-menu hide" data-widget="tree"  id="leftMenu-${key}">
-            <li class="header"></li>
+    <ul class="sidebar-menu hide" data-widget="tree" id="leftMenu-${key}">
+        <li class="header"></li>
+        <#if menuList[key]?? && (menuList[key]?size > 0) >
             <#list menuList[key] as menu>
-                <li class="treeview">
-                    <#if menu.type == 0>
-                        <a href="javascript:;" title="<@ctx.i18n text = "${menu.name}" />">
-                            <#if menu.icon??><i class="${menu.icon}"></i></#if>
-                            <span><@ctx.i18n text = "${menu.name}" /></span>
-                            <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
-                        </a>
+            <li class="treeview">
+                <#if menu.type == 0>
+                    <a href="javascript:;" title="<@ctx.i18n text = " ${menu.name}"/>">
+                    <#if menu.icon??><i class="${menu.icon}"></i></#if>
+                     <span><@ctx.i18n text = "${menu.name}" /></span>
+                     <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+                     </a>
+                </#if>
+                <ul class="treeview-menu">
+                    <#if menu.children?? && (menu.children?size>0)>
+                    <@showMenu menu.children, key />
                     </#if>
-                    <ul class="treeview-menu">
-                        <#if menu.children?? && (menu.children?size>0)>
-                            <@showMenu menu.children, key />
-                        </#if>
-                    </ul>
-                </li>
-            </#list>
-        </ul>
-    </#list>
+                </ul>
+             </li>
+             </#list>
+        </#if>
+    </ul>
+   </#list>
+</#if>
 </div>

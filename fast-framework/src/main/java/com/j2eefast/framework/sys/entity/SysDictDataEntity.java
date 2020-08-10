@@ -21,7 +21,7 @@ public class SysDictDataEntity extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 
 	@TableId(type = IdType.ASSIGN_ID)
-	private Long dictCode;
+	private Long id;
 
 	/** 字典排序 */
 	private Long dictSort;
@@ -41,6 +41,10 @@ public class SysDictDataEntity extends BaseEntity {
 
 	/** 样式属性（其他样式扩展） */
 	private String cssClass;
+
+	/** 删除标志*/
+	@TableLogic
+	private String delFlag;
 
 	/* css样式（如：color:red)*/
 	private String cssStyle;

@@ -27,9 +27,9 @@
 
 
     font-size: 14px;
-    height: 34px;
-    line-height: 34px;
-    min-height: 34px;
+    /*height: 34px;*/
+    /*line-height: 34px;*/
+    /*min-height: 34px;*/
     padding: 4px 6px;
     vertical-align: middle;
     display: block;
@@ -104,11 +104,11 @@ div.sp_clear_btn {
     width: auto;
     height: 100%;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 12px;
     color: #666666;
     font-weight: 600;
     margin: 0;
-    padding: 6px 0 0 0;
+    padding: 10px 0 0 0;
     box-sizing: border-box;
     line-height: 1;
     font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
@@ -118,7 +118,7 @@ div.sp_clear_btn:hover {
     font-weight: bold;
 }
 div.sp_clear_btn i {
-    font-size: 14px;
+    font-size: 12px;
 }
 div.sp_clear_btn.sp_align_right {
     right: 10px;

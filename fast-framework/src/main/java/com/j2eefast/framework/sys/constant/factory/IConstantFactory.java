@@ -9,8 +9,10 @@ package com.j2eefast.framework.sys.constant.factory;
  * @version: 1.0.1
  */
 
+import com.j2eefast.common.core.base.entity.LoginUserEntity;
 import com.j2eefast.framework.log.entity.SysLoginInfoEntity;
 import com.j2eefast.framework.sys.entity.SysMenuEntity;
+import com.j2eefast.framework.sys.entity.SysRoleEntity;
 
 import java.util.List;
 
@@ -49,15 +51,21 @@ public interface IConstantFactory {
 	 */
 	List<Long> getRoleIds(Long userId);
 
-	/**
-	 * 通过角色id获取角色名称
-	 */
-	String getSingleRoleName(Long roleId);
+//	/**
+//	 * 通过角色id获取角色名称
+//	 */
+//	String getSingleRoleName(Long roleId);
+//
+//	/**
+//	 * 通过角色id获取角色英文名称
+//	 */
+//	String getSingleRoleKey(Long roleId);
 
 	/**
-	 * 通过角色id获取角色英文名称
+	 * 通过角色ID获取角色对象
 	 */
-	String getSingleRoleKey(Long roleId);
+	SysRoleEntity getRoleById(Long roleId);
+
 
 	/**
 	 * 获取部门名称
@@ -81,7 +89,7 @@ public interface IConstantFactory {
 	 * @param moduleCode
 	 * @return
 	 */
-	List<SysMenuEntity> getMenuByUserIdModuleCode(Long userId, String moduleCode);
+	List<SysMenuEntity> getMenuByUserIdModuleCode(Long userId, String moduleCode, LoginUserEntity user);
 
 
 	/**

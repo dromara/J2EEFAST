@@ -15,6 +15,8 @@ import com.j2eefast.common.core.controller.BaseController;
 import com.j2eefast.common.core.license.annotation.FastLicense;
 import com.j2eefast.common.core.utils.*;
 import com.j2eefast.framework.manager.factory.AsyncFactory;
+import com.j2eefast.framework.shiro.LoginType;
+import com.j2eefast.framework.shiro.UserToken;
 import com.j2eefast.framework.sys.entity.SysDictDataEntity;
 import com.j2eefast.framework.sys.entity.SysRoleEntity;
 import com.j2eefast.framework.sys.mapper.SysUserMapper;
@@ -22,6 +24,7 @@ import com.j2eefast.framework.sys.service.SysDictDataService;
 import com.j2eefast.framework.sys.service.SysRoleService;
 import com.j2eefast.framework.utils.Constant;
 import com.j2eefast.framework.utils.Global;
+import com.wf.captcha.ArithmeticCaptcha;
 import com.wf.captcha.GifCaptcha;
 import com.wf.captcha.base.Captcha;
 
@@ -75,11 +78,46 @@ public class SysLoginController extends BaseController {
 	public void captcha(HttpServletResponse response) throws IOException {
 		response.setHeader("Cache-Control", "no-store, no-cache");
 		response.setContentType("image/gif");
-		GifCaptcha gifCaptcha = new GifCaptcha(130,48,4);
-		gifCaptcha.setCharType(Captcha.TYPE_DEFAULT);
-		String result = gifCaptcha.text();
-		UserUtils.setSessionAttribute(Constant.KAPTCHA_SESSION_KEY, result);
-		gifCaptcha.out(response.getOutputStream());
+		if(Global.getDbKey("SYS_LOGIN_CAPTACHA_TYPE","0").equals("0")){
+			GifCaptcha gifCaptcha = new GifCaptcha(130,48,4);
+			gifCaptcha.setCharType(Captcha.TYPE_DEFAULT);
+			String result = gifCaptcha.text();
+			UserUtils.setSessionAttribute(Constant.KAPTCHA_SESSION_KEY, result);
+			gifCaptcha.out(response.getOutputStream());
+			return;
+		}else if(Global.getDbKey("SYS_LOGIN_CAPTACHA_TYPE","0").equals("1")){
+			ArithmeticCaptcha gifCaptcha = new ArithmeticCaptcha();
+			// 几位数运算，默认是两位
+			gifCaptcha.setLen(3);
+			// 获取运算的公式：3+2=?
+			gifCaptcha.getArithmeticString();
+			// 获取运算的结果：5
+			String result =  gifCaptcha.text();
+			UserUtils.setSessionAttribute(Constant.KAPTCHA_SESSION_KEY, result);
+			gifCaptcha.out(response.getOutputStream());
+			return;
+		}else if(Global.getDbKey("SYS_LOGIN_CAPTACHA_TYPE","0").equals("2")){
+			int rd= Math.random()>0.5?1:0;
+			if(rd == 1){
+				GifCaptcha gifCaptcha = new GifCaptcha(130,48,4);
+				gifCaptcha.setCharType(Captcha.TYPE_DEFAULT);
+				String result = gifCaptcha.text();
+				UserUtils.setSessionAttribute(Constant.KAPTCHA_SESSION_KEY, result);
+				gifCaptcha.out(response.getOutputStream());
+				return;
+			}else{
+				ArithmeticCaptcha gifCaptcha = new ArithmeticCaptcha();
+				// 几位数运算，默认是两位
+				gifCaptcha.setLen(3);
+				// 获取运算的公式：3+2=?
+				gifCaptcha.getArithmeticString();
+				// 获取运算的结果：5
+				String result =  gifCaptcha.text();
+				UserUtils.setSessionAttribute(Constant.KAPTCHA_SESSION_KEY, result);
+				gifCaptcha.out(response.getOutputStream());
+				return;
+			}
+		}
 	}
 
 
@@ -115,16 +153,18 @@ public class SysLoginController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseData login(String username, String password,Boolean rememberMe) {
-		String secretKey = super.getCookieToDel(ConfigConstant.SECRETKEY);
+		String secretKey = super.getCookie(ConfigConstant.SECRETKEY);
 		Subject subject = null;
 		try {
 			username =new String(SoftEncryption.decryptBySM4(Base64.decode(username),
 					HexUtil.decodeHex(secretKey)).get("bytes",byte[].class)).trim();
 			password =new String(SoftEncryption.decryptBySM4(Base64.decode(password),
 					HexUtil.decodeHex(secretKey)).get("bytes",byte[].class)).trim();
-			UsernamePasswordToken token = new UsernamePasswordToken(username, password,rememberMe);
+//			UsernamePasswordToken token = new UsernamePasswordToken(username, password,rememberMe);
+			UserToken token = new UserToken(username, password, LoginType.NORMAL.getDesc(),rememberMe);
 			subject = UserUtils.getSubject();
 			subject.login(token);
+			super.deleteCookieByName(ConfigConstant.SECRETKEY);
 		}catch (ServiceException e){
 			return error("50006",ToolUtil.message("sys.login.sm4"));
 		}
@@ -226,7 +266,7 @@ public class SysLoginController extends BaseController {
 						number++;
 						redisUtil.set(RedisKeys.getUserLoginKey(username), number, RedisUtil.MINUTE * Global.getLockTime());
 					}
-					AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,loginUser.getCompId(), "50010","锁屏账号或密码不正确,输入错误"+number+" 次!"));
+					AsyncManager.me().execute(AsyncFactory.recordLogininfor(username,loginUser.getCompId(),loginUser.getDeptId(), "50010","锁屏账号或密码不正确,输入错误"+number+" 次!"));
 					if(number >= Global.getLoginNumCode()) { //错误3次
 						throw new RxcException(ToolUtil.message("sys.login.password.retry.limit.count",Global.getLoginMaxCount()),"50004"); //错误3次
 					}

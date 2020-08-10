@@ -31,6 +31,12 @@ public interface AuthService {
 	 */
 	LoginUserEntity loginVerify(String username, String password);
 
+	/**
+	 * 免密授权登录
+	 * @param openId
+	 * @return
+	 */
+	LoginUserEntity freeLoginVerify(String openId);
 
 	/**
 	 * 获取权限列表通过角色id
@@ -54,6 +60,6 @@ public interface AuthService {
 	 * @param loginUser
 	 * @param userId
 	 */
-	void setLoginDetails(LoginUserEntity loginUser, Long userId);
+	void setLoginDetails(LoginUserEntity loginUser, Long userId, String source);
 
 }

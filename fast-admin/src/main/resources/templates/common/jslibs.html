@@ -1,73 +1,113 @@
-
-
-<#-- 引用特殊JS-->
-<#--ztree树插件css js-->
-<#macro ztree_js>
-<script src="${ctxStatic}/static/plugins/ztree/3.5/js/jquery.ztree.all.min.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/static/plugins/ztree/3.5/js/jquery.ztree.exhide.min.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#--select2下拉框插件css-->
-<#macro select2_js>
+<#--
+  Copyright (c) 2020-Now http://www.j2eefast.com All rights reserved.
+  js脚本引入封装
+  @author J2eeFAST
+  @date 2020-05-20
+  @version v1.0.1
+-->
+<#macro js Libs=""
+>
+<#-- Bootstrap 3.3.7 -->
+<#--<script src="${ctxStatic}/statics/libs/bootstrap.min.js?V=${config.getDvVersion()}"></script>-->
+<script src="${ctxStatic}/static/libs/bootstrap.js?V=${config.getDvVersion()}"></script>
 <script src="${ctxStatic}/static/plugins/select2/select2.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#--jsonview格式化和语法高亮JSON格式数据查看插件-->
-<#macro jsonview_js>
-<script src="${ctxStatic}/static/plugins/jsonview/jquery.jsonview.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#--bootstrap-select下拉框插件-->
-<#macro bootstrap_select_js>
-<script src="${ctxStatic}/static/plugins/bootstrap-select/bootstrap-select.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#--头像-->
-<#macro cropbox_js>
-<script src="${ctxStatic}/static/plugins/cropbox/cropbox.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#--表格拖拽插件-->
-<#macro bootstrap_table_reorder_js>
-<script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/reorder/bootstrap-table-reorder.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/reorder/jquery.tablednd.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#--代码修饰器-->
-<#macro prism_js>
-<script src="${ctxStatic}/static/plugins/prism/prism.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#--代码修饰器-->
-
-<#--下拉分页选择插件-->
-<#macro selectpage_js>
-<script src="${ctxStatic}/static/plugins/selectpage/selectpage.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<!-- sparkline线状图插件 -->
-<#macro sparkline_js>
-    <script src="${ctxStatic}/static/plugins/report/sparkline/jquery.sparkline.min.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<!-- summernote富文本编辑器插件 -->
-<#macro summernote_js>
-<script src="${ctxStatic}/static/plugins/summernote/summernote.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/static/plugins/summernote/summernote-zh-CN.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#macro ueditor_js>
-<script src="${ctxStatic}/static/plugins/ueditor/1.4.33/ueditor.config.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/static/plugins/ueditor/1.4.33/ueditor.all.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/static/plugins/ueditor/1.4.33/lang/zh-cn/zh-cn.js?V=${config.getDvVersion()}"></script>
-</#macro>
-
-<#-- 工作流页面svg画流程图-->
-<#macro bpm_js>
-<script src="${ctxStatic}/flowable/modeler/display/jquery.qtip.min.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/flowable/modeler/display/raphael.min.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/flowable/modeler/display/bpmn-draw.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/flowable/modeler/display/bpmn-icons.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/flowable/modeler/display/Polyline.js?V=${config.getDvVersion()}"></script>
-<script src="${ctxStatic}/flowable/modeler/display/displaymodel.min.js?V=${config.getDvVersion()}"></script>
+<#--全局遮罩-->
+<script src="${ctxStatic}/static/plugins/blockUI/jquery.blockUI.js?V=${config.getDvVersion()}"></script>
+<#-- layui-->
+<script src="${ctxStatic}/static/plugins/layer/layer.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/layui/layui.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/libs/jquery.i18n.properties.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/iCheck/icheck.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/bootstrap-tooltip/bootstrap-tooltip-custom-class.js?V=${config.getDvVersion()}"></script>
+<#compress>
+<#if !(Libs?is_string) && Libs?? && (Libs?size > 0) >
+        <#list Libs as x>
+            <#if x == "table">
+                <#--bootstrap-table 表格插件-->
+<#--                <script src="${ctxStatic}/static/plugins/bootstrap-table/bootstrap-table.js?V=${config.getDvVersion()}"></script>-->
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/bootstrap-table.min.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/resizable/colResizable-1.5.min.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/resizable/bootstrap-table-resizable.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/locale/bootstrap-table-i18n.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/toolbar/bootstrap-table-toolbar.min.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/columns/bootstrap-table-fixed-columns.js?V=${config.getDvVersion()}"></script>
+                <#-- bootstrap-treetable 表单树插件-->
+                <script src="${ctxStatic}/static/plugins/bootstrap-treetable/bootstrap-treetable.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- zTree 树-->
+            <#if x == "zTree">
+                <script src="${ctxStatic}/static/plugins/ztree/3.5/js/jquery.ztree.all.min.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/ztree/3.5/js/jquery.ztree.exhide.min.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- JSON试图脚本-->
+            <#if x == "jsonview">
+                <script src="${ctxStatic}/static/plugins/jsonview/jquery.jsonview.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- 页面下拉框-->
+            <#if x == "bootstrapSelect">
+                <script src="${ctxStatic}/static/plugins/bootstrap-select/bootstrap-select.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- 头像裁剪-->
+            <#if x == "cropbox">
+                <script src="${ctxStatic}/static/plugins/cropbox/cropbox.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#if x == "cropper">
+                <script src="${ctxStatic}/static/plugins/cropper/cropper.min.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- 页面代码格式化-->
+            <#if x == "prism">
+                <script src="${ctxStatic}/static/plugins/prism/prism.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/prism/clipboard.min.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- SelectPage 插件-->
+            <#if x == "selectPage">
+                <script src="${ctxStatic}/static/plugins/selectpage/selectpage.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- summernotef副文本编辑器-->
+            <#if x == "summernote">
+                <script src="${ctxStatic}/static/plugins/summernote/summernote.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/summernote/summernote-zh-CN.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- 百度富文本编辑器-->
+            <#if x == "ueditor">
+                <script src="${ctxStatic}/static/plugins/ueditor/1.4.33/ueditor.config.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/ueditor/1.4.33/ueditor.all.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/ueditor/1.4.33/lang/zh-cn/zh-cn.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- 工作流流程图画板-->
+            <#if x == "bmp">
+                <script src="${ctxStatic}/flowable/modeler/display/jquery.qtip.min.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/flowable/modeler/display/raphael.min.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/flowable/modeler/display/bpmn-draw.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/flowable/modeler/display/bpmn-icons.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/flowable/modeler/display/Polyline.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/flowable/modeler/display/displaymodel.min.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- 左右布局-->
+            <#if x == "layout-latest">
+                <script src="${ctxStatic}/static/plugins/jquery-layout/jquery.layout-latest.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- 文件上传-->
+            <#if x == "fileupload">
+            	<script src="${ctxStatic}/static/plugins/webuploader/0.1.5/webuploader.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/webuploader/0.1.5/webuploader.ex.min.js?V=${config.getDvVersion()}"></script>
+<#--                <script src="${ctxStatic}/static/plugins/webuploader/0.1.5/webuploader.ex.js?V=${config.getDvVersion()}"></script>-->
+            </#if>
+            <#-- 表格拖拽-->
+            <#if x == "tableReorder">
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/reorder/bootstrap-table-reorder.js?V=${config.getDvVersion()}"></script>
+                <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/reorder/jquery.tablednd.js?V=${config.getDvVersion()}"></script>
+            </#if>
+            <#-- 可自行扩展, 如果插件有CSS样式请在 cssLibs 相应添加-->
+        </#list>
+</#if>
+<#-- jquery-validate 表单验证插件 -->
+<script src="${ctxStatic}/static/plugins/validate/jquery.validate.min.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/validate/jquery.validate.extend.js?V=${config.getDvVersion()}"></script>
+<#--<script src="${request.contextPath}/static/js/fastJS.js?V=${config.getDvVersion()}"></script>-->
+<script src="${request.contextPath}/static/js/fastJS.min.js?V=${config.getDvVersion()}"></script>
+<#--VUE-->
+<script src="${ctxStatic}/static/libs/vue.min.js?V=${config.getDvVersion()}"></script>
+</#compress>
 </#macro>

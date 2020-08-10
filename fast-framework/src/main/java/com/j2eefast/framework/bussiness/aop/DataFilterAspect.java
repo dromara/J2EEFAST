@@ -1,12 +1,13 @@
 package com.j2eefast.framework.bussiness.aop;
 
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import cn.hutool.core.util.StrUtil;
 import com.j2eefast.common.core.base.entity.LoginUserEntity;
+import com.j2eefast.framework.sys.entity.SysRoleEntity;
 import com.j2eefast.framework.utils.UserUtils;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -36,14 +37,6 @@ import cn.hutool.core.bean.BeanUtil;
 @Aspect
 @Component
 public class DataFilterAspect {
-	@Autowired
-	private SysDeptService sysDeptService;
-	
-	@Autowired
-	private SysUserDeptService sysUserDeptService;
-	
-	@Autowired
-	private SysCompService sysCompService;
 
 	@Pointcut("@annotation(com.j2eefast.framework.annotation.DataFilter)")
 	public void dataFilterCut() {
@@ -53,143 +46,130 @@ public class DataFilterAspect {
 	@SuppressWarnings("unchecked")
 	@Before("dataFilterCut()")
 	public void dataFilter(JoinPoint point) throws Throwable {
-		
-		System.out.println("目标方法名为:" + point.getSignature().getName());
-        System.out.println("目标方法所属类的简单类名:" +        point.getSignature().getDeclaringType().getSimpleName());
-        System.out.println("目标方法所属类的类名:" + point.getSignature().getDeclaringTypeName());
-        System.out.println("目标方法声明类型:" + Modifier.toString(point.getSignature().getModifiers()));
 
-        //Object result =  point.proceed()
+		String[] permissions = (String[]) UserUtils.getSessionAttribute(Constant.REQUIRES_PERMISSIONS);
+		UserUtils.removeSessionAttribute(Constant.REQUIRES_PERMISSIONS);
 		Object params = point.getArgs()[0];
 		if (params != null && params instanceof Map) {
-
 			LoginUserEntity user = UserUtils.getUserInfo();
-
 			// 如果不是超级管理员，则进行数据过滤
-			if (!user.getId().equals(Constant.SUPER_ADMIN)) {
-				//若用户为最大管理员切公司为总公司
-				if(!(user.getCompId() == 0 &&
-						UserUtils.hasRole(Constant.SU_ADMIN))) {
+			if (!(user.getId().equals(Constant.SUPER_ADMIN)
+					|| UserUtils.hasRole(Constant.SU_ADMIN))) {
 					Map map = (Map) params;
-					map.put(Constant.SQL_FILTER, getSQLFilter(user, point));
-				}
+					map.put(Constant.SQL_FILTER, getSQLFilter(user, point,permissions));
 			}
 			return;
 		}
-
 		throw new RxcException("数据权限接口，只能是Map类型参数，且不能为NULL");
 	}
 
 	/**
 	 * 获取数据过滤的SQL
+	 * @param user 当前用户
+	 * @param point 制入点
+	 * @param permissions 控制层 权限字符
+	 * @return
 	 */
-	private String getSQLFilter(LoginUserEntity user, JoinPoint point) {
+	private String getSQLFilter(LoginUserEntity user, JoinPoint point,String[] permissions) {
 
 		MethodSignature signature = (MethodSignature) point.getSignature();
 		DataFilter dataFilter = signature.getMethod().getAnnotation(DataFilter.class);
 		// 获取表的别名
-		String tableAlias = dataFilter.tableAlias();
-		
-		StringBuilder sqlFilter = new StringBuilder();
-		
-		if (ToolUtil.isNotEmpty(tableAlias)) {
-			tableAlias += ".";
+		String compAlias = dataFilter.compAlias();
+		String deptAlias = dataFilter.deptAlias();
+		String userAlias = dataFilter.userAlias();
+		StringBuilder sqlFilter = new StringBuilder(StrUtil.EMPTY);
+		if (ToolUtil.isEmpty(compAlias)) {
+			return sqlFilter.toString();
 		}
-		
-		
-		
-		// 获取 sys_dept 表关联 subDept ture
-		if(dataFilter.subDept()) {
-			
-			// 用户对应sys_dept 
-			Set<Long> deptIdList = new HashSet<>();
-			
-			// 用户对应sys_dept ID列表
-			List<Long> roleIdList = sysUserDeptService.findDeptIdList(user.getId());
-			if(roleIdList!=null && roleIdList.size() > 0) {
-				deptIdList.addAll(roleIdList);
-				//获取子列表
-				for(Long l : roleIdList) {
-					List<Long> subDeptIdList = sysDeptService.getSubDeptIdList(l);
-					if(subDeptIdList.size() > 0) {
-						deptIdList.addAll(subDeptIdList);
+		//
+		List<String> dataScopes = new ArrayList<>();
+		List<Long> releIds = new ArrayList<>();
+		//获取当前用户 所有数据权限控制范围
+		List<Map<Object,Object>> rolePerm = user.getRolePerm();
+		int data = -1;
+		for(Map<Object,Object> map: rolePerm){
+			if(ToolUtil.isEmpty(permissions)){
+				for (Object key : map.keySet()) {
+					SysRoleEntity role = (SysRoleEntity) key;
+					if(data < Integer.parseInt(role.getDataScope())){
+						data = Integer.parseInt(role.getDataScope());
+					}
+					releIds.add(role.getId());
+				}
+			}else{
+				for(String s: permissions){
+					for (Map.Entry<Object, Object> entry : map.entrySet()) {
+						Set<String> tempSet = (Set<String>) entry.getValue();
+						if(tempSet.contains(s)){
+							SysRoleEntity role = (SysRoleEntity) entry.getKey();
+							if(data < Integer.parseInt(role.getDataScope())){
+								data = Integer.parseInt(role.getDataScope());
+							}
+							releIds.add(role.getId());
+						}
 					}
 				}
 			}
-			if(deptIdList != null && deptIdList.size() > 0) {
-				sqlFilter.append(" (");
-				sqlFilter.append(tableAlias).append(dataFilter.deptId()).append(" in(")
-				.append(StringUtils.join(deptIdList, ",")).append(")");
-			}
-			
-			if(ToolUtil.isNotEmpty(sqlFilter.toString())) {
-				sqlFilter.append(")");
-			}
-			
 		}
-		
-		
-		//用户对应sys_comp 表关联
-		if(dataFilter.subComp()) {
-			if("sys_poi.".equals(tableAlias)) {
-				sqlFilter.append(" and");
+		if(data != -1){
+			dataScopes.add(String.valueOf(data));
+		}
+		//////
+
+		for(String dataScope: dataScopes){
+
+			//所有数据权限与未设置
+			if (Constant.DATA_SCOPE_ALL.equals(dataScope)){
+				break;
 			}
-			
-			// 用户对应sys_comp 
-			Set<Long> deptIdList = new HashSet<>();
-			
-			List<Long> compChildId = sysCompService.getSubDeptIdList(user.getCompId());
-			
-			compChildId.add(user.getCompId());
-			
-			deptIdList.addAll(compChildId);
-			
-			if(deptIdList != null && deptIdList.size() > 0) {
-				sqlFilter.append(" (");
-				sqlFilter.append(tableAlias).append(dataFilter.compId()).append(" in(")
-				.append(StringUtils.join(deptIdList, ",")).append(")");
+
+			if (Constant.DATA_SCOPE_NULL.equals(dataScope)){
+				sqlFilter.append(" OR 1=0");
+				break;
 			}
-			
-			if(ToolUtil.isNotEmpty(sqlFilter.toString())) {
-				sqlFilter.append(")");
+
+			// 公司以下数据权限
+			if(Constant.DATA_SCOPE_COMP.equals(dataScope)){
+				sqlFilter.append(StrUtil.format(
+						" OR ({}.id IN ( SELECT id FROM sys_comp WHERE id = {} OR FIND_IN_SET( {} , parent_ids )))",
+						compAlias, user.getCompId(), user.getCompId()));
+			}
+
+			// 部门以下数据权限
+			if(Constant.DATA_SCOPE_DEPT_AND_CHILD.equals(dataScope)){
+				sqlFilter.append(StrUtil.format(
+						" OR ({}.id IN ( SELECT id FROM sys_comp WHERE id = {} OR FIND_IN_SET( {} , parent_ids )))",
+						deptAlias, user.getDeptId(), user.getDeptId()));
+			}
+			//本部门数据权限
+			if(Constant.DATA_SCOPE_DEPT.equals(dataScope)){
+				sqlFilter.append(StrUtil.format(
+						" OR ({}.id = {})",
+						deptAlias, user.getDeptId()));
+			}
+			//自定义数据
+			if (Constant.DATA_SCOPE_CUSTOM.equals(dataScope)){
+				sqlFilter.append(StrUtil.format(
+						" OR ({}.id IN ( SELECT dept_id FROM sys_role_dept WHERE role_id IN ({}))) ", deptAlias,
+						StrUtil.join(StrUtil.COMMA,releIds)));
+			}
+			//仅本人数据权限
+			if(Constant.DATA_SCOPE_SELF.equals(dataScope)){
+				if(!userAlias.equals(StrUtil.EMPTY)){
+					sqlFilter.append(StrUtil.format(
+							" OR ({}.id = {})",
+							userAlias, user.getId()));
+				}else{
+					// 如果注解不填表别名则不允许任何查询
+					sqlFilter.append(" OR 1=0");
+				}
 			}
 		}
 
-		//用户对
-		if(dataFilter.subData()){
-			sqlFilter.append(" (");
-			sqlFilter.append(tableAlias).append(dataFilter.compId()).append(" = ")
-					.append(user.getCompId()+"").append(")");
+		if(ToolUtil.isNotEmpty(sqlFilter.toString())){
+			return sqlFilter.substring(4);
 		}
-
-//		// 用户角色对应的部门ID列表
-//		List<Long> roleIdList = sysUserRoleService.queryRoleIdList(user.getUserId());
-//		if (roleIdList.size() > 0) {
-//			List<Long> userDeptIdList = sysRoleDeptService
-//					.queryDeptIdList(roleIdList.toArray(new Long[roleIdList.size()]));
-//			deptIdList.addAll(userDeptIdList);
-//		}
-//
-//		// 用户子部门ID列表
-//		if (dataFilter.subDept()) {
-//			List<Long> subDeptIdList = sysDeptService.getSubDeptIdList(user.getDeptId());
-//			deptIdList.addAll(subDeptIdList);
-//		}
-//
-//		StringBuilder sqlFilter = new StringBuilder();
-//		sqlFilter.append(" (");
-//
-//		if (deptIdList.size() > 0) {
-//			sqlFilter.append(tableAlias).append(dataFilter.deptId()).append(" in(")
-//					.append(StringUtils.join(deptIdList, ",")).append(")");
-//		}
-//
-//		// 只针对用户ID
-		if (dataFilter.user()) {
-			sqlFilter.append(ToolUtil.isNotEmpty(sqlFilter.toString())?" and ":"")
-					.append(dataFilter.setField()+"='"+ BeanUtil.getFieldValue(user,dataFilter.setField()) +"'");
-		}
-		System.out.println(sqlFilter.toString());
 		return sqlFilter.toString();
 	}
 }

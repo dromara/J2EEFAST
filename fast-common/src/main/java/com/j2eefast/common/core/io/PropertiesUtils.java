@@ -8,8 +8,14 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import cn.hutool.core.util.StrUtil;
+import com.j2eefast.common.core.constants.ConfigConstant;
+import com.j2eefast.common.core.crypto.SM4;
+import com.j2eefast.common.core.utils.HexUtil;
 import com.j2eefast.common.core.utils.YamlParsing;
 import lombok.extern.slf4j.Slf4j;
+import com.j2eefast.common.core.utils.ToolUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -38,6 +44,7 @@ public class PropertiesUtils {
 	private static final class PropertiesLoaderHolder {
 		private static PropertiesUtils INSTANCE;
 		static {
+			ToolUtil.getFastServerInfos();
 			releadInstance();
 		}
 		public static void releadInstance(){
@@ -47,7 +54,6 @@ public class PropertiesUtils {
 			for(Resource resource : resources){
 				configSet.add("classpath:config/"+resource.getFilename());
 			}
-			//configSet.add("classpath:config/jeesite.yml");
 			// 获取全局设置默认的配置文件（以下是支持环境配置的属性文件）
 			Set<String> set = new LinkedHashSet<>();
 			for (String configFile : DEFAULT_CONFIG_FILE){
@@ -120,6 +126,11 @@ public class PropertiesUtils {
     			log.error("Load " + location + " failure. ", e);
 			}
 		}
+		properties.put("machineCode",HexUtil.encodeHexStr(SM4.encryptData_ECB(HexUtil.decodeHex
+				(ConfigConstant.FAST_OS_SN),ConfigConstant.FAST_KEY)));
+		properties.put("checkCode",HexUtil.encodeHexStr(SM4.encryptData_ECB(HexUtil.decodeHex
+				(ConfigConstant.FAST_OS_SN),ConfigConstant.FAST_VERIFY_KEY)).substring(0,6));
+		properties.put("pCIp",StrUtil.cleanBlank(StrUtil.join(StrUtil.COMMA,ConfigConstant.FAST_IPS)));
 	}
 	
 	/**

@@ -11,7 +11,10 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.j2eefast.common.core.base.entity.LoginUserEntity;
 import com.j2eefast.common.core.base.entity.Ztree;
+import com.j2eefast.common.core.constants.Cache;
+import com.j2eefast.common.core.utils.RedisUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.framework.sys.entity.SysMenuEntity;
 import com.j2eefast.framework.sys.entity.SysModuleEntity;
@@ -37,21 +40,34 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 
 	@Resource
 	private SysMenuMapper sysMenuMapper;
+
+	@Resource
+	private RedisUtil redisUtil;
 	/**
 	 * 获取所有菜单
 	 * @param menu
-	 * @param userId
+	 * @param user
 	 * @return
 	 */
-	public List<SysMenuEntity> findMenuList(SysMenuEntity menu, Long userId) {
+	public List<SysMenuEntity> findMenuList(SysMenuEntity menu, LoginUserEntity user) {
 		List<SysMenuEntity> menuList = null;
-		if (userId.equals(Constant.SUPER_ADMIN)){
+		if (user.getId().equals(Constant.SUPER_ADMIN) || user.getRoleKey().contains(Constant.SU_ADMIN)){
 			menuList = sysMenuMapper.findMenuList(menu);
 		}
 		else{
-			menuList = sysMenuMapper.findMenuListByUserId(userId,menu.getName(),menu.getHide());
+			menuList = sysMenuMapper.findMenuListByUserId(user.getId(),menu.getName(),menu.getHide());
 		}
 		return menuList;
+	}
+
+
+	/**
+	 * 通过菜单ID查询菜单
+	 * @param menuId
+	 * @return
+	 */
+	public SysMenuEntity selectMenuByMenId(Long menuId){
+		return sysMenuMapper.selectMenuByMenId(menuId);
 	}
 
 	public List<SysMenuEntity> findUserMenuList(Long userId) {
@@ -65,9 +81,9 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 		return getAllMenuList(menuIdList);
 	}
 
-	public List<SysMenuEntity> findUserModuleMenuList(Long userId, String modules) {
+	public List<SysMenuEntity> findUserModuleMenuList(Long userId, String modules,boolean flag) {
 		// 系统管理员，拥有最高权限
-		if (userId.equals(Constant.SUPER_ADMIN)) {
+		if (userId.equals(Constant.SUPER_ADMIN) || flag) {
 			return findAllModelMenuList(null,modules);
 		}
 		// 用户菜单列表
@@ -107,7 +123,7 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 
 		List<SysMenuEntity> userMenuList = new ArrayList<>();
 		for (SysMenuEntity menu : menuList) {
-			if (menuIdList.contains(menu.getMenuId())) {
+			if (menuIdList.contains(menu.getId())) {
 				userMenuList.add(menu);
 			}
 		}
@@ -118,7 +134,7 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 		List<SysMenuEntity> menuList = sysMenuMapper.findListmoduleParentId(parentId,models);
 		if (menuIdList == null) {
 			for (SysMenuEntity menu : menuList) {
-				menu.setMId(Base64.encode(models+menu.getMenuId()));
+				menu.setMId(Base64.encode(models+menu.getId()));
 				/*
 				 *判断是否市新的
 				 */
@@ -133,8 +149,8 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 
 		List<SysMenuEntity> userMenuList = new ArrayList<>();
 		for (SysMenuEntity menu : menuList) {
-			if (menuIdList.contains(menu.getMenuId())) {
-				menu.setMId(Base64.encode(models+menu.getMenuId()));
+			if (menuIdList.contains(menu.getId())) {
+				menu.setMId(Base64.encode(models+menu.getId()));
 				/*
 				 *判断是否市新的
 				 */
@@ -157,18 +173,27 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 	 * @return
 	 */
 	public boolean checkMenuNameUnique(SysMenuEntity menu) {
-		Long menuId = ToolUtil.isEmpty(menu.getMenuId()) ? -1L : menu.getMenuId();
+		Long menuId = ToolUtil.isEmpty(menu.getId()) ? -1L : menu.getId();
 		SysMenuEntity info = this.sysMenuMapper.checkMenuNameUnique(menu.getName(), menu.getParentId());
-		if (!ToolUtil.isEmpty(info) && info.getMenuId().longValue() != menuId.longValue()) {
+		if (!ToolUtil.isEmpty(info) && info.getId().longValue() != menuId.longValue()) {
 			return  false;
 		}
 		return true;
 	}
 
-	public List<Ztree> roleModuleMenuTreeData(SysRoleEntity role, Long userId) {
-		Long roleId = role.getRoleId();
+	public List<Ztree> roleModuleMenuTreeData(SysRoleEntity role, LoginUserEntity user) {
+		Long roleId = role.getId();
 		List<Ztree> ztrees = new ArrayList<Ztree>();
-		List<SysMenuEntity> menuList = selectModuleMenuAll(userId,role.getModuleCodes());
+		String modules = StrUtil.EMPTY;
+		if(ToolUtil.isEmpty(role.getModuleCodes())){
+			for(Map<String, Object> s: user.getModules()){
+				modules = modules+s.get("moduleCode")+StrUtil.COMMA;
+			}
+			modules = modules.substring(0,modules.length()-1);
+		}else{
+			modules = role.getModuleCodes();
+		}
+		List<SysMenuEntity> menuList = selectModuleMenuAll(user,modules);
 		if (!ToolUtil.isEmpty(roleId)){
 			List<String> roleMenuList = selectMenuTree(roleId);
 			ztrees = initZtree(menuList, roleMenuList, true);
@@ -179,19 +204,19 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 		return ztrees;
 	}
 
-	public List<SysMenuEntity> selectModuleMenuAll(Long userId, String moduleCodes) {
+	public List<SysMenuEntity> selectModuleMenuAll(LoginUserEntity user, String moduleCodes) {
 		List<SysMenuEntity> menuList = null;
-		if (userId.equals(Constant.SUPER_ADMIN)) {
+		if (user.getId().equals(Constant.SUPER_ADMIN) || user.getRoleKey().contains(Constant.SU_ADMIN)) {
 			menuList = this.sysMenuMapper.findModuleMenuAll(moduleCodes);
 		}
 		else {
-			menuList = this.sysMenuMapper.findMenuAllByUserIdModelId(userId,moduleCodes);
+			menuList = this.sysMenuMapper.findMenuAllByUserIdModelId(user.getId(),moduleCodes);
 		}
 		return menuList;
 	}
 
-	public List<Ztree> menuTreeData(Long userId) {
-		List<SysMenuEntity> menuList = selectMenuAll(userId);
+	public List<Ztree> menuTreeData(LoginUserEntity user) {
+		List<SysMenuEntity> menuList = selectMenuAll(user);
 		List<Ztree> ztrees = initZtree(menuList);
 		return ztrees;
 	}
@@ -225,22 +250,28 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 	}
 
 	/**
-	 * 根居权限查询菜单树
-	 * @param role
-	 * @param userId
+	 * 清空系统参数redis 缓存
 	 * @return
 	 */
-	public List<Ztree> roleMenuTreeData(SysRoleEntity role, Long userId) {
-		Long roleId = role.getRoleId();
+	public boolean clearMenuRedis(){
+		return  redisUtil.deletes(Cache.MENU_CONSTANT+"*");
+	}
+
+	/**
+	 * 根居权限查询菜单树
+	 * @param role
+	 * @param user
+	 * @return
+	 */
+	public List<Ztree> roleMenuTreeData(SysRoleEntity role, LoginUserEntity user) {
+		Long roleId = role.getId();
 		List<Ztree> ztrees = new ArrayList<Ztree>();
-		List<SysMenuEntity> menuList = selectMenuAll(userId);
-		if (!ToolUtil.isEmpty(roleId))
-		{
+		List<SysMenuEntity> menuList = selectMenuAll(user);
+		if (!ToolUtil.isEmpty(roleId)) {
 			List<String> roleMenuList = selectMenuTree(roleId);
 			ztrees = initZtree(menuList, roleMenuList, true);
 		}
-		else
-		{
+		else{
 			ztrees = initZtree(menuList, null, true);
 		}
 		return ztrees;
@@ -261,13 +292,13 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 		for (SysMenuEntity menu : menuList)
 		{
 			Ztree ztree = new Ztree();
-			ztree.setId(menu.getMenuId());
+			ztree.setId(menu.getId());
 			ztree.setpId(menu.getParentId());
-			ztree.setName(transMenuName(menu, permsFlag));
-			ztree.setTitle(menu.getName());
+			ztree.setName(menu.getName());
+			ztree.setTitle(transMenuName(menu, permsFlag));
 			if (isCheck)
 			{
-				ztree.setChecked(roleMenuList.contains(menu.getMenuId() + menu.getPerms()));
+				ztree.setChecked(roleMenuList.contains(menu.getId() + menu.getPerms()));
 			}
 			ztrees.add(ztree);
 		}
@@ -289,15 +320,14 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 		return this.sysMenuMapper.findMenuTree(roleId);
 	}
 
-	public List<SysMenuEntity> selectMenuAll(Long userId)
-	{
+	public List<SysMenuEntity> selectMenuAll(LoginUserEntity user){
 		List<SysMenuEntity> menuList = null;
-		if (userId.equals(Constant.SUPER_ADMIN)){
+		if (user.getId().equals(Constant.SUPER_ADMIN) || user.getRoleKey().contains(Constant.SU_ADMIN)){
 			menuList = this.list(new QueryWrapper<SysMenuEntity>().
 					orderByAsc("parent_id","order_num"));
 		}
 		else{
-			menuList = this.sysMenuMapper.findMenuAllByUserId(userId);
+			menuList = this.sysMenuMapper.findMenuAllByUserId(user.getId());
 		}
 		return menuList;
 	}
@@ -312,7 +342,7 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 		for (SysMenuEntity entity : menuList) {
 			// 目录
 			if (entity.getType() == Constant.MenuType.CATALOG.getValue()) {
-				entity.setChildren(getMenuTreeList(findListParentId(entity.getMenuId(), menuIdList), menuIdList));
+				entity.setChildren(getMenuTreeList(findListParentId(entity.getId(), menuIdList), menuIdList));
 			}
 			subMenuList.add(entity);
 		}
@@ -329,7 +359,7 @@ public class SysMenuService  extends ServiceImpl<SysMenuMapper, SysMenuEntity> {
 		for (SysMenuEntity entity : rootmenuList) {
 			// 目录
 			if (entity.getType() == Constant.MenuType.CATALOG.getValue()) {
-				entity.setChildren(getModuleMenuTreeList(findListParentId(entity.getMenuId(), menuIdList,models), menuIdList,models));
+				entity.setChildren(getModuleMenuTreeList(findListParentId(entity.getId(), menuIdList,models), menuIdList,models));
 			}
 			subMenuList.add(entity);
 		}

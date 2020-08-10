@@ -1,0 +1,701 @@
+<#--
+ J2eeFAST 基于若依框架-表单构建二次修改
+-->
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="前端页面生成器" libs=["prism","bootstrapSelect"]>
+<link rel="stylesheet" href="${ctxStatic}/static/plugins/datapicker/bootstrap-datetimepicker.css?V=${config.getDvVersion()}"/>
+<style>
+    .droppable-active {background-color: #ffffee !important; border: 2px dashed #e6e6e6; }
+    .tools a{cursor:pointer;font-size:80%}
+    .form-body .col-md-6,.form-body .col-md-12 {min-height:500px}
+    .draggable {cursor:move}
+    .ibox-content{
+        padding: 15px 10px 20px 10px;
+    }
+    .form-horizontal .form-group {
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+    .form-body .droppable >div{padding-top: 15px}
+    .form-body .droppable > div:hover{
+        background: #f6f7ff;
+        border-radius: 6px;
+    }
+    #draggable0 > div:hover{
+        background: #f6f7ff;
+        border-radius: 6px;
+    }
+    #draggable0 > div{
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
+    .droppable-hover{
+        background: #f6f7ff;
+        border-radius: 6px;
+    }
+    .col-sm-3,.col-sm-6 {padding-right: 5px !important;padding-left: 5px !important;}
+</style>
+</@header>
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>前端组件</h5>
+                    <div class="ibox-tools">
+<#--                        <a class="collapse-link">-->
+<#--                            <i class="fa fa-chevron-up"></i>-->
+<#--                        </a>-->
+<#--                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">-->
+<#--                            <i class="fa fa-wrench"></i>-->
+<#--                        </a>-->
+<#--                        <ul class="dropdown-menu dropdown-user">-->
+<#--                            <li><a href="#">基本</a>-->
+<#--                            </li>-->
+<#--                            <li><a href="#">其他</a>-->
+<#--                            </li>-->
+<#--                        </ul>-->
+<#--                        <a class="close-link">-->
+<#--                            <i class="fa fa-times"></i>-->
+<#--                        </a>-->
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="alert alert-info">
+                        拖拽左侧的表单元素到右侧区域，即可生成相应的HTML代码，表单代码，轻松搞定！
+                    </div>
+                    <form  id="draggable0" role="form" class="form-horizontal m-t">
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>文本框：</label>
+                            <div class="col-sm-9">
+                                <@form.input name="username"  placeholder="请输入登录账号" required=true/>
+                            </div>
+                        </div>
+
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label">多行文本框：</label>
+                            <div class="col-sm-9">
+                                <textarea type="text" name="" class="form-control" placeholder="请输入文本"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>密码框：</label>
+                            <div class="col-sm-9">
+                                <@form.input name="password" type="password" placeholder="请输入密码" required=true/>
+                            </div>
+                        </div>
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label">下拉框：</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="">
+                                    <option>选项 1</option>
+                                    <option>选项 2</option>
+                                    <option>选项 3</option>
+                                    <option>选项 4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label">纯文本：</label>
+
+                            <div class="col-sm-9">
+                                <p class="form-control-static">这里是纯文字信息</p>
+                            </div>
+                        </div>
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label">单选框：
+                            </label>
+
+                            <div class="col-sm-9">
+                                <label class="radio-box"><input type="radio" checked="" value="option1" id="optionsRadios1" name="optionsRadios">选项1</label>
+                                <label class="radio-box"><input type="radio" value="option2" id="optionsRadios2" name="optionsRadios">选项2</label>
+                            </div>
+                        </div>
+                        <div class="form-group draggable">
+                            <h4 class="form-header h4">分割小标题</h4>
+                        </div>
+                        <div class="form-group draggable">
+                            <div class="hr-line-dashed"></div>
+                        </div>
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label">复选框：</label>
+
+                            <div class="col-sm-9">
+                                <label class="check-box">
+                                    <input type="checkbox" value="option1" id="inlineCheckbox1">选项1</label>
+                                <label class="check-box">
+                                    <input type="checkbox" value="option2" id="inlineCheckbox2">选项2</label>
+                                <label class="check-box">
+                                    <input type="checkbox" value="option3" id="inlineCheckbox3">选项3</label>
+                            </div>
+                        </div>
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label">切换按钮：
+                            </label>
+
+                            <div class="col-sm-9">
+                                <label class="toggle-switch switch-solid">
+                                    <input type="checkbox" id="status" checked>
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group draggable">
+                            <label class="col-sm-3 control-label">日期选择：</label>
+
+                            <div class="col-sm-9">
+                                <div class="input-group date">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" class="form-control" value="2018-04-20">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group draggable">
+                            <div class="col-sm-12 col-sm-offset-3">
+                                <button type="submit" class="btn btn-primary">提交</button>
+                                <button onclick="$.modal.close()" class="btn btn-danger" type="button">关闭</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>拖拽左侧表单元素到此区域</h5>
+                    <div class="ibox-tools">
+                        请选择显示的列数：
+                        <select id="n-columns">
+                            <option value="1">显示1列</option>
+                            <option value="2">显示2列</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <div id="pant" class="form-body form-horizontal m-t">
+                        <div  id="rw12" class="col-md-12 droppable sortable">
+                        </div>
+<#--                        <div class="col-md-6 droppable sortable" style="display: none;">-->
+<#--                        </div>-->
+<#--                        <div class="col-md-6 droppable sortable" style="display: none;">-->
+<#--                        </div>-->
+                    </div>
+                    <button type="submit" class="btn btn-warning" data-clipboard-text="testing" id="copy-to-clipboard">复制代码</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>表单设置</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#fromBut" data-toggle="tab" aria-expanded="true"><@ctx.i18n text = "组件属性"/></a></li>
+                            <li><a href="#modify_password" data-toggle="tab" aria-expanded="false"><@ctx.i18n text = "表单属性"/></a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <!--用户信息-->
+                            <div class="tab-pane" id="fromBut">
+
+                            </div>
+
+                            <!--表单属性-->
+                            <div class="tab-pane animated fadeInDown" id="modify_password">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<@footer>
+<script src="${ctxStatic}/static/libs/jquery-ui.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/datapicker/bootstrap-datetimepicker.js?V=${config.getDvVersion()}"></script>
+<script src="${ctxStatic}/static/plugins/beautifyhtml/beautifyhtml.js?V=${config.getDvVersion()}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        opt.modal.alertInfo("此页面未完成,此页面打造为前端代码生成器,针对复杂页面只需拖拽控件填写参数就可以完成前端页面的实现，请大家敬请期待...");
+
+        setup_draggable();
+        $("#n-columns").on("change",
+            function() {
+                var v = $(this).val();
+                var flag = false;
+                if (v === "1") {
+                    var $pant = $("#pant");
+                    var rw0 = $("<div class=\"col-md-12 droppable sortable\"></vid>");
+                    $(".form-body .draggable").each(function(i, el) {
+                        $(this).remove().appendTo(rw0)
+                    });
+                    $pant.empty();
+                    $pant.append(rw0);
+                } else {
+                    var $pant = $("#pant");
+                    var rw0 = $("<div class=\"col-md-6 droppable sortable\"></vid>");
+                    var rw1 = $("<div class=\"col-md-6 droppable sortable\"></vid>");
+                    var rw12 = [];
+                    //var $col = $(".form-body .col-md-6").toggle(true);
+                    var html;
+                    var index = 0;
+                    var t = false;
+                    $(".form-body .col-md-12 .draggable").each(function(i, el) {
+                        console.log($(el).children("h4").hasClass("form-header"));
+                        if(!$(el).children("h4").hasClass("form-header")){
+                            if(i % 2){
+                                $(this).appendTo(rw1);
+                            }else{
+                                $(this).appendTo(rw0);
+                            }
+                            if(index > 0){
+                                t = true;
+                            }
+                        }else{
+                            html = $("<div class=\"col-md-12 droppable sortable\"></div>");
+                            $(this).appendTo(html);
+                            if(t){
+                                html.after(rw0).after(rw1);
+                                t = false;
+                            }
+                            rw12.push(html);
+                            index = rw12.length;
+                            rw0.empty();
+                            rw1.empty();
+                        }
+                    });
+                    $pant.empty();
+                    if(index > 0){
+                        for(var i=0; i< rw12.length; i++){
+                            $pant.append(rw12[i]);
+                        }
+                        if(rw0.children().length > 0){
+                            $pant.append(rw0);
+                        }
+                        if(rw1.children().length > 0){
+                            $pant.append(rw1);
+                        }
+                    }else{
+                        $pant.append(rw0);
+                        $pant.append(rw1);
+                    }
+                }
+                $(".form-body .col-md-12").each(function(i, el) {
+                    $(this).css("min-height","auto");
+                })
+                setup_draggable();
+            });
+        $("#copy-to-clipboard").on("click",
+            function() {
+                var $copy = $(".form-body").clone().appendTo(document.body);
+                $copy.find(".tools, :hidden").remove();
+                $.each(["draggable", "droppable", "sortable", "dropped", "ui-sortable", "ui-draggable", "ui-droppable", "form-body"],
+                    function(i, c) {
+                        $copy.find("." + c).removeClass(c).removeAttr("style")
+                    });
+                var html = html_beautify($copy.html());
+                $copy.remove();
+                $modal = get_modal(html).modal("show");
+                $modal.find(".btn").remove();
+                $modal.find(".modal-title").html("复制HTML代码");
+                $modal.find(":input:first").select().focus();
+                return false
+            })
+    });
+    var setup_draggable = function() {
+
+        $("#pant .droppable").sortable({
+            revert: true
+        });
+
+        $("#draggable0 .draggable").draggable({
+            appendTo: "body",
+            helper: "clone"
+        });
+
+        $("#pant .droppable").droppable({
+            accept: ".draggable",
+            helper: "clone",
+            hoverClass: "droppable-active",
+            drop: function(event, ui) {
+                $(".empty-form").remove();
+                var $orig = $(ui.draggable);
+                if (!$(ui.draggable).hasClass("dropped")) {
+                    var $el = $orig.clone().addClass("dropped").css({
+                        "position": "static",
+                        "left": null,
+                        "right": null
+                    }).appendTo(this);
+                    if ($el.find("label").hasClass("radio-box")) {
+                        $el = $el.html('<label class="col-sm-3 control-label">单选框：</label>' +
+                            '<div class="col-sm-9">' + '<label class="radio-box"><input type="radio"' +
+                            ' checked="" value="option1" id="optionsRadios1" name="optionsRadios">选项1</label>' +
+                            '<label class="radio-box"><input type="radio" value="option2" id="optionsRadios2" name="optionsRadios">选项2</label>' + "</div>")
+                    } else {
+                        if ($el.find("label").hasClass("check-box")) {
+                            $el = $el.html('<label class="col-sm-3 control-label">复选框：</label>' + '<div class="col-sm-9">' + '<label class="check-box">' + '<input type="checkbox" value="option1" id="inlineCheckbox1">选项1</label>' + '<label class="check-box">' + '<input type="checkbox" value="option2" id="inlineCheckbox2">选项2</label>' + '<label class="check-box">' + '<input type="checkbox" value="option3" id="inlineCheckbox3">选项3</label>' + "</div>")
+                        }
+                        if ($el.find("select").hasClass("form-control")) {
+                            $el = $el.html('<label class="col-sm-3 control-label">下拉框：</label><div class="col-sm-9"><select class="form-control" name=""><option>选项 1</option><option>选项 2</option><option>选项 3</option><option>选项 4</option></select></div>');
+                        }
+                    }
+                    //var id = $orig.find(":input").attr("id");
+                    var labelId = opt.common.randomString(5);
+                    var ipuntId = opt.common.randomString(5);
+                    var labelText = $el.find("label").clone()    //复制元素
+                        .children() //获取所有子元素
+                        .remove()   //删除所有子元素
+                        .end()  //回到选择的元素
+                        .text();
+                    var type = "";  //控件类型
+                    var qIcon = ""; //前图标
+                    var hIcon = ""; //后图标
+                    var $input;
+                    if($el.find("input")){
+                        $input = $el.find("input");
+                        type = $input.attr("type");
+                    }else if($el.find("textarea")){
+                        $input = $el.find("textarea");
+                        type = "textarea";
+                    }
+                    var inputPlaceholder = $input.attr("placeholder");
+                    $el.find("label").attr("id",labelId);
+                    $input.attr("id",ipuntId);
+                    // if (id) {
+                    //     id = id.split("-").slice(0, -1).join("-") + "-" + (parseInt(id.split("-").slice( - 1)[0]) + 1);
+                    //     $orig.find(":input").attr("id", id);
+                    //     $orig.find("label").attr("for", id)
+                    // }
+                    $('<p class="tools col-sm-12 col-sm-offset-3"><a class="edit-link">查看代码</a>|<a class="remove-link">移除</a></p>').appendTo($el)
+
+                    // select2复选框事件绑定
+                    $("select.form-control:not(.noselect2)").each(function () {
+                        $(this).select2().on("change", function () {
+                            $(this).valid();
+                        })
+                    })
+                    $el.on("click",function(){
+                        var helpTxt = "";
+                        if(type == "text"){
+                            var gr = $(this).find(".input-group");
+                            if(gr.html()){
+                                var prev = $("#"+ipuntId).prev();
+                                if(prev.html()){
+                                    qIcon = prev.children("i").attr("class").split();
+                                    qIcon = qIcon.substr(9,qIcon.length - 9);
+                                }
+
+                                var next = $("#"+ipuntId).next();
+                                if(next.html()){
+                                    hIcon = next.children("i").attr("class");
+                                    hIcon = hIcon.substr(9,hIcon.length - 9);
+                                }
+                            }
+                            var next =  $("#"+labelId).next('div');
+                            var span = next.find('.help-block');
+                            if(span.html()){
+                                helpTxt = span.clone()    //复制元素
+                                    .children() //获取所有子元素
+                                    .remove()   //删除所有子元素
+                                    .end()  //回到选择的元素
+                                    .text();
+                            }
+                        }
+                        var data = {"title":labelText,"type":type,"qIcon":qIcon,"hIcon":hIcon,"labelId":labelId,"ipuntId":ipuntId,"inputPlaceholder":inputPlaceholder,"helpTxt":helpTxt};
+                        $("#fromBut").empty();
+                        $("#fromBut").addClass("active");
+                        $("#fromBut").append(opt.template('formBut0',data));
+
+                        $(".form-body .droppable > div").each(function(){
+                            $(this).removeClass("droppable-hover");
+                        });
+                        $el.addClass("droppable-hover");
+
+                    });
+                } else {
+                    if ($(this)[0] != $orig.parent()[0]) {
+                        var $el = $orig.clone().css({
+                            "position": "static",
+                            "left": null,
+                            "right": null
+                        }).appendTo(this);
+                        $orig.remove()
+                    }
+                }
+            }
+        }).sortable()
+    };
+    var get_modal = function(content) {
+        var modal = $('<div class="modal" style="overflow: auto;" tabindex="-1">' +
+            '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<a type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</a><h4 class="modal-title">组件HTML</h4></div><div class="modal-body ui-front">' +
+            '<textarea class="form-control textarea-show-src"  style="min-height: 200px; margin-bottom: 10px;font-family: Monaco, Fixed"></textarea>' +
+            '<button class="btn btn-success">拷贝</button></div></div></div></div>').appendTo(document.body);
+        var doms = document.getElementsByClassName("textarea-show-src");
+        for (var i = 0; i < doms.length; i++) {
+            doms.item(i).innerHTML = content
+        }
+        return modal
+    };
+    $(document).on("click", ".edit-link",
+        function(ev) {
+            var $el = $(this).parent().parent();
+            var $el_copy = $el.clone();
+            $el_copy.find(".control-label").removeAttr("id");
+            $el_copy.find(".form-control").attr("id",$el_copy.find(".form-control").attr("name"));
+            var $edit_btn = $el_copy.find(".edit-link").parent().remove();
+            // //
+            // var code = html_beautify($el_copy.html());
+            // var options = {title:"查看代码",url: opt.template('code',{"code":code}), type:1};
+            // opt.modal.openOptions(options);
+
+
+            var $modal = get_modal(html_beautify($el_copy.html())).modal("show");
+            $modal.find(":input:first").focus();
+            $modal.find(".btn-success").click(function(ev2) {
+            $modal.find("textarea").select();
+            document.execCommand("Copy")
+            opt.modal.msg($.i18n.prop("拷贝成功"));
+            $modal.modal("hide");
+            return false
+            })
+        });
+    $(document).on("click", ".remove-link",
+        function(ev) {
+            $(this).parent().parent().remove()
+        });
+    $(".input-group.date").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    function formBut(){
+
+    }
+</script>
+
+<script id="code" type="text/template">//<!--
+    <textarea class="form-control textarea-show-src"  style="min-height: 200px; margin-bottom: 10px;font-family: Monaco, Fixed">{{= d.code}}</textarea>
+//-->
+</script>
+
+<script id="formBut0" type="text/template">//<!--
+<div  class="row">
+    <div class="form-group col-md-12">
+        <label class="col-sm-3 control-label">字段名称：</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="formId" value="fromId" placeholder="表单ID">
+        </div>
+    </div>
+    <div class="form-group col-md-12">
+        <label class="col-sm-3 control-label">标题：</label>
+        <div class="col-sm-9">
+            <input id="_fromTitle" type="text" class="form-control" name="formId" value="{{d.title}}" placeholder="请输入字段标题">
+        </div>
+    </div>
+    <div class="form-group col-md-12">
+        <label class="col-sm-3 control-label">默认值：</label>
+        <div class="col-sm-9">
+            <input id="_fromValue" type="text" class="form-control" name="formId" value="" placeholder="请输入控件绑定值">
+        </div>
+    </div>
+    <div class="form-group col-md-12">
+        <label class="col-sm-3 control-label">占位提示：</label>
+        <div class="col-sm-9">
+            <input id="_fromIdPlaceholderBut" type="text" class="form-control" name="formId" value="{{d.inputPlaceholder}}" placeholder="请输入字段标题">
+        </div>
+    </div>
+    {{# if(d.type == "text" || d.type == "password"){ }}
+    <div class="form-group col-md-12">
+        <label class="col-sm-3 control-label">前图标：</label>
+        <div class="col-sm-9">
+           <@form.iconselect name="_fromIdQIcon" readonly=true value="{{d.qIcon}}" placeholder="选择图标"/>
+        </div>
+    </div>
+    <div class="form-group col-md-12">
+        <label class="col-sm-3 control-label">后图标：</label>
+        <div class="col-sm-9">
+           <@form.iconselect name="_fromIdHIcon" readonly=true value="{{d.hIcon}}"  placeholder="选择图标"/>
+        </div>
+    </div>
+    {{#  } }}
+    <div class="form-group col-md-12">
+        <label class="col-sm-3 control-label">提示说明：</label>
+        <div class="col-sm-9">
+            <input id="_fromIdHelp" type="text" class="form-control" name="formId" value="{{d.helpTxt}}" placeholder="控件底部帮助提示说明">
+        </div>
+    </div>
+    <div class="form-group col-md-12">
+        <label class="col-sm-3 control-label">是否必输：</label>
+        <div class="col-sm-9">
+            <@form.switch name="_fromIdStatus" value="0"/>
+        </div>
+    </div>
+</div>
+<#noparse>
+<script type="text/javascript">
+    $("#_fromIdHelpBut").on('input propertychange', function(){
+        if($(this).val()){
+
+        }else{
+            var next = $("#{{d.ipuntId}}").next();
+            if(!prevAll.html()){
+
+            }
+        }
+    });
+    /*switch控件回调*/
+    function switchCallback(id,$this,event,value){
+        if(id === "_fromIdStatus"){
+            if(value == "0"){
+                var span = $("#{{d.labelId}}").children("span");
+                if(!span.html()){
+                    var txt = $("#{{d.labelId}}").text();
+                    var html = $('<span style="color: red; ">*</span>');
+                    $("#{{d.labelId}}").empty();
+                    $("#{{d.labelId}}").append(html).append(txt);
+                }
+            }else{
+                var span = $("#{{d.labelId}}").children("span");
+                if(span.html()){
+                    span.remove();
+                    $("#{{d.ipuntId}}").removeAttr("required");
+                }
+            }
+        }
+    }
+
+    $("#_fromValue").on('input propertychange', function(){
+        $("#{{d.ipuntId}}").attr("value",$(this).val());
+    });
+
+    {{# if(d.type == "text" || d.type == "password"){ }}
+    $("#_fromTitle").on('input propertychange', function(){
+        var span = $("#{{d.labelId}}").children("span");
+        if(span.html()){
+            $("#{{d.labelId}}").empty();
+            $("#{{d.labelId}}").append(span).append($(this).val());
+        }else{
+            $("#{{d.labelId}}").text($(this).val());
+        }
+    });
+    $("#_fromIdPlaceholderBut").on('input propertychange', function(){
+        $("#{{d.ipuntId}}").attr("placeholder",$(this).val());
+    });
+
+    $("#_fromIdHelp").on('input propertychange', function(){
+
+
+       var next =  $("#{{d.labelId}}").next('div');
+       var span = next.find('.help-block');
+       if($(this).val().length > 0){
+           if(span.html()){
+              var i =  span.children('i');
+              span.empty();
+              span.append(i).append($(this).val());
+           }else{
+                var help = $('<span class="help-block m-b-none"></span>');
+                help.append('<i class="fa fa-info-circle" style="color: red"></i>'+$(this).val());
+                next.append(help);
+           }
+       }else{
+           if(span.html()){
+               span.remove();
+           }
+       }
+    });
+
+    function iconCallback(id,event,index, layero, icon){
+        if(id === "_fromIdQIcon"){
+            if(event === "ok"){
+                var parent = $("#{{d.ipuntId}}").parent();
+                if(parent.hasClass("input-group")){
+                    var prev = $("#{{d.ipuntId}}").prev('.input-group-addon');
+                    if(!prev.html()){
+                        var html = $('<span class="input-group-addon"><i class="fa fa-fw '+icon+'"></i></span>');
+                        $("#{{d.ipuntId}}").before(html);
+                    }else{
+                        prev.children("i").attr("class","fa fa-fw "+icon);
+                    }
+                }else{
+                    var nextAll = $("#{{d.ipuntId}}").nextAll();
+                    var html = $('<div class="input-group"></div>');
+                    html.append('<span class="input-group-addon"><i class="fa fa-fw '+icon+'"></i></span>');
+                    html.append($("#{{d.ipuntId}}"));
+                    parent.empty();
+                    parent.append(html);
+                    parent.append(nextAll);
+                }
+            }
+
+            if(event === "clear"){
+                if(icon != ""){
+                    var next = $("#{{d.ipuntId}}").next('.input-group-addon');
+                    if(!next.html()){
+                        var parent = $("#{{d.ipuntId}}").parent().parent();
+                        var html = $("#{{d.ipuntId}}");
+                        $("#{{d.ipuntId}}").parent().remove();
+                        parent.prepend(html);
+                    }else{
+                         $("#{{d.ipuntId}}").prev('.input-group-addon').remove();
+                    }
+                }
+            }
+        }
+
+        if( id === "_fromIdHIcon"){
+            if(event == "ok"){
+               var parent = $("#{{d.ipuntId}}").parent();
+               if(parent.hasClass("input-group")){
+                    var next = $("#{{d.ipuntId}}").next('.input-group-addon');
+                    if(next.html()){
+                        next.children("i").attr("class","fa fa-fw "+icon);
+                    }else{
+                        var html = $('<span class="input-group-addon"><i class="fa fa-fw '+icon+'"></i></span>');
+                        $("#{{d.ipuntId}}").after(html);
+                    }
+               }else{
+                    var nextAll = $("#{{d.ipuntId}}").nextAll();
+                    var html = $('<div class="input-group"></div>');
+                    html.append($("#{{d.ipuntId}}"));
+                    html.append('<span class="input-group-addon"><i class="fa fa-fw '+icon+'"></i></span>');
+                    parent.empty();
+                    parent.append(html);
+                    parent.append(nextAll);
+               }
+            }
+
+            if(event === "clear"){
+                if(icon != ""){
+                    var prev = $("#{{d.ipuntId}}").prev('.input-group-addon');
+                    if(prev.html()){
+                        $("#{{d.ipuntId}}").next('.input-group-addon').remove();
+                    }else{
+                        var parent = $("#{{d.ipuntId}}").parent().parent();
+                        var html = $("#{{d.ipuntId}}");
+                        $("#{{d.ipuntId}}").parent().remove();
+                        parent.prepend(html);
+                    }
+                }
+            }
+        }
+    }
+    {{#  } }}
+</script>
+//-->
+</script>
+</#noparse>
+</@footer>
+</@pageTheme>

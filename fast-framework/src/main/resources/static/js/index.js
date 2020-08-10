@@ -6,7 +6,8 @@
  * @data 2020-02-20
  *       2020-04-10 优化国际化参数
  *       2020-05-17 优化菜单显示
- * @version 1.0.11
+ *       2020-08-06 修复多级菜单情况下点击TAB菜单不切换问题
+ * @version 1.0.12
  */
 //菜单添加事件
 +function ($) {
@@ -88,46 +89,59 @@
         }
 
         if(hash!=''){
-            var tms = hash.substring(1, hash.length).split("#");
-            var url = tms[0];
-            var $a = $('a[data-url="' + url + '"][data-module="'+tms[1]+'"]');
-            var data;
-            if($a.length >0 ){
-                var href = $a.data('url');
-                var id = $a.data('id');
-                var module = $a.data('module');
-                var icon = $a.children('i:first').data('icon');
-                var title = $a.children('span:first').text();
-                data = {
-                    href: href,
-                    icon: icon,
-                    title: title,
-                    module:module,
-                    id: id
-                }
-            }else{
-                if(url === "sys/user/profile/info"){
+            try{
+                var tms = hash.substring(1, hash.length).split("#");
+                var url = tms[0];
+                var $a = $('a[data-url="' + url + '"][data-module="'+tms[1]+'"]');
+                var data;
+                if($a.length >0 ){
+                    var href = $a.data('url');
+                    var id = $a.data('id');
+                    var module = $a.data('module');
+                    var icon = $a.children('i:first').data('icon');
+                    var title = $a.children('span:first').text();
                     data = {
-                        href: 'sys/user/profile/info',
-                        icon: 'fa fa-address-card',
-                        title: $.i18n.prop('个人中心'),
-                        id: '-1',
-                        module:'_sysInfo'
-                    };
+                        href: href,
+                        icon: icon,
+                        title: title,
+                        module:module,
+                        id: id
+                    }
+                }else{
+                    if(opt.common.startWith(url,"sys/user/profile/info")){
+                        data = {
+                            href: url,
+                            icon: 'fa fa-address-card',
+                            title: $.i18n.prop('个人中心'),
+                            id: '-1',
+                            module:'_sysInfo'
+                        };
+                    }
+                    if(opt.common.startWith(url,"sys/user/profile/password")){
+                        data = {
+                            href: url,
+                            icon: 'fa fa-address-card',
+                            title: $.i18n.prop('个人中心'),
+                            id: '-1',
+                            module:'_sysInfo'
+                        };
+                    }
+                    if(opt.common.startWith(url,"sys/user/profile/oauth2")){
+                        data = {
+                            href: url,
+                            icon: 'fa fa-address-card',
+                            title: $.i18n.prop('个人中心'),
+                            id: '-1',
+                            module:'_sysInfo'
+                        };
+                    }
                 }
-                if(url === "sys/user/profile/password"){
-                    data = {
-                        href: 'sys/user/profile/password',
-                        icon: 'fa fa-shield',
-                        title: $.i18n.prop('修改密码'),
-                        id: '-2',
-                        module:'_sysInfo'
-                    };
-                }
+                //清除TBA记忆
+                opt.storage.set("menu","");
+                opt.navTabAdd(data);
+            }catch (e) {
+                //console.error(e);
             }
-            //清除TBA记忆
-            opt.storage.set("menu","");
-            opt.navTabAdd(data);
         }
     };
 
@@ -145,10 +159,16 @@
         var _target = $a.data('target');
         var href = $a.data('url');
         var module = $a.data('module');
+        //如果菜单url-># 则不做操作
+        if(href === "#"){
+            opt.modal.alertInfo("菜单页面URL地址配置为[#]不展示页面!");
+            return;
+        }
+
         if(_target === "_tab" || _target == "" || _target ==="_fullscreen"){ //TAB打开
             var id = $a.data('id');
             var icon = $a.children('i:first').data('icon');
-            var title = $a.children('span:first').text();
+            var title = $a.attr('title');//$a.children('span:first').text();
             var data = {
                 href: href,
                 icon: icon,
@@ -165,6 +185,7 @@
 
         if(_target === "_blank"){ //新窗口打开
             window.open(href);
+            //opt.modal.windowOpen(href,$a.attr('title'));
         }
 
         if(_target === "_alert"){ //新窗口打开
@@ -191,15 +212,14 @@
         //菜单
         if(elem.find('ul').length > 0){
             elem.find('ul').css("display","none");
-            var $li = elem.find('ul').children('li');
-            for(i=0;i<$li.length;i++){
+            var $li = elem.children('ul').children('li');
+            for(let i=0; i<$li.length; i++){
                 if($($li[i]).hasClass("active")){
                     $($li[i]).removeClass("active");
                     return true;
                 }
                 if($($li[i]).hasClass("treeview")){
                     that.recursiveHideMenu($($li[i]));
-                    return true;
                 }
             }
         }
@@ -215,20 +235,20 @@
         //目录 elem
         //菜单
         if(elem.find('ul').length > 0){
-            var $li = elem.find('ul').children('li');
-            for(i=0;i<$li.length;i++){
+            var $li = elem.children('ul').children('li');
+            for(let i=0; i<$li.length; i++){
                 if($($li[i]).hasClass("treeview")){
                     that.recursiveShowMenu($($li[i]), id);
-                    return true;
                 }else{
                     var $a = $($li[i]).children('a');
                     if( id != 0 && $a.data('id') == id){
                         that.recursiveMenuCss($($li[i]));
-                        return false;
+                        return true;
                     }
                 }
             }
         }
+        return true;
     };
 
     menu.prototype.recursiveMenuCss = function(elem){
@@ -370,11 +390,11 @@ $(function () {
                     }
                     var target = $('iframe[data-id="' + $(this).attr("lay-id") + '"]');
                     var url = target.attr('src');
-                    window.opt.block('数据加载中，请稍后...','#content-main');
+                    window.opt.block('','#content-main');
                     target.attr('src', url).on("load",function () {
                         setTimeout(function(){
                             window.opt.unblock('#content-main')
-                        }, 50);
+                        }, 30);
                     });
                 }
             },

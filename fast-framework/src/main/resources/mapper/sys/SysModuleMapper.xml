@@ -27,9 +27,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="findModuleByRoleIds" resultType="com.j2eefast.framework.sys.entity.SysModuleEntity">
-		SELECT u.id, u.module_code, u.module_name, u.icon FROM sys_module u  LEFT JOIN sys_role_module ur ON ur.module_code = u.module_code WHERE
-		u.del_flag = 0 and
-        ur.role_id in
+		SELECT DISTINCT u.id, u.module_code, u.module_name, u.icon,u.status FROM sys_module u  LEFT JOIN sys_role_module ur ON ur.module_code = u.module_code WHERE
+		u.del_flag = 0 AND u.status = 0  AND
+        ur.role_id IN
         <foreach item="id" collection="ids"  open="(" separator="," close=")">
 			 #{id}
 		</foreach>

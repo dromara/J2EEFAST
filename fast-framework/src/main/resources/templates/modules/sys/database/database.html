@@ -1,8 +1,10 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-    <@header title="多源数据">
-    </@header>
-    <@search fromId="module-form">
+<@header title="多源数据" libs=["table"]/>
+<div class="container-div" id="_app">
+    <div class="row">
+    <div class="col-sm-12 search-collapse">
+    <@form.form id="module-form">
         <div class="select-list">
             <ul>
                 <li>
@@ -15,155 +17,149 @@
                 </li>
             </ul>
         </div>
-    </@search>
-    <@table tableId="bootstrap-table">
-
+    </@form.form>
+    </div>
+    <@table id="bootstrap-table">
         <@shiro.hasPermission name="sys:database:add">
             <a class="btn btn-success" onclick="opt.operate.add()"><i class="fa fa-plus"></i> <@ctx.i18n text = "新增"/></a>
         </@shiro.hasPermission>
-<#--        <@shiro.hasPermission name="sys:database:edit">-->
-<#--            <a class="btn btn-primary single disabled" onclick="opt.operate.editTab()"><i class="fa fa-pencil-square-o"></i> <@ctx.i18n text = "修改"/></a>-->
-<#--        </@shiro.hasPermission>-->
-<#--        <@shiro.hasPermission name="sys:database:del">-->
-<#--            <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()">-->
-<#--                <i class="fa fa-remove"></i> <@ctx.i18n text = "删除"/>-->
-<#--            </a>-->
-<#--        </@shiro.hasPermission>-->
     </@table>
-    <@footer>
-        <script>
-            var editFlag = "${permission.hasPermi("sys:database:edit")}";
-            var listFlag = "${permission.hasPermi("sys:database:add")}";
-            var delFlag = "${permission.hasPermi("sys:database:del")}";
-            var visible = ${permission.isPermitteds("sys:database:edit,
-    sys:database:del,sys:database:add")?string('true', 'false')};
-            var typeDatas = ${dict.getDictListJson('sys_db_encrypt_type')};
-            var statusDatas = ${dict.getDictListJson('sys_normal_disable')};
-            var prefix = baseURL + "sys/database";
+    </div>
+</div>
+<@footer>
+    <script>
+        var editFlag = "${permission.hasPermi("sys:database:edit")}";
+        var listFlag = "${permission.hasPermi("sys:database:add")}";
+        var delFlag = "${permission.hasPermi("sys:database:del")}";
+        var visible = ${permission.isPermitteds("sys:database:edit,
+sys:database:del,sys:database:add")?string('true', 'false')};
+        var typeDatas = ${dict.getDictListJson('sys_db_encrypt_type')};
+        var statusDatas = ${dict.getDictListJson('sys_normal_disable')};
+        var prefix = baseURL + "sys/database";
 
-            $(function() {
-                var options = {
-                    url: prefix + "/list",
-                    addUrl: prefix + "/add",
-                    editUrl: prefix + "/edit/{id}",
-                    delUrl: prefix + "/del",
-                    modalName: "多源数据",
-                    uniqueId:    'id'                           , /* 唯一ID */
-                    sortName: "createTime",
-                    sortOrder: "desc",
-                    columns: [
-                        {
-                            field : 'checked',
-                            checkbox: true,
-                            width: 5,
-                            formatter:function(value,row,index){/*设置满足条件的行可以使用复选框*/
-                                if(row.dbName ==='DEFAULT' || row.dbName ==='FLOWABLE'){
-                                    return {
-                                        disabled : true
-                                    }
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                addUrl: prefix + "/add",
+                editUrl: prefix + "/edit/{id}",
+                delUrl: prefix + "/del",
+                modalName: "多源数据",
+                uniqueId:    'id'                           , /* 唯一ID */
+                sortName: "createTime",
+                sortOrder: "desc",
+                columns: [
+                    {
+                        field : 'checked',
+                        checkbox: true,
+                        width: 5,
+                        formatter:function(value,row,index){/*设置满足条件的行可以使用复选框*/
+                            if(row.dbName ==='MASTER' || row.dbName ==='FLOWABLE'){
+                                return {
+                                    disabled : true
                                 }
                             }
-                        },
-                        {
-                            title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
-                                return $.table.serialNumber(index);
+                        }
+                    },
+                    {
+                        title: $.i18n.prop("序号"), width: 5, align: "center", formatter: function (value, row, index) {
+                            return $.table.serialNumber(index);
+                        }
+                    }
+                    ,{
+                        field : 'dbName'
+                        ,title : '<@ctx.i18n text = "数据库名称"/>'
+                        ,sortable: true
+                    }
+                    ,{
+                        field : 'jdbcDriver'
+                        ,title : '<@ctx.i18n text = "驱动类型"/>'
+                    }
+                    ,{
+                        field : 'jdbcUrl'
+                        ,title : '<@ctx.i18n text = "URL"/>'
+                        ,formatter: function(value, row, index) {
+                            return $.table.tooltip(value,35);
+                        }
+                    }
+                    ,{
+                        field : 'userName'
+                        ,title : '<@ctx.i18n text = "账号"/>'
+                        ,formatter: function(value, row, index) {
+                            return $.table.tooltip(value,10);
+                        }
+                    }
+                    ,{
+                        field : 'password'
+                        ,title : '<@ctx.i18n text = "密码"/>'
+                        ,formatter: function(value, row, index) {
+                            return $.table.tooltip(value,10);
+                        }
+                    }
+                    ,{
+                        field : 'encType'
+                        ,title : '<@ctx.i18n text = "加密类型"/>'
+                        ,formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(typeDatas, value);
+                        }
+                    }
+                    ,{
+                        field : 'status'
+                        ,title : '<@ctx.i18n text = "状态"/>'
+                        ,formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(statusDatas, value);
+                        }
+                    }
+                    ,{
+                        field : 'remark'
+                        ,title : '<@ctx.i18n text = "备注"/>'
+                        ,formatter: function(value, row, index) {
+                            return $.table.tooltip(value,10);
+                        }
+                    }
+                    ,{
+                        title:"<@ctx.i18n text = "操作"/>"
+                        ,width: 80
+                        ,visible:visible
+                        ,class:'action'
+                        ,formatter: function(value, row, index) {
+                            var actions = [];
+                            if(!(row.dbName ==='DEFAULT' || row.dbName ==='MASTER' || row.dbName ==='FLOWABLE')){
+                                //actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "编辑"/>" onclick="opt.operate.editTab(\'' + row.id + '\')"><i class="fa fa-edit"></i></a> ');
+                                actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.id + '\')"><i class="fa fa-trash-o"></i></a> ');
+                            }else{
+                                actions.push($.table.tooltip('禁止操作!',3));
                             }
+                            return actions.join('');
                         }
-                        ,{
-                            field : 'dbName'
-                            ,title : '<@ctx.i18n text = "数据库名称"/>'
-                            ,sortable: true
-                        }
-                        ,{
-                            field : 'jdbcDriver'
-                            ,title : '<@ctx.i18n text = "驱动类型"/>'
-                        }
-                        ,{
-                            field : 'jdbcUrl'
-                            ,title : '<@ctx.i18n text = "URL"/>'
-                            ,formatter: function(value, row, index) {
-                                return $.table.tooltip(value,35);
-                            }
-                        }
-                        ,{
-                            field : 'userName'
-                            ,title : '<@ctx.i18n text = "账号"/>'
-                            ,formatter: function(value, row, index) {
-                                return $.table.tooltip(value,10);
-                            }
-                        }
-                        ,{
-                            field : 'password'
-                            ,title : '<@ctx.i18n text = "密码"/>'
-                            ,formatter: function(value, row, index) {
-                                return $.table.tooltip(value,10);
-                            }
-                        }
-                        ,{
-                            field : 'encType'
-                            ,title : '<@ctx.i18n text = "加密类型"/>'
-                            ,formatter: function(value, row, index) {
-                                return $.table.selectDictLabel(typeDatas, value);
-                            }
-                        }
-                        ,{
-                            field : 'status'
-                            ,title : '<@ctx.i18n text = "状态"/>'
-                            ,formatter: function(value, row, index) {
-                                return $.table.selectDictLabel(statusDatas, value);
-                            }
-                        }
-                        ,{
-                            field : 'remark'
-                            ,title : '<@ctx.i18n text = "备注"/>'
-                            ,formatter: function(value, row, index) {
-                                return $.table.tooltip(value,10);
-                            }
-                        }
-                        ,{
-                            title:"<@ctx.i18n text = "操作"/>"
-                            ,width: 80
-                            ,visible:visible
-                            ,class:'action'
-                            ,formatter: function(value, row, index) {
-                                var actions = [];
-                                if(!(row.dbName ==='DEFAULT' || row.dbName ==='FLOWABLE')){
-                                    //actions.push('<a class="' + editFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "编辑"/>" onclick="opt.operate.editTab(\'' + row.id + '\')"><i class="fa fa-edit"></i></a> ');
-                                    actions.push('<a class="' + delFlag + '" href="javascript:void(0)" title="<@ctx.i18n text = "删除"/>" onclick="opt.operate.del(\'' + row.id + '\')"><i class="fa fa-trash-o"></i></a> ');
-                                }else{
-                                    actions.push($.table.tooltip('禁止操作!',3));
-                                }
-                                return actions.join('');
-                            }
-                        }
-                    ]
-                };
-                $.table.init(options);
-            });
+                    }
+                ]
+            };
+            $.table.init(options);
+        });
 
-            /* 用户管理-停用 */
-            function disable(id) {
-                opt.modal.confirm("确认要停用模块吗？", function() {
-                    opt.operate.post(prefix + "/changeStatus", { "id": id, "status": 1 });
-                })
-            }
+        /* 用户管理-停用 */
+        function disable(id) {
+            opt.modal.confirm("确认要停用模块吗？", function() {
+                opt.operate.post(prefix + "/changeStatus", { "id": id, "status": 1 });
+            })
+        }
 
-            /* 用户管理启用 */
-            function enable(id) {
-                opt.modal.confirm("确认要发布公告\\通知吗?", function() {
-                    opt.operate.post(prefix + "/changeStatus", { "id": id, "status": 0 });
-                })
-            }
-            
-            /*预览*/
-            function preview(htmlNo) {
-                var options = {
-                    url: prefix + "/preview/" + htmlNo+"0",
-                    title:'公告通知预览',
-                    btn:['<i class="fa fa-close"></i> '+$.i18n.prop("取消")],
-                };
-                opt.modal.openMainWin(options);
-            }
-        </script>
-    </@footer>
+        /* 用户管理启用 */
+        function enable(id) {
+            opt.modal.confirm("确认要发布公告\\通知吗?", function() {
+                opt.operate.post(prefix + "/changeStatus", { "id": id, "status": 0 });
+            })
+        }
+
+        /*预览*/
+        function preview(htmlNo) {
+            var options = {
+                url: prefix + "/preview/" + htmlNo+"0",
+                title:'公告通知预览',
+                btn:['<i class="fa fa-close"></i> '+$.i18n.prop("取消")],
+            };
+            opt.modal.openMainWin(options);
+        }
+    </script>
+</@footer>
 </@pageTheme>

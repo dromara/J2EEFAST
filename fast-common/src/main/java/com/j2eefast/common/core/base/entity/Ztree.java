@@ -21,10 +21,10 @@ public class Ztree implements Serializable{
     /** 节点父ID */
     private Long pId;
 
-    /** 节点名称 */
+    /** 获取节点值 */
     private String name;
 
-    /** 节点标题 */
+    /** 节点页面显示 有时候我们需要显示的值与获取的值不一致此处就可以用上,你也可以name 与 title 一样 */
     private String title;
 
     /** 类型*/
@@ -40,6 +40,18 @@ public class Ztree implements Serializable{
 
     /** 是否能勾选 */
     private boolean nocheck = false;
+
+    /** 设置节点的 checkbox / radio 是否禁用*/
+    private boolean chkDisabled = false;
+
+
+    public boolean isChkDisabled() {
+        return chkDisabled;
+    }
+
+    public void setChkDisabled(boolean chkDisabled) {
+        this.chkDisabled = chkDisabled;
+    }
 
     public boolean getIsParent() {
         return isParent;

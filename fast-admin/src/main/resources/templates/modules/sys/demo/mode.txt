@@ -1,0 +1,65 @@
+//前端模板说明
+<#--
+    J2eeFAST 前端模板引擎采用FreeMarker,官方中文文档 http://freemarker.foofun.cn/
+    J2eeFAST 前端引擎主要由4部分组成
+    1. 引入核心模板引擎
+    2. 引入页面压缩引擎
+    3. 引入头部
+    4. 引入底部
+
+    //头部标签与底部标签 中间为我们自行设计区域
+    //这样设计的目的就是为了最大程度的将前端代码中重复部分抽出，你只需要关心页面变化部分
+    //你可以仿照二次开发或者自定义模板引擎
+ -->
+<#-- 引入J2eeFAST 前端核心模板引擎 页面必须添加-->
+<#include "/common/defaultEngine.html"/>
+<#-- pageTheme 标签为页面压缩标签 后台系统参数控制页面是否压缩输出-->
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<#--
+    页面头部分引入
+    支持标签属性
+    ----------------------------
+    title = "默认标题J2eeFAST"  // 页面Title
+    libs = ""                 // 需要引入的css样式 js脚本 数组形式 写法->例如页面需要引入 zTree树插件,bootstrap-table表格插件: libs=["zTree","table"]
+                              // 目前支持: 表格插件[table],zTree 树[zTree],JSON试图脚本[jsonview],页面下拉框[bootstrapSelect],头像裁剪[cropbox]
+                              // 页面代码格式化[prism], SelectPage 插件[selectPage], 富文本summernote[summernote], 工作流流程画板[bmp]
+                              // 百度富文本编辑器[ueditor], 页面分割布局插件[layout-latest]
+                              // 你也可以自行控制扩展, 也可以单独页面引用
+
+    bodyClass = "gray-bg"     // body样式 页面body标签 class样式
+    isAnimation = "true"      // 是否需要页面动画
+    animation = "fadeInRight" // 动画风格 具体值可以查看animation.css, 默认从右滑入
+    -------------------------
+    // 如果你不需要单独使用css 可以如下标签直接闭合写法
+    <@header title="新增用户" bodyClass="white-bg" libs=["bootstrapSelect"]/>
+
+    // 如果你想单独引入css 样式 但是又不想在libs里面扩展,你可以如下引入你的css样式,建议此处只做css引入,JS脚本在下面的页面底部标签统一引入
+    <@header title="新增用户" bodyClass="white-bg" libs=["bootstrapSelect"]>
+    <link rel="stylesheet" href="${ctxStatic}/static/css/animate.css?V=${config.getDvVersion()}"/>
+    <style>
+        #larry-body{
+            height: calc(100% - 116px);
+        }
+    </style>
+    </@header>
+ -->
+<@header title="前端模板说明" bodyClass="white-bg" libs=["bootstrapSelect"]/>
+<!--页面主体部分 就是除去页面body部分-->
+<div class="wrapper wrapper-content ibox-content">
+</div>
+<#--
+    底部JS部分
+    footer 标签属性[无]
+    //如果要单独引入JS插件或者写页面脚本都在footer闭合标签中写
+    例如:
+    <@footer>
+    <script src="${ctxStatic}/static/plugins/ueditor/1.4.33/ueditor.config.js?V=${config.getDvVersion()}"></script>
+    <script type="text/javascript">
+        var a = 0;
+        ....
+    </script>
+    </@footer>
+-->
+<@footer>
+</@footer>
+</@pageTheme>

@@ -20,7 +20,7 @@ import javax.validation.constraints.NotBlank;
 public class GenTableColumnEntity extends BaseEntity {
     /** 编号 */
     @TableId
-    private Long columnId;
+    private Long id;
 
     /** 归属表编号 */
     private Long tableId;
@@ -113,12 +113,12 @@ public class GenTableColumnEntity extends BaseEntity {
         this.isPlus = isPlus;
     }
 
-    public Long getColumnId() {
-        return columnId;
+    public Long getId() {
+        return id;
     }
 
-    public void setColumnId(Long columnId) {
-        this.columnId = columnId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getTableId() {
@@ -382,4 +382,7 @@ public class GenTableColumnEntity extends BaseEntity {
     {
         return isInsert(this.isInsert);
     }
+
+    
+    
 }

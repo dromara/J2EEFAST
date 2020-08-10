@@ -35,6 +35,18 @@ a:focus {
     outline: none;
 }
 
+.width-120{
+    width: 120px !important;
+}
+
+.width-80{
+    width: 80px !important;
+}
+
+.width-150{
+    width: 150px !important;
+}
+
 .nav>li>a {
     color: #a7b1c2;
     font-weight: 600;
@@ -354,6 +366,7 @@ em{
 .login-page .has-feedback .form-control {
     height: 34px;
     padding: 4px 10px;
+    border-radius: 4px;
 }
 .login-page .form-group {
     margin-top: 5px;
@@ -382,7 +395,7 @@ em{
 @media (min-width: 768px) {
     .login-footer {
         margin: 2% auto;
-        width: 600px;
+        /*width: 600px;*/
         text-align: center;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Liberation Sans", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti", SimHei, SimSun, "WenQuanYi Zen Hei Sharp", sans-serif;
         font-size: 13px;
@@ -808,12 +821,12 @@ body.canvas-menu.mini-navbar nav.navbar-static-side {
 }
 
 .btn {
-    border-radius: 3px;
+    border-radius: 3px !important;
 }
 
-.float-e-margins .btn {
-    margin-bottom: 5px;
-}
+/*.float-e-margins .btn {*/
+/*    margin-bottom: 5px;*/
+/*}*/
 
 .btn-w-m {
     min-width: 120px;
@@ -1708,6 +1721,55 @@ a.list-group-item.active, a.list-group-item.active:hover, a.list-group-item.acti
     margin-top: 0;
 }
 
+.social-auth-links .oauth-title{
+    display: table;
+    white-space: nowrap;
+    height: auto;
+    line-height: 1;
+    text-align: center;
+    font-size: 14px;
+    font-weight: normal;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Liberation Sans", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti", SimHei, SimSun, "WenQuanYi Zen Hei Sharp", sans-serif;
+}
+
+.social-auth-links .oauth-list{
+    display: flex !important;
+    -webkit-box-pack: center !important;
+    list-style-type: none;
+    margin: 1em 0em;
+    padding: 0em 0em;
+    -ms-flex-pack: center !important;
+    justify-content: center !important;
+}
+.oauth-list .item{
+    table-layout: fixed;
+    list-style-type: none;
+    list-style-position: outside;
+    padding: 0.3em 0em;
+    line-height: 1.2;
+    margin-left: 48px !important;
+}
+
+.oauth-list>.item:first-child {
+    margin-left: 0em !important;
+    padding-left: 0em !important;
+}
+
+.oauth-list .item a>img{
+    width: 32px;
+    height: 32px;
+}
+.social-auth-links .oauth-title:after, .social-auth-links .oauth-title:before{
+    background-position: right 1em top 50%;
+    content: '';
+    display: table-cell;
+    position: relative;
+    top: 50%;
+    width: 50%;
+    background-repeat: no-repeat;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABaAAAAACCAYAAACuTHuKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1OThBRDY4OUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1OThBRDY4QUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjU5OEFENjg3Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU5OEFENjg4Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+VU513gAAADVJREFUeNrs0DENACAQBDBIWLGBJQby/mUcJn5sJXQmOQMAAAAAAJqt+2prAAAAAACg2xdgANk6BEVuJgyMAAAAAElFTkSuQmCC);
+}
+
 .stat-list {
     list-style: none;
     padding: 0;
@@ -2050,6 +2112,28 @@ table.dataTable thead .sorting:after {
 .input-group-addon {
     background-color: #fff;
     padding: 5px 6px 4px 6px;
+}
+.iconselect[readonly]{
+    background-color: #fff!important;
+}
+
+.input-group-btn{
+    padding: 5px 6px 4px 6px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    color: #555;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 0;
+    display: table-cell;
 }
 
 .spinner-buttons.input-group-btn .btn-xs {
@@ -3553,7 +3637,7 @@ nav.page-tabs .page-tabs-content {
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td,  .table>tbody>tr>td, .table>tfoot>tr>td {
     border-top: 1px solid #e7eaec;
     line-height: 1.42857;
-    padding: 8px;
+    padding: 0.75rem;
     vertical-align: middle;
 }
 
@@ -3916,6 +4000,8 @@ code5 {
     margin-bottom: 0;
     padding: 14px 15px 7px;
     min-height: 40px;
+    border-bottom: 1px solid #f6f6f6;
+    border-radius: 2px 2px 0 0;
 }
 
 .ibox-content {
@@ -3925,9 +4011,13 @@ code5 {
     border-color: #e7eaec;
     -webkit-border-image: none;
     -o-border-image: none;
-    border-image: none;
-    border-style: solid solid none;
-    border-width: 1px 0px;
+    border-radius: 0 0 2px 2px;
+    /*border-image: none;*/
+    /*border-style: solid solid none;*/
+    /*border-width: 1px 0px;*/
+    /*box-shadow: 1px 1px 3px rgba(0,0,0,.2);*/
+    /*border-bottom-right-radius: 6px;*/
+    /*border-bottom-left-radius: 6px;*/
 }
 
 .layui-layer-btn1 {
@@ -3959,6 +4049,10 @@ table.table-mail tr td {
 
 .star-mail, .check-mail {
     width: 40px;
+}
+
+.inputZtree[readonly], fieldset[disabled] .form-control {
+    background-color: #fff!important;
 }
 
 .unread td a, .unread td {
@@ -7383,10 +7477,10 @@ padding: 5px 6px 0px 6px;
 border-left: 0;
 border-radius: 0px 4px 4px 0px;
 }
-.input-group-btn .btn {
-height: 30px;
-padding: 3px 10px 4px 10px;
-border-color: #caced6;
+.control-div {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle
 }
 .jump5 {
     animation-iteration-count: 5;

@@ -19,7 +19,7 @@ public class SysDictTypeEntity extends BaseEntity {
 
     /** 字典主键 */
     @TableId(type = IdType.ASSIGN_ID)
-    private Long dictId;
+    private Long id;
 
     /** 字典名称 */
     private String dictName;

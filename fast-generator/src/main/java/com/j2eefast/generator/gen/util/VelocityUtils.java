@@ -109,24 +109,18 @@ public class VelocityUtils
 
     public static void setTreeVelocityContext(VelocityContext context, GenTableEntity genTable)
     {
-        String options = genTable.getOptions();
-        JSONObject paramsObj = JSONObject.parseObject(options);
-        String treeCode = getTreecode(paramsObj);
-        String treeParentCode = getTreeParentCode(paramsObj);
-        String treeName = getTreeName(paramsObj);
-
+        Option options = genTable.getOption();
+        String treeCode = options.getTreeCode();
+        String treeParentCode = options.getTreeParentCode();
+        String treeName = options.getTreeName();
+      
         context.put("treeCode", treeCode);
         context.put("treeParentCode", treeParentCode);
         context.put("treeName", treeName);
+        context.put("tree_name",treeName);
+        context.put("tree_parent_code", treeParentCode);
+        
         context.put("expandColumn", getExpandColumn(genTable));
-        if (paramsObj.containsKey(GenConstants.TREE_PARENT_CODE))
-        {
-            context.put("tree_parent_code", paramsObj.getString(GenConstants.TREE_PARENT_CODE));
-        }
-        if (paramsObj.containsKey(GenConstants.TREE_NAME))
-        {
-            context.put("tree_name", paramsObj.getString(GenConstants.TREE_NAME));
-        }
     }
 
     /**
@@ -134,37 +128,72 @@ public class VelocityUtils
      * 
      * @return 模板列表
      */
-    public static List<String> getTemplateList(String tplCategory)
-    {
+    public static List<String> getTemplateList(String tplCategory, String target){
+        List<String> templates = new ArrayList<String>();
+        templates.add("vm/java/entity.java.vm");
+//        templates.add("vm/java/mapper.java.vm");
+//        templates.add("vm/java/service.java.vm");
+////        templates.add("vm/java/serviceImpl.java.vm");
+//        templates.add("vm/java/controller.java.vm");
+//        templates.add("vm/xml/mapper.xml.vm");
+        if (isCrud(tplCategory,GenConstants.TPL_CRUD) || isCrud(tplCategory,GenConstants.TPL_R) ) {
+            templates.add("vm/java/mapper.java.vm");
+            templates.add("vm/java/service.java.vm");
+            templates.add("vm/java/controller.java.vm");
+            templates.add("vm/xml/mapper.xml.vm");
+            templates.add("vm/html/list.html.vm");
+        }
+        if (isCrud(tplCategory,GenConstants.TPL_TREE)) {
+            templates.add("vm/java/mapper.java.vm");
+            templates.add("vm/java/service.java.vm");
+            templates.add("vm/java/controller.java.vm");
+            templates.add("vm/xml/mapper.xml.vm");
+            templates.add("vm/html/tree.html.vm");
+            templates.add("vm/html/list-tree.html.vm");
+        }
+        if (isCrud(tplCategory,GenConstants.TPL_CRUD) || isCrud(tplCategory,GenConstants.TPL_C) ) {
+            if(target.equals(GenConstants.TARGET)){
+                templates.add("vm/html/tabAdd.html.vm");
+            }else{
+                templates.add("vm/html/add.html.vm");
+            }
+        }
+        if (isCrud(tplCategory,GenConstants.TPL_CRUD) || isCrud(tplCategory,GenConstants.TPL_U) ){
+            if(target.equals(GenConstants.TARGET)){
+                templates.add("vm/html/tabEdit.html.vm");
+            }else{
+                templates.add("vm/html/edit.html.vm");
+            }
+        }
+        if(isCrud(tplCategory,GenConstants.SERVICE)){
+            templates.add("vm/java/mapper.java.vm");
+            templates.add("vm/java/service.java.vm");
+            templates.add("vm/xml/mapper.xml.vm");
+        }
+        if(!isCrud(tplCategory,GenConstants.ENTITY)){
+            templates.add("vm/sql/sql.vm");
+        }
+        return templates;
+    }
+
+    public static List<String> allTemplateList(String target){
         List<String> templates = new ArrayList<String>();
         templates.add("vm/java/entity.java.vm");
         templates.add("vm/java/mapper.java.vm");
         templates.add("vm/java/service.java.vm");
-//        templates.add("vm/java/serviceImpl.java.vm");
         templates.add("vm/java/controller.java.vm");
-        templates.add("vm/xml/mapper.xml.vm");
-
-        if (isCrud(tplCategory,GenConstants.TPL_CRUD) || isCrud(tplCategory,GenConstants.TPL_R) )
-        {
-            templates.add("vm/html/list.html.vm");
-        }
-        else if (isCrud(tplCategory,GenConstants.TPL_TREE))
-        {
-            templates.add("vm/html/tree.html.vm");
-            templates.add("vm/html/list-tree.html.vm");
-        }
-        if (isCrud(tplCategory,GenConstants.TPL_CRUD) || isCrud(tplCategory,GenConstants.TPL_C) )
-        {
+        templates.add("vm/html/list.html.vm");
+        if(target.equals(GenConstants.TARGET)){
+            templates.add("vm/html/tabAdd.html.vm");
+            templates.add("vm/html/tabEdit.html.vm");
+        }else{
             templates.add("vm/html/add.html.vm");
-        }
-        if (isCrud(tplCategory,GenConstants.TPL_CRUD) || isCrud(tplCategory,GenConstants.TPL_U) )
-        {
             templates.add("vm/html/edit.html.vm");
         }
+        templates.add("vm/xml/mapper.xml.vm");
         templates.add("vm/sql/sql.vm");
         return templates;
     }
-
     /**
      * 获取文件名
      */
@@ -221,11 +250,11 @@ public class VelocityUtils
         {
             fileName = StrUtil.format("{}/tree.html", htmlPath);
         }
-        else if (template.contains("add.html.vm"))
+        else if (template.contains("add.html.vm") || template.contains("tabAdd.html.vm"))
         {
             fileName = StrUtil.format("{}/add.html", htmlPath);
         }
-        else if (template.contains("edit.html.vm"))
+        else if (template.contains("edit.html.vm") || template.contains("tabEdit.html.vm"))
         {
             fileName = StrUtil.format("{}/edit.html", htmlPath);
         }
@@ -350,11 +379,9 @@ public class VelocityUtils
      * @param genTable 业务表对象
      * @return 展开按钮列序号
      */
-    public static int getExpandColumn(GenTableEntity genTable)
-    {
-        String options = genTable.getOptions();
-        JSONObject paramsObj = JSONObject.parseObject(options);
-        String treeName = paramsObj.getString(GenConstants.TREE_NAME);
+    public static int getExpandColumn(GenTableEntity genTable) {
+
+        String treeName = genTable.getOption().getTreeName() ; 
         int num = 0;
         for (GenTableColumnEntity column : genTable.getColumns())
         {

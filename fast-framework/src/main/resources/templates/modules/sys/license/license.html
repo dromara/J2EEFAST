@@ -1,7 +1,6 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="true">
 <@header title="产品许可信息"/>
-<body class="gray-bg animated fadeInRight">
 <section class="section-content">
     <div class="error-page">
         <div class="headline text-aqua">&nbsp; <i class="fa icon-key"></i></div>
@@ -180,7 +179,7 @@
         <div class="col-xs-7">
             <input type="file" id="f" name="f" style="padding-top: 4px;"/>
         </div>
-</from>
+</form>
 //-->
 </script>
  <script id="licDownloadTpl" type="text/template">//<!--
@@ -214,15 +213,7 @@
 	</form>
 	<script>
             function show() {
-                var html='<img src="${ctxStatic}/static/img/verifySn.png" width="100%" height="100%" alt="机器码与验证码">';
-                opt.layer.open({
-                    title: false,
-                    type: 1,
-                    closeBtn:false,
-                    shadeClose:true,
-                    area: ['700px', 'auto'],
-                    content: html
-                 });
+                 opt.modal.openView("verifySn.png","${ctxStatic}/static/img/verifySn.png",800,700);
             };
      </script>
 //-->

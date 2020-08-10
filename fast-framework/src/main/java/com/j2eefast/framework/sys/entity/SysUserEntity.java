@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2eefast.common.core.base.entity.BaseEntity;
 import lombok.Data;
+import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
 /**
  * <p>系统用户</p>
@@ -41,7 +42,7 @@ public class SysUserEntity extends BaseEntity {
 	 */
 	@TableId
 	@ExcelProperty("用户ID")
-	private Long userId;
+	private Long id;
 
 	/**
 	 * 用户名
@@ -124,12 +125,17 @@ public class SysUserEntity extends BaseEntity {
 	@TableField(exist = false)
 	private List<String> RoleKeys;
 
+
+	/**
+	 * 第三方登录源
+	 */
+	private String source;
+
 	/**
 	 * 角色ID列表
 	 */
 	@TableField(exist = false)
 	private List<Long> roleIdList;
-
 
 	/**
 	 * 地区ID列表
@@ -187,9 +193,9 @@ public class SysUserEntity extends BaseEntity {
 	 */
 	@TableField(exist = false)
 	private String postCode;
-	
+
 	/**
-	 * 部门ID --暂时不用
+	 * 部门ID
 	 */
 	private Long deptId;
 

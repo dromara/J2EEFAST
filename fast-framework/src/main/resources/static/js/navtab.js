@@ -86,7 +86,7 @@ layui.define(['element'], function(exports){
 	    var tabIndex = _this.exists(data.id,data.href,data.module);
 	    // 若不存在
 	    if(tabIndex === -1){
-			opt.block('数据加载中，请稍后...','#content-main');
+			opt.block('','#content-main');
 	    	var content = '<iframe width="100%" height="100%" src="' + data.href + '" data-id="' + data.id + '" data-module="'+data.module+'" class="larry-iframe"></iframe>';
 		    var title = '';
 		    // 若icon有定义
@@ -110,8 +110,8 @@ layui.define(['element'], function(exports){
 				title += ' data-module="'+data.module+'"';
 			}
 
-			title += 'title="'+data.title+'">&nbsp;' + (data.title.length > 12?(data.title.substr(0, 12) + "..."):data.title) + '</em>';
-
+			// title += 'title="'+data.title+'">&nbsp;' + (opt.common.getByteLen(data.title) > 12?(data.title.sub(0, 12) + "..."):data.title) + '</em>';
+			title += 'title="'+data.title+'">&nbsp;' + (opt.common.subString(data.title,12,true)) + '</em>';
 
 		    //_this.config.closed &&
 		    if(data.id !== '0') {
@@ -260,7 +260,7 @@ layui.define(['element'], function(exports){
 					function () {
 						opt.unblock('#content-main');
 					}
-					, 50);
+					, 30);
 			});
 
 			//切换到当前打开的选项卡

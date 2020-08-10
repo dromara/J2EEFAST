@@ -45,7 +45,7 @@ public class SystemController extends BaseController {
 		List<Map<String, Object>> modules = user.getModules();
 		Map<String, List<SysMenuEntity>> menuList = new HashMap<>();
 		for(Map<String, Object> s: modules){
-			List<SysMenuEntity> menu = ConstantFactory.me().getMenuByUserIdModuleCode(user.getId(), (String) s.get("moduleCode"));
+			List<SysMenuEntity> menu = ConstantFactory.me().getMenuByUserIdModuleCode(user.getId(), (String) s.get("moduleCode"),user);
 			menuList.put((String) s.get("moduleCode"),menu);
 		}
 		mmap.put("modules",modules);

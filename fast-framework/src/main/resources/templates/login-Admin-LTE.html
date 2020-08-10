@@ -1,4 +1,4 @@
-<#include "/common/include.html">
+<#include "/common/defaultEngine.html">
 <@pageTheme mark="true">
 <!DOCTYPE html>
 <html>
@@ -7,8 +7,8 @@
   <meta charset="utf-8">
   <meta name="keywords" content="PoweredByJ2eeFast"/><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>登录 - J2eeFAST J2eefast.com</title>
-    <link href="${ctxStatic}/static/img/favicon.ico" rel="shortcut icon">
+  <title>登录 - J2eeFAST J2eefast.com</title>
+  <link href="${ctxStatic}/static/img/favicon.ico" rel="shortcut icon">
   <#--Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <#-- Bootstrap 3.3.7 -->
@@ -109,7 +109,36 @@
 						</ul>
 					</div>
 				</div>
-		</div>
+       </div>
+      <#if config.getKey("SYS_IS_OAUTH") == "0">
+          <div class="social-auth-links text-center">
+              <div class="oauth-title">
+                  <span class="text-muted"> 其他方式登录 </span>
+              </div>
+              <div class="oauth-list">
+                  <div class="item" title="<@ctx.i18n text = "使用 Gitee 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                      <a href="${ctxStatic}/auth/gitee">
+                          <img src="${ctxStatic}/static/img/gitee.svg"/>
+                      </a>
+                  </div>
+                  <div class="item" title="<@ctx.i18n text = "使用 GitHub 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                      <a href="${ctxStatic}/auth/github">
+                          <img src="${ctxStatic}/static/img/github.svg"/>
+                      </a>
+                  </div>
+                  <div class="item" title="<@ctx.i18n text = "使用 OsChina 账号授权登录"/>" data-toggle="tooltip" data-placement="top">
+                      <a href="${ctxStatic}/auth/oschina">
+                          <img src="${ctxStatic}/static/img/oschina.svg"/>
+                      </a>
+                  </div>
+                  <div class="item" title="<@ctx.i18n text = "功能开发中..."/>" data-toggle="tooltip" data-placement="top">
+                      <a href="#">
+                          <img src="${ctxStatic}/static/img/qq-no.svg"/>
+                      </a>
+                  </div>
+              </div>
+          </div>
+      </#if>
   </div>
   <!-- /.login-box-body -->
 </div>
@@ -206,9 +235,7 @@
                         "rememberMe":vm.rememberme},
                     dataType: "json",
                     success: function(result){
-                        /*登录成功*/
                         if(result.code == 0){
-                            /*获取登陆前用户是否勾选记住账号*/
                             if($("input[name='rememberUserCode']").is(':checked')){
                                 window.localStorage.setItem('rememberUserCode',vm.username);
                             }else{

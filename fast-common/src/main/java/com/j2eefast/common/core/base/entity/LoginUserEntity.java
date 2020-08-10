@@ -108,12 +108,26 @@ public class LoginUserEntity implements Serializable {
 	private List<String> roleKey;
 
 	/**
+	 * 角色权限范围 0=未设置, 1=仅本人数据, 2=本公司数据,3=本部门及以下数据权限,4=本部门数据权限, 5=自定义数据权限  6 所有数据权限
+	 * 数据权限范围 优先级 如果多个数据权限范围 则已最大优先
+	 * 例如:
+	 * 有 角色1-数据范围6   角色2-数据权限5  角色3-数据权限1
+	 * 如果都把这些角色都分配给这个用户- 则此用户权限为6 所有数据权限
+	 */
+//	private List<String> dataScope;
+
+	/**
 	 * 系统标识集合
 	 */
 	private List<Map<String, Object>> modules;
 
 	/**
-	 * 拥有的权限
+	 * 用户角色对应菜单的权限
+	 */
+	private List<Map<Object,Object>> rolePerm;
+
+	/**
+	 * 拥有菜单的权限
 	 */
 	private Set<String> permissions;
 

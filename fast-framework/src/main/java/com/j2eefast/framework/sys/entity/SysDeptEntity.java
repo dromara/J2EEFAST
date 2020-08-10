@@ -20,7 +20,7 @@ public class SysDeptEntity  extends BaseEntity {
 	 * 部门ID
  	 */
 	@TableId(type = IdType.ASSIGN_ID)
-	private Long deptId;
+	private Long id;
 
 	/**
 	 * 上级部门ID，一级部门为0

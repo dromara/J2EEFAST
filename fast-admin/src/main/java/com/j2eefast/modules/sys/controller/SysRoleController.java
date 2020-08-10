@@ -2,6 +2,9 @@ package com.j2eefast.modules.sys.controller;
 
 import java.util.List;
 import java.util.Map;
+
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import com.j2eefast.common.core.base.entity.Ztree;
 import com.j2eefast.common.core.utils.*;
 import com.j2eefast.common.core.business.annotaion.BussinessLog;
@@ -74,8 +77,8 @@ public class SysRoleController extends BaseController {
 		mmap.put("role", sysRoleService.getById(roleId));
 		List<SysModuleEntity>  modules = sysModuleService.list();
 		mmap.put("modules", modules);
-		List<String> lisModule = sysRoleModuleService.findRoleModuleList(roleId);
-		mmap.put("lisModule", lisModule);
+		String selectModules = sysRoleModuleService.getRoleModuleByRoleIdToStr(roleId);
+		mmap.put("selectModules", selectModules);
 		return urlPrefix + "/edit";
 	}
 
@@ -87,21 +90,48 @@ public class SysRoleController extends BaseController {
 		mmap.put("role", sysRoleService.getById(roleId));
 		List<SysModuleEntity>  modules = sysModuleService.list();
 		mmap.put("modules", modules);
-		List<String> lisModule = sysRoleModuleService.findRoleModuleList(roleId);
-		mmap.put("lisModule", lisModule);
+		String selectModules = sysRoleModuleService.getRoleModuleByRoleIdToStr(roleId);
+		mmap.put("selectModules", selectModules);
 		return urlPrefix + "/authorization";
 	}
 
 	/**
-	 * 角色授权用户
+	 * 角色授权用户页面跳转
 	 */
 	@GetMapping("/authUser/{roleId}")
 	public String authorUser(@PathVariable("roleId") Long roleId, ModelMap mmap){
 		mmap.put("roleId", roleId);
-		List<Ztree> ztrees = sysCompService.findCompTree(UserUtils.getUserInfo().getCompId(),UserUtils.getUserId());
-		mmap.put("comps",  ztrees);
 		return urlPrefix + "/authUser";
 	}
+
+	/**
+	 * 角色分配数据权限
+	 * @param roleId
+	 * @param mmap
+	 * @return
+	 */
+	@RequiresPermissions("sys:role:data")
+	@GetMapping("/authData/{roleId}")
+	public String authorData(@PathVariable("roleId") Long roleId, ModelMap mmap){
+		mmap.put("role", sysRoleService.getById(roleId));
+		return urlPrefix + "/authorData";
+	}
+
+	/**
+	 * 保存角色分配数据权限
+	 */
+	@RequiresPermissions("sys:role:data")
+	@BussinessLog(title = "角色管理", businessType = BusinessType.UPDATE)
+	@PostMapping("/authData/edit")
+	@ResponseBody
+	public ResponseData authDataScopeEdit(SysRoleEntity role){
+		sysRoleService.checkRoleAllowed(role);
+		if (sysRoleService.authDataScope(role)){
+			return success();
+		}
+		return error("修改失败!");
+	}
+
 
 	/**
 	 * 选择用户
@@ -109,10 +139,10 @@ public class SysRoleController extends BaseController {
 	@GetMapping("/authUser/selectUser/{roleId}")
 	public String selectUser(@PathVariable("roleId") Long roleId, ModelMap mmap){
 		mmap.put("roleId",roleId);
-		List<Ztree> ztrees = sysCompService.findCompTree(UserUtils.getUserInfo().getCompId(),UserUtils.getUserId());
-		mmap.put("comps",  ztrees);
 		return urlPrefix + "/selectUser";
 	}
+
+
 
 	/**
 	 * 授权用户列表
@@ -147,7 +177,7 @@ public class SysRoleController extends BaseController {
 	@RequiresRoles(Constant.SU_ADMIN)
 	@ResponseBody
 	public ResponseData cancelAuthUser(Long roleId,Long[] userIds){
-		return sysUserRoleService.deleteByUserIdToRoleIdsBatch(roleId,userIds) ? success() : success();
+		return sysUserRoleService.deleteByUserIdToRoleIdsBatch(roleId,userIds) ? success() : error("修改失败");
 	}
 
 
@@ -160,7 +190,7 @@ public class SysRoleController extends BaseController {
 	@PostMapping("/authUser/insertAuthUsers")
 	@ResponseBody
 	public ResponseData selectAuthUserAll(Long roleId, Long[] userIds){
-		return  sysUserRoleService.addAuthUsers(roleId, userIds)?success() : success();
+		return  sysUserRoleService.addAuthUsers(roleId, userIds)?success() : error("修改失败");
 	}
 
 	/**
@@ -184,27 +214,6 @@ public class SysRoleController extends BaseController {
 		List<SysRoleEntity> list = sysRoleService.list();
 		return success().put("list", list);
 	}
-
-	/**
-	 * 角色信息
-	 */
-	@RequestMapping("/info/{roleId}")
-	@RequiresPermissions("sys:role:info")
-	@ResponseBody
-	public ResponseData info(@PathVariable("roleId") Long roleId) {
-		SysRoleEntity role = sysRoleService.getById(roleId);
-
-		// 查询角色对应的菜单
-		List<Long> menuIdList = sysRoleMenuService.findMenuIdList(roleId);
-		//role.setMenuIdList(menuIdList);
-
-		// 查询角色对应的部门
-		List<Long> deptIdList = sysRoleDeptService.findDeptIdList(new Long[] { roleId });
-		//role.setDeptIdList(deptIdList);
-
-		return  success().put("role", role);
-	}
-
 
 
 	/**
@@ -299,5 +308,7 @@ public class SysRoleController extends BaseController {
 	public ResponseData changeStatus(SysRoleEntity role){
 		return sysRoleService.changeStatus(role) ? success() : error("角色状态修改失败!");
 	}
+
+
 
 }

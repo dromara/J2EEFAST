@@ -1,0 +1,107 @@
+<#--
+  Copyright (c) 2020-Now http://www.j2eefast.com All rights reserved.
+  页面布局总入口,组件引入总入口 前端默认引擎
+  @author J2eeFAST
+  @date 2020-05-20
+  @version v1.0.2 优化整体布局,优化设计逻辑,引入前端组件功能
+-->
+
+<#--页面主题-->
+<#macro pageTheme mark = false>
+	<#if mark == "true">
+		<@compress single_line=true>
+			<#nested>
+		</@compress>
+	<#else>
+		<#nested>
+	</#if>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?d7168b0cef9904be9b675a22e48c5721";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+<#assign jscssLib="">
+<#assign animationTag="">
+</#macro>
+<#--页面公共头部-->
+<#macro header title = "默认标题J2eeFAST"
+               libs = "" <#-- 需要引入的css js样式 -->
+               bodyClass = "gray-bg" <#-- body样式-->
+               isAnimation = "true" <#--是否需要页面动画 -->
+               animation = "fadeInRight" <#-- -->
+               style = "" <#-- body style-->
+                >
+<#assign jscssLib=libs>
+<#assign animationTag=isAnimation>
+<!DOCTYPE html>
+<html>
+<head>
+<#import "springctx.ftl" as ctx>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<#-- 其他地方代码都可以改,未获得作者许可此信息(以下三行代码)请不要修改。请尊重作者劳动成果! ™否则作者有权收回软件使用权ø -->
+<meta name="keywords" content="PoweredByJ2eeFast"/>
+<meta name="description" content="PoweredByJ2eeFast"/>
+<meta name="author" content="J2eeFAST"/>
+<#-------------------------------------------------------------------------------------------------->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+<title>${title}</title>
+<link rel="shortcut icon" href="${ctxStatic}/static/img/favicon.ico"/>
+<script src="${ctxStatic}/static/libs/jquery.2.1.4.min.js?V=${config.getDvVersion()}"></script>
+<script> var baseURL = "${ctxStatic}/", _lang = "${config.getSysLang()}",  _username = "<@shiro.principal property="username"/>"  ,
+ LockScreen = ${config.getKey('SYS_LOCK_SCEREEN')}; function imgUserError(){var img=event.srcElement;img.src=baseURL+"static/img/user2-160x160.jpg"; img.onerror=null;}</script>
+<@cssLibs.css Libs = libs/>
+<#-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<#-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+<#-- Google Font-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"/>
+<#-- Vue单页面刷新闪烁标签{{}}问题解决-->
+<style>
+    [v-cloak]{display:none !important;}
+</style>
+<#nested>
+</head>
+<body class="${bodyClass} sidebar-mini ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')}" <#if style !="">style="${style}"</#if>>
+<#if animationTag == "true">
+<div id="__bodyDiv009" class="animated ${animation}">
+</#if>
+</#macro>
+
+<#--页面公共尾部-->
+<#macro footer>
+<#if animationTag == "true">
+</div>
+</#if>
+<a id="scroll-up" href="#" class="btn btn-sm display"><i class="fa fa-angle-double-up"></i></a>
+<@jsLibs.js Libs = jscssLib/>
+
+<#nested>
+</body>
+</html>
+</#macro>
+
+<#--表格-->
+<#macro table id = "bootstrap-table"
+>
+    <div class="btn-group-sm" id="toolbar" role="group">
+        <#nested>
+    </div>
+    <div class="col-sm-12 select-table table-striped">
+        <table id="${id}"></table>
+    </div>
+</#macro>
+
+<#-- 引入控件组件-->
+<#import "jslibs.html" as jsLibs>
+<#import "csslibs.html" as cssLibs>
+<#import "/common/component/form.html" as form>

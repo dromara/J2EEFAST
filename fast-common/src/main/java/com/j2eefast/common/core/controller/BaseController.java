@@ -1,5 +1,6 @@
 package com.j2eefast.common.core.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.j2eefast.common.core.utils.CookieUtil;
 import com.j2eefast.common.core.utils.HttpContextUtil;
 import com.j2eefast.common.core.utils.ResponseData;
@@ -39,7 +40,11 @@ public class BaseController {
     }
 
     protected String getPara(String name) {
-        return Objects.requireNonNull(HttpContextUtil.getRequest()).getParameter(name);
+        return StrUtil.nullToDefault(HttpContextUtil.getRequest().getParameter(name),"");
+    }
+
+    protected String getPara(String name,String default1) {
+        return StrUtil.nullToDefault(HttpContextUtil.getRequest().getParameter(name),default1);
     }
 
     protected void setAttr(String name, Object value) {
@@ -81,6 +86,12 @@ public class BaseController {
 		return CookieUtil.getCookie(this.getHttpServletRequest(),
                 this.getHttpServletResponse(),name);
     }
+
+    protected String getCookie(String name){
+        return CookieUtil.getCookie(this.getHttpServletRequest(),
+                name);
+    }
+
 
     /**
      * 返回页面错误

@@ -41,6 +41,13 @@ public interface SysMenuMapper extends BaseMapper<SysMenuEntity> {
 	List<SysMenuEntity> findModuleMenuAll(@Param("moduleCodes") String moduleCodes);
 
 	/**
+	 * 通过菜单ID查询菜单
+	 * @param menuId
+	 * @return
+	 */
+	SysMenuEntity selectMenuByMenId(@Param("menuId") Long menuId);
+
+	/**
 	 * 根据用户ID 及用户选择模块 查询菜单
 	 *
 	 * @param userdId 用户ID
@@ -105,5 +112,5 @@ public interface SysMenuMapper extends BaseMapper<SysMenuEntity> {
 	 * @param userId 用户ID
 	 * @return 菜单列表
 	 */
-	List<SysMenuEntity> findMenuAllByUserId(@Param("userdId") Long userId);
+	List<SysMenuEntity> findMenuAllByUserId(@Param("userId") Long userId);
 }

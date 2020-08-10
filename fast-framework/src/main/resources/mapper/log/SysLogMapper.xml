@@ -3,7 +3,76 @@
 
 <mapper namespace="com.j2eefast.framework.log.mapper.SysOperLogMapper">
 
+    <!--  实体栏位  -->
+    <!--  实体栏位  -->
+    <sql id="sysOperLogColumns">
+          DISTINCT a.id as "id"   ,
+          a.title as "title"   ,
+          a.business_type as "businessType"   ,
+          a.method as "method"   ,
+          a.request_method as "requestMethod"   ,
+          a.operator_type as "operatorType"   ,
+          a.oper_name as "operName"   ,
+          a.comp_name as "compName"   ,
+          a.oper_url as "operUrl"   ,
+          a.oper_ip as "operIp"   ,
+          a.oper_location as "operLocation"   ,
+          a.oper_param as "operParam"   ,
+          a.json_result as "jsonResult"   ,
+          a.status as "status"   ,
+          a.error_msg as "errorMsg"   ,
+          a.oper_time as "operTime"   ,
+          a.time as "time"   ,
+          a.comp_id as "compId"   ,
+          a.dept_id as "deptId"
+      </sql>
+
+    <!-- 外联表  -->
+    <sql id="sysOperLogJoins">
+         LEFT JOIN sys_comp c ON c.id = a.comp_id
+         LEFT JOIN (SELECT id,parent_ids FROM sys_comp) d  ON a.dept_id = d.id
+    </sql>
+
     <update id="cleanLog">
-        truncate table sys_oper_log
+        DELETE FROM sys_oper_log
     </update>
+
+    <select id="findPage"  resultType="com.j2eefast.framework.log.entity.SysOperLogEntity">
+        SELECT
+        <include refid="sysOperLogColumns"/>
+        FROM sys_oper_log AS a
+        <include refid="sysOperLogJoins"/>
+        <where>
+            <if test="title != null and title != ''">
+                AND a.title LIKE
+                <if test="_databaseId == 'oracle'"> '%,'||#{title}||',%'</if>
+                <if test="_databaseId == 'mysql'"> CONCAT('%', #{title}, '%')</if>
+            </if>
+            <if test="operName != null and operName != ''">
+                AND a.oper_name LIKE
+                <if test="_databaseId == 'oracle'"> '%,'||#{operName}||',%'</if>
+                <if test="_databaseId == 'mysql'"> CONCAT('%', #{operName}, '%')</if>
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status != #{status}
+            </if>
+            <if test="deptId != null and deptId != ''">
+                AND  FIND_IN_SET(#{deptId},d.parent_ids) OR a.dept_id = #{deptId}
+            </if>
+            <if test="businessTypes != null and businessTypes != ''">
+                AND  a.business_type IN(${businessTypes})
+            </if>
+            <if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(a.oper_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+            </if>
+            <if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(a.oper_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+            </if>
+            <!-- 数据范围过滤 -->
+            <if test = "sql_filter !=null and sql_filter!=''">
+                AND ${sql_filter}
+            </if>
+        </where>
+    </select>
+
 </mapper>

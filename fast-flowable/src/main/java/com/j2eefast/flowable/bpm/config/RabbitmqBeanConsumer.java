@@ -58,7 +58,7 @@ public class RabbitmqBeanConsumer {
 			if(ToolUtil.isNotEmpty(heade) && heade.equals("ADDROLE")){
 				JSONObject json = JSONArray.parseObject(info);
 				GroupEntity group = new GroupEntity();
-				group.setId(String.valueOf(json.getLongValue("roleId")));
+				group.setId(String.valueOf(json.getLongValue("id")));
 				group.setName(json.getString("roleName"));
 				group.setRev(1);
 				group.setType(json.getString("roleKey"));
@@ -72,7 +72,7 @@ public class RabbitmqBeanConsumer {
 			}else if(ToolUtil.isNotEmpty(heade) && heade.equals("ADDUSER")){
 				JSONObject json = JSONArray.parseObject(info);
 				UserEntity user = new UserEntity();
-				user.setId(String.valueOf(json.getLongValue("userId")));
+				user.setId(String.valueOf(json.getLongValue("id")));
 				user.setDispalyName(json.getString("name"));
 				user.setFirstName(json.getString("name"));
 				user.setLastName(json.getString("name"));
@@ -90,7 +90,7 @@ public class RabbitmqBeanConsumer {
 			}else if(ToolUtil.isNotEmpty(heade) && heade.equals("UPDATAUSER")){
 				JSONObject json = JSONArray.parseObject(info);
 				UserEntity user = new UserEntity();
-				user.setId(String.valueOf(json.getLongValue("userId")));
+				user.setId(String.valueOf(json.getLongValue("id")));
 				user.setDispalyName(json.getString("name"));
 				user.setFirstName(json.getString("name"));
 				user.setLastName(json.getString("name"));

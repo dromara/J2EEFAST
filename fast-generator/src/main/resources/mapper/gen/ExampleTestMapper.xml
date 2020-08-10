@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.j2eefast.generator.gen.mapper.ExampleTestMapper">
+
+
+    
+    <resultMap type="ExampleTestEntity" id="ExampleTestResult">
+  <result property="id"    column="id"    />
+   <result property="code"    column="code"    />
+   <result property="name"    column="name"    />
+   <result property="email"    column="email"    />
+   <result property="avatar"    column="avatar"    />
+   <result property="phone"    column="phone"    />
+   <result property="sex"    column="sex"    />
+   <result property="age"    column="age"    />
+   <result property="joinDate"    column="join_date"    />
+   <result property="leaveDate"    column="leave_date"    />
+   <result property="compId"    column="comp_id"    />
+   <result property="deptId"    column="dept_id"    />
+   <result property="addr"    column="addr"    />
+   <result property="addrinfo"    column="addrinfo"    />
+   <result property="delFlag"    column="del_flag"    />
+   <result property="createBy"    column="create_by"    />
+   <result property="remark"    column="remark"    />
+   <result property="updateTime"    column="update_time"    />
+   <result property="updateBy"    column="update_by"    />
+   <result property="createTime"    column="create_time"    />
+     </resultMap>
+    
+    <!--  实体栏位  --> 
+    <sql id="exampleTestColumns">
+         a.id as "id" ,
+         a.code as "code" ,
+         a.name as "name" ,
+         a.email as "email" ,
+         a.avatar as "avatar" ,
+         a.phone as "phone" ,
+         a.sex as "sex" ,
+         a.age as "age" ,
+         a.join_date as "joinDate" ,
+         a.leave_date as "leaveDate" ,
+         comp001.name as "compName",
+         a.comp_id as "compId" ,
+         dept001.name as "deptName",          
+         a.dept_id as "deptId" ,
+         a.addr as "addr" ,
+         a.addrinfo as "addrinfo" ,
+         a.del_flag as "delFlag" ,
+         a.create_by as "createBy" ,
+         a.remark as "remark" ,
+         a.update_time as "updateTime" ,
+         a.update_by as "updateBy" ,
+         a.create_time as "createTime" 
+     </sql>
+                                                                                                                                    
+        <!-- 外联表  -->
+    <sql id="exampleTestJoins">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        left join sys_comp comp001 ON comp001.id = a.comp_id                                                                                
+        left join sys_comp dept001 ON (dept001.type = 1 AND dept001.id = a.dept_id )                                                                                                                                                                                                                                                                                                                                                                        
+    </sql>    
+    
+    
+    <!--  根据主键获取实体   -->
+     <select id="findExampleTestById"  resultType="com.j2eefast.generator.gen.entity.ExampleTestEntity" >
+          SELECT 
+			<include refid="exampleTestColumns"/>
+		FROM  example_test a
+        <include refid="exampleTestJoins"/>
+		WHERE a.id = #{id}
+    </select>
+    
+     <!--  根据获取实体List   -->
+     <select id="findList" resultType="com.j2eefast.generator.gen.entity.ExampleTestEntity">
+		SELECT 
+			<include refid="exampleTestColumns"/>
+		FROM example_test a
+        <include refid="exampleTestJoins"/>
+		<where>
+                                                                    a.del_flag = '0'                      
+            <if test="code != null  and code != ''">
+                     and a.code LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{code}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{code}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{code},'%')</if>
+			</if>
+			
+   
+            <if test="name != null  and name != ''">
+                     and a.name LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{name}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{name}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			
+   
+            <if test="email != null  and email != ''">
+                     and a.email LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{email}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{email}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{email},'%')</if>
+			</if>
+			
+    
+            <if test="phone != null  and phone != ''">
+                     and a.phone LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{phone}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{phone}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{phone},'%')</if>
+			</if>
+			
+                                <if test = "sql_filter !=null and sql_filter!=''">
+                   and ${sql_filter}
+               </if>    
+		</where>
+	 </select>
+
+	  <!--  根据获取实体 page   -->
+     <select id="findPage" resultType="com.j2eefast.generator.gen.entity.ExampleTestEntity">
+		SELECT 
+			<include refid="exampleTestColumns"/>
+		FROM example_test a
+         <include refid="exampleTestJoins"/>
+		<where>
+                                                                    a.del_flag = '0'
+                                      <if test="exampleTest.code != null  and exampleTest.code != ''">
+                     and a.code LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{exampleTest.code}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{exampleTest.code}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{exampleTest.code},'%')</if>
+			</if>
+               <if test="exampleTest.name != null  and exampleTest.name != ''">
+                     and a.name LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{exampleTest.name}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{exampleTest.name}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{exampleTest.name},'%')</if>
+			</if>
+               <if test="exampleTest.email != null  and exampleTest.email != ''">
+                     and a.email LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{exampleTest.email}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{exampleTest.email}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{exampleTest.email},'%')</if>
+			</if>
+                <if test="exampleTest.phone != null  and exampleTest.phone != ''">
+                     and a.phone LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{exampleTest.phone}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{exampleTest.phone}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{exampleTest.phone},'%')</if>
+			</if>
+                              <if test = "sql_filter !=null and sql_filter!=''">
+               and ${sql_filter}
+             </if>  
+		</where>
+	 </select>
+</mapper>

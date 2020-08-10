@@ -28,9 +28,14 @@ public class GenConstants
     /** 单表（增） */
     public static final String TPL_C = "c";
 
+    public static final String TARGET = "tab";
 
     /** 树表（增删改查） */
     public static final String TPL_TREE = "tree";
+
+    public static final String SERVICE = "service";
+
+    public static final String ENTITY = "entity";
 
     /** 树编码字段 */
     public static final String TREE_CODE = "treeCode";

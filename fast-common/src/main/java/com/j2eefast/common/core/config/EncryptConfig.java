@@ -21,15 +21,15 @@ import org.springframework.context.annotation.Configuration;
 public class EncryptConfig {
     private final static Logger LOG                        = LoggerFactory.getLogger(EncryptConfig.class);
 
-    static {
-        //----------密码解密需要的Key---------------------------------------------
-        try {
-            ToolUtil.getFastServerInfos();
-        } catch (Exception e) {
-            LOG.error("获取机器码失败!",e);
-        }
-        //----------------------------------------------------------------------
-    }
+//    static {
+//        //----------密码解密需要的Key---------------------------------------------
+//        try {
+//            ToolUtil.getFastServerInfos();
+//        } catch (Exception e) {
+//            LOG.error("获取机器码失败!",e);
+//        }
+//        //----------------------------------------------------------------------
+//    }
     @Bean(name = "encryptablePropertyDetector")
     public EncryptablePropertyDetector encryptablePropertyDetector() {
         return new MyEncryptablePropertyDetector();

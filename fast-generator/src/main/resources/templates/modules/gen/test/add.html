@@ -1,0 +1,190 @@
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="新增代码生成范例" bodyClass="white-bg" libs=["bootstrapSelect","fileupload","selectPage"]/>
+<div class="wrapper wrapper-content ibox-content">
+<@form.form id="form-test-add"  class="form-horizontal">
+    <h4 class="form-header h4"><@ctx.i18n text = "基本信息"/>&nbsp;<i class="fa-fw fa icon-star"></i></h4>                                                                                                                                    
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "员工编号"/>：                
+               </label>
+                <div class="col-sm-8">
+                    <@form.input name="code"  required=true />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+                <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "姓名"/>：        
+               </label>
+                <div class="col-sm-8">
+                    <@form.input name="name"  required=true />
+                </div>
+            </div>    
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><@ctx.i18n text = "邮箱"/>：                
+               </label>
+                <div class="col-sm-8">
+                    <@form.input name="email"  />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+                <div class="form-group">
+                <label class="col-sm-4 control-label"><@ctx.i18n text = "头像"/>：
+                </label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <@form.imageclip name="avatar"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "电话"/>：                
+               </label>
+                <div class="col-sm-8">
+                    <@form.input name="phone"  required=true />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+            <label class="col-sm-4 control-label"><@ctx.i18n text = "性别"/>：</label>
+            <div class="col-sm-8">
+                <@form.radio name="sex" dictType="sys_user_sex"  />
+            </div>
+        </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "年龄"/>：                
+               </label>
+                <div class="col-sm-8">
+                    <@form.input name="age"  required=true />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+            <label class="col-sm-4 control-label"><@ctx.i18n text = "入职日期"/>：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input class="form-control time-input" name="joinDate"  data-type="date"   value="${(exampleTest.joinDate?string('yyyy-MM-dd'))!}" data-format="yyyy-MM-dd" type="text" />
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+        <div class="form-group">
+            <label class="col-sm-4 control-label"><@ctx.i18n text = "离职日期"/>：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input class="form-control time-input" name="leaveDate"  data-type="date"   value="${(exampleTest.leaveDate?string('yyyy-MM-dd'))!}" data-format="yyyy-MM-dd" type="text" />
+                </div>
+            </div>
+        </div>
+
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+            <label class="col-sm-4 control-label"><@ctx.i18n text = "归属公司"/>：</label>
+            <div class="col-sm-8">
+                  <@form.treeselect  name="compId"
+                    boxTitle="选择归属公司" url="sys/comp/treeData?type=0" expandLevel=true  placeholder="请选择归属公司"/>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+         <div class="form-group">
+            <label class="col-sm-4 control-label"><@ctx.i18n text = "归属部门"/>：</label>
+            <div class="col-sm-8">
+                    <@form.treeselect name="deptId" boxTitle="请选择管理地区" url="sys/dept/selectZtree" correlationId="compId" isSelectParent=true placeholder="请选择管理地区"/>
+            </div>
+         </div> 
+        </div>
+        <div class="col-sm-6">
+                <div class="form-group">
+                <label class="col-sm-4 control-label"><@ctx.i18n text = "地址"/>：
+                </label>
+                <div class="col-sm-8">
+                     <@form.selectLinkage name="addr"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+        <div class="form-group">
+            <label class="col-sm-4 control-label"><@ctx.i18n text = "地址详情"/>：</label>
+            <div class="col-sm-8">
+                <textarea name="addrinfo" class="form-control"></textarea>
+            </div>
+        </div>
+        </div>
+    </div>
+<h4 class="form-header h4"><@ctx.i18n text = "附件上传"/>&nbsp;<i class="fa-fw fa icon-cloud-upload"></i></h4>
+   <div class="row">
+       <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><@ctx.i18n text = "图片附件上传"/>：
+                </label>
+                <div class="col-sm-10">
+                    <@form.fileupload name="upload_img" bizType="example_test_img" isLazy=true preview="true" uploadType="image"/>
+                </div>
+           </div>
+       </div>
+    </div>
+   <div class="row">
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><@ctx.i18n text = "文件附件上传"/>：
+                </label>
+                <div class="col-sm-10">
+                    <@form.fileupload name="upload_file" bizType="example_test_file" isLazy=true preview="true" uploadType="all"/>
+                </div>
+            </div>
+        </div>
+   </div>
+</@form.form>
+    <div class="hr-line-dashed"></div>
+    <div class="row" id="_addTab">
+        <div class="col-sm-offset-5 col-sm-10">
+            <button type="button" class="btn btn-sm btn-primary" onclick="opt.form.submit()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+        </div>
+    </div>
+</div>
+<@footer>
+<script type="text/javascript">
+    var prefix = baseURL + "gen/test"
+    $("#form-test-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if (opt.validate.form()) {
+            opt.operate.saveTab(prefix + "/add", $('#form-test-add').serialize());
+        }
+    }
+</script>
+</@footer>
+</@pageTheme>

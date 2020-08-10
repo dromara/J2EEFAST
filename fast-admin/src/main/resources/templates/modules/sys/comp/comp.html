@@ -1,44 +1,51 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="公司列表"/>
-<@search fromId="comp-form">
-<div class="select-list">
-    <ul>
-        <li>
-            <@ctx.i18n text = "公司名称"/>：<input type="text" name="name"/>
-        </li>
-        <li>
-            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
-            <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
-        </li>
-    </ul>
+<@header title="公司列表" libs=["table"]/>
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <@form.form name="comp-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <@ctx.i18n text = "公司名称"/>：<@form.input name="name" class=""/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+                        </li>
+                    </ul>
+                </div>
+            </@form.form>
+        </div>
+        <@table id="bootstrap-tree-table">
+            <@shiro.hasPermission name="sys:comp:add">
+                <a class="btn btn-success" onclick="opt.operate.add(1)"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
+            </@shiro.hasPermission>
+            <@shiro.hasPermission name="sys:comp:edit">
+                <a class="btn btn-primary" onclick="opt.operate.edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
+            </@shiro.hasPermission>
+            <a class="btn btn-info" id="expandAllBtn">
+                <i class="fa fa-exchange"></i> <@ctx.i18n text = "展开/折叠"/>
+            </a>
+        </@table>
+     </div>
 </div>
-</@search>
-<@table tableId="bootstrap-tree-table">
-    <@shiro.hasPermission name="sys:comp:add">
-        <a class="btn btn-success" onclick="opt.operate.add(1)"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
-    </@shiro.hasPermission>
-    <@shiro.hasPermission name="sys:comp:edit">
-        <a class="btn btn-primary" onclick="opt.operate.edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
-    </@shiro.hasPermission>
-    <a class="btn btn-info" id="expandAllBtn">
-        <i class="fa fa-exchange"></i> <@ctx.i18n text = "展开/折叠"/>
-    </a>
-</@table>
 <@footer>
-<script>
+<script type="text/javascript">
     var addFlag = "${permission.hasPermi('sys:comp:add')}";
     var editFlag = "${permission.hasPermi('sys:comp:edit')}";
     var delFlag = "${permission.hasPermi('sys:comp:del')}";
     var datas = ${dict.getDictListJson('sys_normal_disable')};
+    var types = ${dict.getDictListJson('sys_comp_type')};
     var visible = ${permission.isPermitteds("sys:comp:edit,sys:comp:del")?string('true', 'false')};
     var prefix = baseURL + "sys/comp";
 
     $(function() {
         var options = {
-            code: "compId",
+            code: "id",
             parentCode: "parentId",
-            uniqueId: "compId",
+            uniqueId: "id",
             url: prefix + "/list",
             addUrl: prefix + "/add/{id}",
             editUrl: prefix + "/edit/{id}",
@@ -47,7 +54,10 @@
             columns: [
                 {field: 'selectItem', radio: true},
                 {field: 'name', title: "<@ctx.i18n text = "公司名称"/>", align: "left",halign:"left"},
-                {field: 'orderNum', title: "<@ctx.i18n text = "排序"/>"},
+                {field: 'type', title: "<@ctx.i18n text = "类型"/>", formatter: function(value, item, index) {
+                        return $.table.selectDictLabel(types, item.type);}
+                },
+                {field: 'orderNum', title: "<@ctx.i18n text = "排序"/>",align: "center"},
                 {field: 'status', title: "<@ctx.i18n text = "状态"/>", formatter: function(value, item, index) {
                         return $.table.selectDictLabel(datas, item.status);}
                 },
@@ -55,9 +65,9 @@
                 {title: "<@ctx.i18n text = "操作"/>",visible:visible, formatter: function(value, row, index) {
                         if (row.parentId != 0) {
                             var actions = [];
-                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.compId + '\')"><i class="fa fa-edit"></i> <@ctx.i18n text = "编辑"/></a> ');
-                            actions.push('<a class="btn btn-info  btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="opt.operate.add(\'' + row.compId + '\')"><i class="fa fa-plus"></i> <@ctx.i18n text = "新增"/></a> ');
-                            actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.compId + '\')"><i class="fa fa-trash"></i> <@ctx.i18n text = "删除"/></a>');
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="opt.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i> <@ctx.i18n text = "编辑"/></a> ');
+                            actions.push('<a class="btn btn-info  btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="opt.operate.add(\'' + row.id + '\')"><i class="fa fa-plus"></i> <@ctx.i18n text = "新增"/></a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + delFlag + '" href="javascript:void(0)" onclick="opt.operate.del(\'' + row.id + '\')"><i class="fa fa-trash"></i> <@ctx.i18n text = "删除"/></a>');
                             return actions.join('');
                         } else {
                             return "";
@@ -66,7 +76,6 @@
         };
         $.treeTable.init(options);
     });
-
 </script>
 </@footer>
 </@pageTheme>

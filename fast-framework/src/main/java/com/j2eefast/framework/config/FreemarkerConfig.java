@@ -43,6 +43,5 @@ public class FreemarkerConfig {
 		configurer.setConfiguration(configuration);
 		return configurer;
 	}
-	
 
 }

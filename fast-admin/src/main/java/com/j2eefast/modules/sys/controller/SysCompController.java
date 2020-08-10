@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Joiner;
 import com.j2eefast.common.core.base.entity.Ztree;
 import com.j2eefast.common.core.business.annotaion.BussinessLog;
 import com.j2eefast.common.core.enums.BusinessType;
+import com.j2eefast.framework.sys.entity.SysAreaEntity;
 import com.j2eefast.framework.sys.entity.SysDeptEntity;
-import com.j2eefast.framework.sys.service.SysDeptService;
+import com.j2eefast.framework.sys.service.*;
 import com.j2eefast.framework.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,6 @@ import com.j2eefast.common.core.utils.ToolUtil;
 import com.j2eefast.common.core.utils.ValidatorUtil;
 import com.j2eefast.framework.sys.entity.SysCompEntity;
 import com.j2eefast.framework.sys.entity.SysUserEntity;
-import com.j2eefast.framework.sys.service.SysCompDeptService;
-import com.j2eefast.framework.sys.service.SysCompService;
-import com.j2eefast.framework.sys.service.SysUserService;
 import com.j2eefast.common.core.controller.BaseController;
 import com.j2eefast.framework.utils.Constant;
 
@@ -54,6 +53,8 @@ public class SysCompController extends BaseController {
 	@Autowired
 	private SysDeptService sysDeptService;
 
+	@Autowired
+	private SysAreaService sysAreaService;
 
 
 
@@ -69,14 +70,9 @@ public class SysCompController extends BaseController {
 	 */
 	@GetMapping("/edit/{compId}")
 	public String edit(@PathVariable("compId") Long compId, ModelMap mmap){
-		mmap.put("comp",  sysCompService.findCompById(compId));
-		Map<String, Object> params = new HashMap<>(1);
-		params.put("compId",compId);
-		List<SysDeptEntity> list = sysDeptService.findByDeptNameId(params);
-		List<Long> comps = list.stream().map(SysDeptEntity::getDeptId).collect(Collectors.toList());
-		List<String> compName = list.stream().map(SysDeptEntity::getName).collect(Collectors.toList());
-		mmap.put("deptIdList",  Joiner.on(",").join(comps));
-		mmap.put("deptName",  Joiner.on(",").join(compName));
+		SysCompEntity sysCompEntity = sysCompService.findCompById(compId);
+		mmap.put("comp",  sysCompEntity);
+		mmap.put("areaNames",  sysAreaService.getAreaNames(sysCompEntity.getAreaIds()));
 		return urlPrefix + "/edit";
 	}
 
@@ -114,62 +110,26 @@ public class SysCompController extends BaseController {
 
 
 	/**
-	 * 加载部门列表树
+	 * 加载公司列表树
 	 */
 	@GetMapping("/treeData")
+	@RequiresPermissions("sys:user:list")
 	@ResponseBody
 	public List<Ztree> treeData(){
-		List<Ztree> ztrees = sysCompService.findCompTree(UserUtils.getUserInfo().getCompId(),UserUtils.getUserId());
+		List<Ztree> ztrees = sysCompService.findCompTree(super.getPara("type"));
 		return ztrees;
 	}
 
+	/**
+	 * 页面获取公司信息列表
+	 * @param params
+	 * @return
+	 */
 	@RequestMapping("/list")
 	@RequiresPermissions("sys:comp:list")
 	@ResponseBody
 	public List<SysCompEntity> list(@RequestParam Map<String, Object> params) {
 		return  sysCompService.findList(params);
-	}
-
-	/**
-	 * 选择部门(添加、修改菜单)
-	 */
-	@RequestMapping("/select")
-	@RequiresPermissions("sys:comp:select")
-	@ResponseBody
-	public ResponseData select() {
-		List<SysCompEntity> compList = sysCompService.findList(new HashMap<String, Object>());
-		return success().put("compList", compList);
-	}
-
-	/**
-	 * 
-	 * @Description:上级公司ID(总公司为0)
-	 * @author zhouzhou 18774995071@163.com
-	 * @time 2018-12-05 12:26
-	 * @return
-	 *
-	 */
-	@RequestMapping("/info")
-	@RequiresPermissions("sys:comp:list")
-	@ResponseBody
-	public ResponseData info() {
-		long deptId = 0;
-		if (UserUtils.getUserId() != Constant.SUPER_ADMIN) {
-			List<SysCompEntity> comptList = sysCompService.findList(new HashMap<String, Object>());
-			Long parentId = null;
-			for (SysCompEntity compEntity : comptList) {
-				if (parentId == null) {
-					parentId = compEntity.getParentId();
-					continue;
-				}
-
-				if (parentId > compEntity.getParentId().longValue()) {
-					parentId = compEntity.getParentId();
-				}
-			}
-			deptId = parentId;
-		}
-		return success().put("compId", deptId);
 	}
 
 	/**

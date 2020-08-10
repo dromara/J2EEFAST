@@ -1,31 +1,35 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="新增公司"/>
-<@addorEdit fromId="form-comp-add">
-	<input id="parentId" name="parentId" type="hidden" value="${comp.compId}"   />
-	<input id="deptId" name="deptIdList" type="hidden"/>
+<@header title="新增公司" bodyClass="white-bg"/>
+<div class="wrapper wrapper-content ibox-content">
+	<@form.form id="form-comp-add" class="form-horizontal">
+	<@form.hidden name="type" value="0"/>
 	<div class="form-group">
 		<label class="col-sm-3 control-label "><span style="color: red; ">*</span>上级公司：</label>
 		<div class="col-sm-8">
-			<div class="input-group">
-				<input class="form-control" type="text" onclick="selectCompTree()" id="compName" readonly="true" value="${comp.name?default("总公司")}">
-				<span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
-			</div>
+			<@form.treeselect id="parentId" name="parentId" boxTitle="选择上级公司" url="sys/comp/treeData?type=0"
+			expandLevel=true value="${comp.id}" labelValue="${comp.name?default('总公司')}" isparentids=true
+			parenIdsValue="${comp.id}${(comp.parentIds == '1')?string('',',${comp.parentIds}')}"
+			placeholder="请选择上级公司" required=true/>
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-3 control-label"><span style="color: red; ">*</span>名称：</label>
+		<label class="col-sm-3 control-label"><span style="color: red; ">*</span>公司名称：</label>
 		<div class="col-sm-8">
-			<input class="form-control" type="text" id="name" name="name" required>
+			<@form.input name="name" required=true/>
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-3 control-label "><span style="color: red; ">*</span>管理地区：</label>
+		<label class="col-sm-3 control-label"><span style="color: red; ">*</span>公司全称：</label>
 		<div class="col-sm-8">
-			<div class="input-group">
-				<input class="form-control" type="text" onclick="selectDeptTree()" id="deptName" readonly="true">
-				<span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
-			</div>
+			<@form.input name="fullName" required=true/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-3 control-label "><span style="color: red; ">*</span>归属地区：</label>
+		<div class="col-sm-8">
+			<@form.treeselect id="areaId" name="areaIds" boxTitle="请选择管理地区" url="sys/area/treeData"
+			checked=true correlationId="parentId" placeholder="请选择管理地区"/>
 		</div>
 	</div>
 	<div class="form-group">
@@ -37,31 +41,22 @@
 	<div class="form-group">
 		<label class="col-sm-3 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "状态"/>：</label>
 		<div class="col-sm-8">
-			<#list dict.getType('sys_normal_disable')>
-				<#items as d>
-					<#if d.status =='0' >
-						<div class="radio-box">
-							<input type="radio" id="${d.dictCode}" name="status"
-								   value="${d.dictValue}" <#if d.isDefault =='Y' >checked</#if>>
-							<label for="${d.dictCode}" text="${d.dictLabel}"><@ctx.i18n text = "${d.dictLabel}"/></label>
-						</div>
-					</#if>
-				</#items>
-			</#list>
+			<@form.radio name="status" dictType="sys_normal_disable"/>
 		</div>
 	</div>
 	<div class="form-group">
 		<label class="col-sm-3 control-label"><@ctx.i18n text = "备注"/>：</label>
 		<div class="col-sm-8">
-			<textarea id="remark" name="remark" class="form-control"></textarea>
+			<@form.textarea name="remark"/>
 		</div>
 	</div>
-</@addorEdit>
+</div>
+</@form.form>
 <@footer>
-<script>
+<script type="text/javascript">
 	var prefix = baseURL + "sys/comp";
 
-	$("#form-dept-add").validate({
+	$("#form-comp-add").validate({
 		onkeyup: false,
 		rules:{
 			name:{
@@ -96,54 +91,8 @@
 
 	function submitHandler() {
 		if (opt.validate.form()) {
-			var options = {
-				id:'form-comp-add',
-				conversion:[ /*//需要转数据*/
-					{
-						name:'deptIdList',
-						value:'arr'
-					}
-				]
-			};
-			var data = opt.form.dataUp(options);
-			opt.operate.save(prefix + "/add", data);
+			opt.operate.save(prefix + "/add", $('#form-comp-add').serialize());
 		}
-	}
-
-	/*部门管理-新增-选择父部门树*/
-	function selectCompTree() {
-		var options = {
-			title: '公司选择',
-			width: "380",
-			url: prefix + "/selectCompTree/" + $("#parentId").val(),
-			callBack: doSubmit
-		};
-		opt.modal.openOptions(options);
-	}
-
-	function doSubmit(index, layero){
-		var _v = $.tree.callBackTree(layero,index);
-		$("#parentId").val(_v.id);
-		$("#compName").val(_v.name);
-		layer.close(index);
-	}
-
-	/*获取公司对应地区*/
-	function selectDeptTree(){
-		var options = {
-			title:"<@ctx.i18n text = "sys.select.dept"/>",
-			width: "380",
-			url: baseURL+'sys/dept/selectDeptTree',
-			obj:{"compId":$("#parentId").val(),"list":$("#deptId").val()},
-			callBack: DeptDoSubmit
-		};
-		opt.modal.openOptions(options);
-	}
-	function DeptDoSubmit(index, layero){
-		var _v = $.tree.callBackTree(layero,index);
-		$("#deptId").val(_v.id);
-		$("#deptName").val(_v.name);
-		layer.close(index);
 	}
 </script>
 </@footer>

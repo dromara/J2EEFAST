@@ -5,11 +5,11 @@
 	<div class="form-group" style="padding-top: 20px;">
 		<label class="col-sm-3 control-label ">选择数据库：</label>
 		<div class="col-sm-8">
-			<select id="dbType" name="dbType" class="form-control">
+			<select id="dbName" name="dbId" class="form-control">
 				<#list listDb>
 					<#items as d>
 						<#if d.status == '0' >
-							<option  value="${d.dbName}" text="${d.dbName}" >${d.dbName}</option>
+							<option  value="${d.id}" text="${d.dbName}" >${d.dbName}</option>
 						</#if>
 					</#items>
 				</#list>

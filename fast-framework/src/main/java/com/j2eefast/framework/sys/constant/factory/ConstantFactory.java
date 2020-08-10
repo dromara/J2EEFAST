@@ -11,6 +11,7 @@ package com.j2eefast.framework.sys.constant.factory;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.j2eefast.common.core.base.entity.LoginUserEntity;
 import com.j2eefast.common.core.constants.Cache;
 import com.j2eefast.common.core.constants.CacheKey;
 import com.j2eefast.common.core.utils.SpringUtil;
@@ -23,6 +24,7 @@ import com.j2eefast.framework.sys.entity.SysUserEntity;
 import com.j2eefast.framework.sys.mapper.SysRoleMapper;
 import com.j2eefast.framework.sys.mapper.SysUserMapper;
 import com.j2eefast.framework.sys.service.SysMenuService;
+import com.j2eefast.framework.utils.Constant;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.DependsOn;
@@ -102,36 +104,49 @@ public class ConstantFactory implements IConstantFactory {
 		}
 		List<Long> roleids = new ArrayList<>(roleList.size());
 		roleList.forEach(role->{
-			roleids.add(role.getRoleId());
+			roleids.add(role.getId());
 		});
 		return roleids;
 	}
 
 	@Override
-	@Cacheable(value = Cache.ROLECONSTANT, key = "'" + CacheKey.SINGLE_ROLE_NAME + "'+#roleId")
-	public String getSingleRoleName(Long roleId) {
+	@Cacheable(value = Cache.ROLECONSTANT, key = "'" + CacheKey.ROLE + "'+#roleId")
+	public SysRoleEntity getRoleById(Long roleId) {
 		if (0 == roleId) {
-			return "--";
+			return null;
 		}
 		SysRoleEntity roleObj = sysRoleMapper.selectById(roleId);
-		if (ToolUtil.isNotEmpty(roleObj) && ToolUtil.isNotEmpty(roleObj.getRoleName())) {
-			return roleObj.getRoleName();
+		if (ToolUtil.isNotEmpty(roleObj)) {
+			return roleObj;
 		}
-		return "";
+		return null;
 	}
 
-	@Override
-	@Cacheable(value = Cache.ROLECONSTANT, key = "'" + CacheKey.SINGLE_ROLE_KEY + "'+#roleId")
-	public String getSingleRoleKey(Long roleId) {
-		if (0 == roleId) {
-			return "--";
-		}
-		SysRoleEntity roleObj = sysRoleMapper.selectById(roleId);
-		if (ToolUtil.isNotEmpty(roleObj) && ToolUtil.isNotEmpty(roleObj.getRoleKey())) {
-			return roleObj.getRoleKey();
-		}
-		return "";
-	}
+//	@Override
+//	@Cacheable(value = Cache.ROLECONSTANT, key = "'" + CacheKey.SINGLE_ROLE_NAME + "'+#roleId")
+//	public String getSingleRoleName(Long roleId) {
+//		if (0 == roleId) {
+//			return "--";
+//		}
+//		SysRoleEntity roleObj = sysRoleMapper.selectById(roleId);
+//		if (ToolUtil.isNotEmpty(roleObj) && ToolUtil.isNotEmpty(roleObj.getRoleName())) {
+//			return roleObj.getRoleName();
+//		}
+//		return "";
+//	}
+//
+//	@Override
+//	@Cacheable(value = Cache.ROLECONSTANT, key = "'" + CacheKey.SINGLE_ROLE_KEY + "'+#roleId")
+//	public String getSingleRoleKey(Long roleId) {
+//		if (0 == roleId) {
+//			return "--";
+//		}
+//		SysRoleEntity roleObj = sysRoleMapper.selectById(roleId);
+//		if (ToolUtil.isNotEmpty(roleObj) && ToolUtil.isNotEmpty(roleObj.getRoleKey())) {
+//			return roleObj.getRoleKey();
+//		}
+//		return "";
+//	}
 
 	@Override
 	public String getDeptName(Long deptId) {
@@ -150,8 +165,8 @@ public class ConstantFactory implements IConstantFactory {
 
 	@Override
 	@Cacheable(value = Cache.MENU_CONSTANT, key = "'" + CacheKey.MENU_NAME + "'+ T(String).valueOf(#userId).concat('-').concat(#moduleCode)")
-	public List<SysMenuEntity> getMenuByUserIdModuleCode(Long userId, String moduleCode) {
-		List<SysMenuEntity> menuList = sysMenuService.findUserModuleMenuList(userId,moduleCode);
+	public List<SysMenuEntity> getMenuByUserIdModuleCode(Long userId, String moduleCode, LoginUserEntity user) {
+		List<SysMenuEntity> menuList = sysMenuService.findUserModuleMenuList(userId,moduleCode,user.getRoleKey().contains(Constant.SU_ADMIN));
 		if(ToolUtil.isNotEmpty(menuList)){
 			return menuList;
 		}

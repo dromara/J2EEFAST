@@ -12,8 +12,43 @@ public class Constant {
 
 	public static final  String SU_ADMIN = "ADMIN";
 
+	//0=未设置, 1=仅本人数据, 2=本公司数据,3=本部门及以下数据权限,4=本部门数据权限, 5=自定义数据权限  6 所有数据权限
+	/**
+	 * 未设置
+	 */
+	public static final String DATA_SCOPE_NULL = "0";
+
+	public static final String DATA_SCOPE_ALL = "6";
+
+	/**
+	 * 自定数据权限
+	 */
+	public static final String DATA_SCOPE_CUSTOM = "5";
+
+	/**
+	 * 部门数据权限
+	 */
+	public static final String DATA_SCOPE_DEPT = "4";
+
+	/**
+	 * 部门及以下数据权限
+	 */
+	public static final String DATA_SCOPE_DEPT_AND_CHILD = "3";
+
+	/**
+	 * 仅本人数据权限
+	 */
+	public static final String DATA_SCOPE_SELF = "1";
+
+	/**
+	 * 仅公司数据权限
+	 */
+	public static final String DATA_SCOPE_COMP = "2";
+
 	/** 数据权限过滤 */
 	public static final String SQL_FILTER = "sql_filter";
+
+	public static final String REQUIRES_PERMISSIONS = "REQUIRESPERMISSIONS";
 
 	/** 硬件代码 **/
 	public static final String IDS_CODE_0000 = "0000";
@@ -24,6 +59,10 @@ public class Constant {
 	public static final String IDS_CODE_0005 = "0005";
 	public static final String IDS_CODE_0006 = "0006";
 	public static final String IDS_CODE_0007 = "0007";
+
+	public static final String BANNER = "spring.main.banner-mode";
+
+	public static final String FALSE = "false";
 
 	/** 公司正常状态 */
 	public static final String COMP_NORMAL = "0";
@@ -38,6 +77,8 @@ public class Constant {
 	 * 资源映射路径 前缀
 	 */
 	public static final String RESOURCE_urlPrefix = "/profile";
+
+	public static final String BASE_WEB_HTML = "templates/";
 	/**
      * 手机号码格式限制
      */

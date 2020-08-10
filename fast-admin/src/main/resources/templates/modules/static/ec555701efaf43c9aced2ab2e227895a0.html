@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8" />
+<title>系统升级通知</title>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" >
+<link rel="shortcut icon" href="../../statics/img/favicon.ico">
+<meta name="renderer" content="webkit"><base target="_blank" />
+    <style type="text/css">
+a{text-decoration:none;color:#0072c6;}a:hover{text-decoration:none;color:#004d8c;}
+body{width:960px;margin:0 auto;padding:10px;font-size:14px;line-height:24px;color:#454545;font-family:'Microsoft YaHei UI','Microsoft YaHei',DengXian,SimSun,'Segoe UI',Tahoma,Helvetica,sans-serif;}
+h1{font-size:30px;line-height:80px;font-weight:300;margin-bottom:10px;}
+/*h2{font-size:20px;line-height:25px;font-weight:100;margin:10px 0;}*/
+/*p{margin-bottom:10px;font-size:14px;}*/
+hr{margin:20px 0;border:0;border-top:1px solid #dadada}
+img{width:34px;height:34px;border:0;float:left;margin-right:10px;}
+span{display:block;font-size:12px;line-height:12px;}
+.browser{padding:10px 0;}
+.browser li{width:180px;height:34px;line-height:22px;float:left;list-style:none;padding-left:25px}
+.clean{clear:both;}
+.ibox-content {
+    background-color: #ffffff !important;
+    color: inherit;
+    padding: 15px 25px 20px 30px;
+    border-color: #e7eaec;
+    -webkit-border-image: none;
+    -o-border-image: none;
+    border-image: none;
+    /*border-style: solid solid none;*/
+    border: 1px solid #ddd;
+}
+</style>
+</head><body>
+<div style="width:100%;text-align: center;"><h1>系统升级通知</h1></div>
+<div style="width:100%;font-size: 12px;margin-bottom: -10px;">
+    <div style="width: 100%;">
+        <span style="text-align: left; width: 20%;float: left">发布时间: 2020-04-06 20:21:00</span> <span style="text-align: center; width: 80%;">等级:
+                        
+                        
+                        严重
+        </span>
+    </div>
+</div>
+<hr>
+<iframe id="frame-content" width="100%" scrolling="no" src="/fast/statics/notice/ec555701efaf43c9aced2ab2e227895a1" frameborder="0"></iframe>
+<hr>
+<div style="width:100%;text-align: right;font-size: 12px;">
+    发布人: 超级管理员
+</div>
+</body>
+<script>
+
+    // // iframe自适应会用到
+    function calcPageHeight(doc) {
+        var cHeight = Math.max(doc.body.clientHeight, doc.documentElement.clientHeight)
+        var sHeight = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight)
+        var height = Math.max(cHeight, sHeight)
+        return height
+    }
+
+    var ifr = document.getElementById('frame-content')
+    ifr.onload = function () {
+        var iDoc = ifr.contentDocument || ifr.document || ifr.contentWindow
+        var height = calcPageHeight(iDoc);
+        ifr.style.height = height + 'px'
+    }
+
+    // var frame = document.getElementById('frame-content'),
+    //     win = frame.contentWindow,
+    //     doc = win.document,
+    //     html = doc.documentElement,
+    //     body = doc.body;
+    //
+    // // 获取高度
+    // var height = Math.max( body.scrollHeight, body.offsetHeight,
+    //     html.clientHeight, html.scrollHeight, html.offsetHeight );
+    //
+    // frame.setAttribute('height', height);
+
+
+</script>
+</html>

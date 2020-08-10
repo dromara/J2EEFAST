@@ -1,9 +1,6 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="修改用户头像">
-	<@cssLibs.cropbox_css/>
-</@header>
-<body class="white-bg animated fadeInRight">
+<@header title="修改用户头像" libs=["cropbox"] style="height: 95%;"/>
     <div class="container"> 
         <div class="imageBox"> 
 	        <div class="thumbBox"></div> 
@@ -21,10 +18,8 @@
 	   <div class="cropped"></div> 
     </div>
 <@footer>
-<@jsLibs.cropbox_js/>
 <script type="text/javascript">
 	var cropper;
-
 	$(function() {
 		var avatar = '${user.avatar?default("")}';
 		var options = {

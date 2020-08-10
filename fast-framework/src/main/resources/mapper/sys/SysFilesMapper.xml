@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.j2eefast.framework.sys.mapper.SysFileMapper">
+
+
+    
+    <resultMap type="SysFilesEntity" id="sysFilesEntityResult">
+       <result property="id"    column="id"    />
+       <result property="fileMd5"    column="file_md5"    />
+       <result property="filePath"    column="file_path"    />
+       <result property="fileName"    column="file_name"    />
+       <result property="fileSize"    column="file_size"    />
+     </resultMap>
+    
+    <!--  实体栏位  --> 
+    <sql id="sysFilesColumns">
+         a.id as "id"   ,                 
+          a.file_md5 as "fileMd5"   ,                 
+          a.file_path as "filePath"   ,                 
+          a.file_name as "fileName"   ,                 
+          a.file_size as "fileSize"                   
+      </sql>
+    
+     <!-- 外联表  --> 
+	<sql id="sysFilesJoins">
+         left join sys_file_upload up ON a.id = up.file_id
+    </sql>
+
+    
+     <!--  根据获取实体List   -->
+     <select id="selectSysFilesList" resultType="com.j2eefast.framework.sys.entity.SysFilesEntity">
+		SELECT 
+			<include refid="sysFilesColumns"/>
+         , up.create_by as "createBy"
+         , up.create_time as "createTime"
+         FROM sys_file a
+        <include refid="sysFilesJoins"/>
+		<where>
+            up.del_flag = '0'
+            <if test="bizId != null  and bizId != ''">
+                     and up.biz_id = #{bizId}
+			</if>
+            <if test="bizType != null  and bizType != ''">
+                and up.biz_type = #{bizType}
+            </if>
+        </where>
+	 </select>
+
+</mapper>

@@ -1,0 +1,61 @@
+<#include "/common/include.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="行政区域列表">
+</@header>
+<@search fromId="area-form">
+<div class="select-list">
+    <ul>
+           <li>
+              <label> <@ctx.i18n text = "名称"/>：
+               <input type="text" placeholder="" name="name"/> </label>
+            </li>
+           <li>
+              <label> <@ctx.i18n text = "区域等级"/>：
+               <input type="text" placeholder="" name="level"/> </label>
+            </li>
+           <li>
+              <label> <@ctx.i18n text = "邮政编码"/>：
+               <input type="text" placeholder="" name="zipCode"/> </label>
+            </li>
+           <li>
+              <label> <@ctx.i18n text = "行政区划代码"/>：
+               <input type="text" placeholder="" name="areaCode"/> </label>
+            </li>
+        <li>
+          <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;&nbsp;<@ctx.i18n text = "查询"/></a>
+          <a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+       </li>
+    </ul>
+</div>
+</@search>
+<@table tableId="bootstrap-tree-table">
+</@table>
+<@footer>
+<script>
+    var prefix = baseURL + "sys/area";
+    var datas_type = ${dict.getDictListJson('sys_area_type')};
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            code: "id",
+            expandAll: false,
+            expandFirst: false,
+            parentCode: "parentId",
+            uniqueId: "id",
+            // ajaxParams:{"level":1},
+            async: true,
+            columns: [
+                {field: 'selectItem', checkbox: true}
+               ,{field : 'name',title : '<@ctx.i18n text = "名称"/>', align: 'center',halign:"left"}
+               ,{field : 'level',title : '<@ctx.i18n text = "区域等级"/>', align: 'center', formatter: function(value, row, index) {return $.table.selectDictLabel(datas_type, value);}}
+               ,{field : 'cityCode',title : '<@ctx.i18n text = "电话区号"/>', align: 'center', formatter: function(value, row, index) {return $.table.tooltip(value,10);}}
+               ,{field : 'zipCode',title : '<@ctx.i18n text = "邮政编码"/>', align: 'center', formatter: function(value, row, index) {return $.table.tooltip(value,10);}}
+               ,{field : 'areaCode',title : '<@ctx.i18n text = "行政区划代码"/>', align: 'center', formatter: function(value, row, index) {return $.table.tooltip(value,10);}}
+                ]
+            };
+            $.treeTable.init(options);
+        });
+
+</script>
+</@footer>
+</@pageTheme>

@@ -1,33 +1,42 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="参数列表"/>
-<@search fromId="config-form">
-	<div class="select-list">
-		<ul>
-			<li>
-				参数名称：<input type="text" name="paramName"/>
-			</li>
-			<li>
-				参数键名：<input type="text" name="paramKey"/>
-			</li>
-			<li>
-				<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
-				<a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
-			</li>
-		</ul>
+<@header title="参数列表" libs=["table"]/>
+<div class="container-div" id="_app">
+	<div class="row">
+	<div class="col-sm-12 search-collapse">
+	<@form.form id="config-form">
+		<div class="select-list">
+			<ul>
+				<li>
+					参数名称：<input type="text" name="paramName"/>
+				</li>
+				<li>
+					参数键名：<input type="text" name="paramKey"/>
+				</li>
+				<li>
+					<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;<@ctx.i18n text = "查询"/></a>
+					<a class="btn btn-warning btn-rounded btn-sm" onclick="opt.form.reset()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "重置"/></a>
+				</li>
+			</ul>
+		</div>
+	</@form.form>
 	</div>
-</@search>
-<@table tableId="bootstrap-table">
-	<@shiro.hasPermission name="sys:config:add">
-       	<a class="btn btn-success" onclick="opt.operate.add()"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
-     </@shiro.hasPermission>
-     <@shiro.hasPermission name="sys:config:edit">
-     	<a class="btn btn-primary single disabled" onclick="opt.operate.edit()"><i class="fa fa-edit"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
-     </@shiro.hasPermission>
-     <@shiro.hasPermission name="sys:config:del">
-        <a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()"><i class="fa fa-remove"></i>&nbsp;<@ctx.i18n text = "删除"/></a>
-     </@shiro.hasPermission>	    
-</@table>
+	<@table id="bootstrap-table">
+		<@shiro.hasPermission name="sys:config:add">
+			<a class="btn btn-success" onclick="opt.operate.add()"><i class="fa fa-plus"></i>&nbsp;<@ctx.i18n text = "新增"/></a>
+		 </@shiro.hasPermission>
+		 <@shiro.hasPermission name="sys:config:edit">
+			<a class="btn btn-primary single disabled" onclick="opt.operate.edit()"><i class="fa fa-edit"></i>&nbsp;<@ctx.i18n text = "修改"/></a>
+		 </@shiro.hasPermission>
+		 <@shiro.hasPermission name="sys:config:del">
+			<a class="btn btn-danger multiple disabled" onclick="opt.operate.delAll()"><i class="fa fa-remove"></i>&nbsp;<@ctx.i18n text = "删除"/></a>
+		 </@shiro.hasPermission>
+		<@shiro.hasPermission name="sys:config:clear">
+			<a class="btn btn-danger" onclick="clearRedis()"><i class="fa fa-refresh"></i>&nbsp;<@ctx.i18n text = "清除缓存"/></a>
+		</@shiro.hasPermission>
+	</@table>
+	</div>
+</div>
 <@footer>
 <script>
     var editFlag = "${permission.hasPermi('sys:config:edit')}";
@@ -76,6 +85,10 @@
 				     };
         			$.table.init(options);
     });
+
+    function clearRedis() {
+		opt.operate.get(prefix + "/clearConfig");
+	}
 </script>
 </@footer>
 </@pageTheme>

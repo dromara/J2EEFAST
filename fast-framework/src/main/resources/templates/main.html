@@ -1,8 +1,8 @@
-<#include "/common/include.html"/>
-<@pageTheme mark="true">
-<@header title="主页"/>
-<body class="gray-bg animated fadeInRight" style="height: auto">
-    <div class="row  border-bottom white-bg dashboard-header">
+<#include "/common/defaultEngine.html">
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header  title="主页">
+</@header>
+    <div class="row  border-bottom white-bg dashboard-header" xmlns="http://www.w3.org/1999/html">
         <div class="col-sm-8">
             <h2>J2eeFAST 开源平台</h2>
             <p>
@@ -43,10 +43,84 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h5 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.6</a><code class="pull-right">2020.05.17</code>
+                                            <a data-toggle="collapse" data-parent="#v8" href="#v">v2.0.8<code class="pull-right">2020.08.10</code></a>
                                         </h5>
                                     </div>
-                                    <div id="v41" class="panel-collapse collapse in">
+                                    <div id="v8" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>1. 解决issues #I1LLJX 问题,页面多个表格回调混乱问题.</li>
+                                                <li>2. 修复用户头像不存在、或者头像地址异常显示问题</li>
+                                                <li>3. 修复CVE-2020-11996 | Apache Tomcat HTTP/2拒绝服务漏洞</li>
+                                                <li>4. 修复JAT 设置日志名称路径无效问题</li>
+                                                <li>5. 修改输入框后图标带点击事件样式.</li>
+                                                <li>6. 优化页面ibox卡片样式UI</li>
+                                                <li>7. 新增登录验证码类型[支持算数格式]</li>
+                                                <li>8. 修复系统监控获取硬盘信息光驱问题</li>
+                                                <li>9. 修复表格冻结列问题</li>
+                                                <li>10.优化表格冻结列样式</li>
+                                                <li>11.扩增字典表数据值长度</li>
+                                                <li>12.新增上传组件</li>
+                                                <li>13.优化代码生成器新增关联公司机构，支持生成TAB页面</li>
+                                                <li>14.新增第三方登录集成JustAuth插件</li>
+                                                <li>15.新增上传文件管理表与业务关联表</li>
+                                                <li>16.代码生成器支持单独生成实体类，支持代码生成业务关联上传组件</li>
+                                                <li>17.支持上传信息在线预览功能，fastJS.js 新增打开视图方法</li>
+                                                <li>18.新增多级联动控件(未优化完),新增多级异步联动示例</li>
+                                                <li>19.项目文档转移至[语雀]、Gitee WIKI文档不在维护、更新</li>
+                                                <li>20.新增无密登录方法</li>
+                                                <li>21.优化其他细节</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h5 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#v7" href="#v">v2.0.7<code class="pull-right">2020.06.23</code></a>
+                                        </h5>
+                                    </div>
+                                    <div id="v7" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>1. 删除多余依赖</li>
+                                                <li>2. @paradisehere 修复新建菜单，尚未新建菜单时左侧菜单栏404报错</li>
+                                                <li>3. 新增一个表单显示国际化案例</li>
+                                                <li>4. @临时的 增加了代码产生模块表构结刷新功能</li>
+                                                <li>5. @临时的 代码生成模块修正checkbox在增删改查，列表使用问题</li>
+                                                <li>6. @临时的 增加了一个单表的增删改查范例，基本包含了目前的所有表单控件.</li>
+                                                <li>7. 修复代码生成页面大量空格格式问题</li>
+                                                <li>8. 新增多级菜单演示</li>
+                                                <li>9. 修复代码生成器选择生成路径获取本地磁盘有光驱报错问题</li>
+                                                <li>10.修复弹窗加载遮罩问题</li>
+                                                <li>11.重构项目系统数据权限</li>
+                                                <li>12.重构前端页面布局</li>
+                                                <li>13.新增前端组件功能</li>
+                                                <li>14.优化项目启动</li>
+                                                <li>15.升级fastjson 1.2.69, 防止安全漏洞</li>
+                                                <li>16.新增系统手动热加载mapper.xml, 修改mapper文件无需重启项目,配合开发工具到此本项目开发无需重启项目整体实现热加载</li>
+                                                <li>17.新增前端引擎使用，组件使用demo</li>
+                                                <li>18.新增登录提示音</li>
+                                                <li>19.修复bootstrap-table.js源码压缩阅读不友好问题</li>
+                                                <li>20.新增表格行title提示</li>
+                                                <li>21.优化用户登录解密异常问题</li>
+                                                <li>22.重构项目定时任务模块</li>
+                                                <li>23.修改权限控制，数据控制精确到菜单权限上.便于更加细致化的控制</li>
+                                                <li>24.layer.js 增强type=2 iframe 层POST可以POST 提交</li>
+                                                <li>25.参数管理、字典管理新增缓存清除功能,便于开发清除缓存</li>
+                                                <li>26.新增用户查询侧边栏关联机构</li>
+                                                <li>27.优化其他细节</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h5 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#v6" href="#v41">v2.0.6<code class="pull-right">2020.05.17</code></a>
+                                        </h5>
+                                    </div>
+                                    <div id="v6" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ol>
                                                 <li>1. 新增BPM 工作流模块</li>
@@ -70,10 +144,10 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h5 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.5</a><code class="pull-right">2020.05.10</code>
+                                            <a data-toggle="collapse" data-parent="#v5" href="#v41">v2.0.5<code class="pull-right">2020.05.10</code></a>
                                         </h5>
                                     </div>
-                                    <div id="v41" class="panel-collapse collapse">
+                                    <div id="v5" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ol>
                                                 <li>1. 优化项目打包流程,call mvn install 一键打gz包</li>
@@ -99,10 +173,10 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h5 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.4</a><code class="pull-right">2020.04.11</code>
+                                            <a data-toggle="collapse" data-parent="#v4" href="#v41">v2.0.4<code class="pull-right">2020.04.11</code></a>
                                         </h5>
                                     </div>
-                                    <div id="v41" class="panel-collapse collapse">
+                                    <div id="v4" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ol>
                                                 <li>1. 新增百度ueditor富文本编辑器更换之前编辑器</li>
@@ -129,10 +203,10 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h5 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.3</a><code class="pull-right">2020.03.28</code>
+                                            <a data-toggle="collapse" data-parent="#v3" href="#v41">v2.0.3<code class="pull-right">2020.03.28</code></a>
                                         </h5>
                                     </div>
-                                    <div id="v41" class="panel-collapse collapse">
+                                    <div id="v3" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ol>
                                                 <li>1. fastjson升级1.2.67 阻止漏洞</li>
@@ -156,10 +230,10 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h5 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#version" href="#v41">v2.0.2</a><code class="pull-right">2020.03.20</code>
+                                            <a data-toggle="collapse" data-parent="#v2" href="#v41">v2.0.2<code class="pull-right">2020.03.20</code></a>
                                         </h5>
                                     </div>
-                                    <div id="v41" class="panel-collapse collapse">
+                                    <div id="v2" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ol>
                                                 <li>1. 新增产品许可功能</li>
@@ -181,13 +255,13 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#version" href="#v00">v2.0.1</a><code class="pull-right">2020.03.01</code>
+                                            <a data-toggle="collapse" data-parent="#v0" href="#v00">v2.0.1<code class="pull-right">2020.03.01</code></a>
                                         </h4>
                                     </div>
-                                    <div id="v00" class="panel-collapse collapse">
+                                    <div id="v0" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ol>
-                                                <li>FAST云OS系统正式发布</li>
+                                                <li>FAST云OS系统正式发布(后更名J2eeFAST)</li>
                                             </ol>
                                         </div>
                                     </div>
@@ -213,7 +287,7 @@
                         </p>
                         <p class="mt5"><i class="fa icon-cursor"></i> 官网：<a href="http://www.j2eefast.com" target="_blank">http://www.j2eefast.com</a>
                         </p>
-                        <p class="mt5"><i class="fa fa-book"></i> 关于文档：<a href="https://gitee.com/zhouhuanOGP/J2EEFAST/wikis/pages" target="_blank">Gitee Wiki 文档</a>
+                        <p class="mt5"><i class="fa fa-book"></i> 关于文档：<a href="https://www.yuque.com/u1174484/j2eefast/tv3kee" target="_blank">语雀 文档</a>
                         </p>
                         <p class="mt5"><i class="fa fa-cloud-upload"></i> 关于更新：项目每周都会有更新,演示网站会在周五~周日,不定期暂停访问,带来不便尽情谅解!
                         </p>
@@ -376,137 +450,23 @@
 <#--            </div>-->
 <#--        </div>-->
 <#--    </div>-->
-</div>
 <@footer>
-<script type="text/javascript" src="${ctxStatic}/static/plugins/flot/jquery.flot.js?V=${config.getDvVersion()}"></script>
-<@jsLibs.sparkline_js/>
 <script type="text/javascript">
+
+    $(function() {
+        //更新日志点击事件
+        $('[data-toggle="collapse"]').each(function () {
+            $(this).on('click', function () {
+                var id = $(this).data("parent");
+                $(id).slideToggle();
+            });
+        });
+    });
 
 
     function show() {
-        var html = '<img src="${ctxStatic}/static/img/collect.png" width="100%" height="100%" alt="点击收藏">';
-        opt.layer.open({
-            title: false,
-            type: 1,
-            closeBtn:false,
-            shadeClose:true,
-            area: ['700px', 'auto'],
-            content: html
-        });
+        opt.modal.openView("collect.png","${ctxStatic}/static/img/collect.png",800,700);
     }
-
-    $(document).ready(function () {
-        var data2 = [
-            [gd(2012, 1, 1), 7], [gd(2012, 1, 2), 6], [gd(2012, 1, 3), 4], [gd(2012, 1, 4), 8],
-            [gd(2012, 1, 5), 9], [gd(2012, 1, 6), 7], [gd(2012, 1, 7), 5], [gd(2012, 1, 8), 4],
-            [gd(2012, 1, 9), 7], [gd(2012, 1, 10), 8], [gd(2012, 1, 11), 9], [gd(2012, 1, 12), 6],
-            [gd(2012, 1, 13), 4], [gd(2012, 1, 14), 5], [gd(2012, 1, 15), 11], [gd(2012, 1, 16), 8],
-            [gd(2012, 1, 17), 8], [gd(2012, 1, 18), 11], [gd(2012, 1, 19), 11], [gd(2012, 1, 20), 6],
-            [gd(2012, 1, 21), 6], [gd(2012, 1, 22), 8], [gd(2012, 1, 23), 11], [gd(2012, 1, 24), 13],
-            [gd(2012, 1, 25), 7], [gd(2012, 1, 26), 9], [gd(2012, 1, 27), 9], [gd(2012, 1, 28), 8],
-            [gd(2012, 1, 29), 5], [gd(2012, 1, 30), 8], [gd(2012, 1, 31), 25]
-        ];
-
-        var data3 = [
-            [gd(2012, 1, 1), 800], [gd(2012, 1, 2), 500], [gd(2012, 1, 3), 600], [gd(2012, 1, 4), 700],
-            [gd(2012, 1, 5), 500], [gd(2012, 1, 6), 456], [gd(2012, 1, 7), 800], [gd(2012, 1, 8), 589],
-            [gd(2012, 1, 9), 467], [gd(2012, 1, 10), 876], [gd(2012, 1, 11), 689], [gd(2012, 1, 12), 700],
-            [gd(2012, 1, 13), 500], [gd(2012, 1, 14), 600], [gd(2012, 1, 15), 700], [gd(2012, 1, 16), 786],
-            [gd(2012, 1, 17), 345], [gd(2012, 1, 18), 888], [gd(2012, 1, 19), 888], [gd(2012, 1, 20), 888],
-            [gd(2012, 1, 21), 987], [gd(2012, 1, 22), 444], [gd(2012, 1, 23), 999], [gd(2012, 1, 24), 567],
-            [gd(2012, 1, 25), 786], [gd(2012, 1, 26), 666], [gd(2012, 1, 27), 888], [gd(2012, 1, 28), 900],
-            [gd(2012, 1, 29), 178], [gd(2012, 1, 30), 555], [gd(2012, 1, 31), 993]
-        ];
-
-
-        var dataset = [
-            {
-                label: "订单数",
-                data: data3,
-                color: "#1ab394",
-                bars: {
-                    show: true,
-                    align: "center",
-                    barWidth: 24 * 60 * 60 * 600,
-                    lineWidth: 0
-                }
-
-            }, {
-                label: "付款数",
-                data: data2,
-                yaxis: 2,
-                color: "#464f88",
-                lines: {
-                    lineWidth: 1,
-                    show: true,
-                    fill: true,
-                    fillColor: {
-                        colors: [{
-                            opacity: 0.2
-                        }, {
-                            opacity: 0.2
-                        }]
-                    }
-                },
-                splines: {
-                    show: false,
-                    tension: 0.6,
-                    lineWidth: 1,
-                    fill: 0.1
-                },
-            }
-        ];
-
-
-        var options = {
-            xaxis: {
-                mode: "time",
-                tickSize: [3, "day"],
-                tickLength: 0,
-                axisLabel: "Date",
-                axisLabelUseCanvas: true,
-                axisLabelFontSizePixels: 12,
-                axisLabelFontFamily: 'Arial',
-                axisLabelPadding: 10,
-                color: "#838383"
-            },
-            yaxes: [{
-                position: "left",
-                max: 1070,
-                color: "#838383",
-                axisLabelUseCanvas: true,
-                axisLabelFontSizePixels: 12,
-                axisLabelFontFamily: 'Arial',
-                axisLabelPadding: 3
-            }, {
-                position: "right",
-                clolor: "#838383",
-                axisLabelUseCanvas: true,
-                axisLabelFontSizePixels: 12,
-                axisLabelFontFamily: ' Arial',
-                axisLabelPadding: 67
-            }
-            ],
-            legend: {
-                noColumns: 1,
-                labelBoxBorderColor: "#000000",
-                position: "nw"
-            },
-            grid: {
-                hoverable: false,
-                borderWidth: 0,
-                color: '#838383'
-            }
-        };
-
-        function gd(year, month, day) {
-            return new Date(year, month - 1, day).getTime();
-        }
-
-        var previousPoint = null,
-            previousLabel = null;
-        /*$.plot($("#flot-dashboard-chart"), dataset, options);*/
-    });
 </script>
 </@footer>
 </@pageTheme>

@@ -1,11 +1,26 @@
 package com.j2eefast.generator.gen.util;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
+
+import com.j2eefast.common.core.exception.RxcException;
+import com.j2eefast.common.db.dao.sql.AllTableListSql;
+import com.j2eefast.common.db.entity.SysDatabaseEntity;
 import com.j2eefast.generator.gen.config.GenConfig;
 import com.j2eefast.generator.gen.entity.GenTableColumnEntity;
 import com.j2eefast.generator.gen.entity.GenTableEntity;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -13,6 +28,7 @@ import cn.hutool.core.util.StrUtil;
  * 
  * @author ruoyi
  */
+@Slf4j
 public class GenUtils
 {
     /**
@@ -34,9 +50,11 @@ public class GenUtils
      */
     public static void initColumnField(GenTableColumnEntity column, GenTableEntity table)
     {
-        String dataType = getDbType(column.getColumnType());
-        String columnName = column.getColumnName();
-        column.setTableId(table.getTableId());
+        String dataType = getDbType(column.getColumnType()).toLowerCase();
+        column.setColumnType(column.getColumnType().toLowerCase());
+        String columnName = column.getColumnName().toLowerCase();
+        column.setColumnName(columnName);  //设置为小写//  数据库中一般栏位名大写不敏感
+        column.setTableId(table.getId());
         column.setCreateBy(table.getCreateBy());
         // 设置java字段名
         column.setJavaField(StrUtil.toCamelCase(columnName));
@@ -169,7 +187,8 @@ public class GenUtils
             String[] replacementList = emptyList(searchList.length);
             tableName = StringUtils.replaceEach(tableName, searchList, replacementList);
         }
-        return StrUtil.toCamelCase(tableName);
+        String name = StrUtil.toCamelCase(tableName);
+        return name.substring(0,1).toUpperCase() + name.substring(1);
     }
 
     /**
@@ -231,4 +250,117 @@ public class GenUtils
         }
         return values;
     }
+    
+    
+
+	/**
+	* @Title: selectTables 
+	* @Description: 获取不同的数据的表名
+	* @param dbInfo
+	* @return  List<GenTableEntity> 
+	* @author mfksn001@163.com
+	* @Date: 2020年5月29日
+	 */
+	public static List<GenTableEntity> selectTables(SysDatabaseEntity dbInfo) {
+		List<GenTableEntity> tables = new ArrayList<>();
+		try {
+			Class.forName(dbInfo.getJdbcDriver());
+			Connection conn = DriverManager.getConnection(
+					dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
+
+			//获取数据库名称
+			String dbName = getDbName(dbInfo);
+
+			//构造查询语句
+			PreparedStatement preparedStatement = conn.prepareStatement(new AllTableListSql().getSql(dbInfo.getJdbcUrl()));
+
+			//拼接设置数据库名称
+			if (!dbInfo.getJdbcUrl().contains("sqlserver") && !dbInfo.getJdbcUrl().contains("postgresql")) {
+				preparedStatement.setString(1, dbName);
+			}
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				GenTableEntity genTableEntity = new GenTableEntity();
+				String tableName = resultSet.getString("tableName");
+				String tableComment = resultSet.getString("tableComment");
+				Date updateTime = resultSet.getDate("updateTime");
+				Date createTime = resultSet.getDate("createTime");
+				genTableEntity.setTableName(tableName);
+				genTableEntity.setTableComment(StringUtils.isBlank(tableComment)?tableName:tableComment);
+				genTableEntity.setUpdateTime(updateTime);
+				genTableEntity.setCreateTime(createTime);
+				tables.add(genTableEntity);
+			}
+			return tables;
+		} catch (Exception ex) {
+			log.error("查询所有表错误！", ex);
+			throw new RxcException("查询所有表错误！","60001");
+		}
+	}
+	
+
+
+	/**
+	 * 获取数据库名称
+	 *
+	 * @author zhouzhou
+	 * @Date 2019-06-18 15:25
+	 */
+	private static String getDbName(SysDatabaseEntity dbInfo) {
+
+		if (dbInfo.getJdbcUrl().contains("oracle")) {
+
+			//如果是oracle，直接返回username
+			return dbInfo.getUserName().toUpperCase().trim();
+
+		} else if (dbInfo.getJdbcUrl().contains("postgresql")) {
+
+			//postgresql，直接返回最后一个/后边的字符
+			int first = dbInfo.getJdbcUrl().lastIndexOf("/") + 1;
+			return dbInfo.getJdbcUrl().substring(first);
+
+		} else if (dbInfo.getJdbcUrl().contains("sqlserver")) {
+
+			//sqlserver，直接返回最后一个=后边的字符
+			int first = dbInfo.getJdbcUrl().lastIndexOf("=") + 1;
+			return dbInfo.getJdbcUrl().substring(first);
+
+		} else {
+
+			//mysql，返回/和?之间的字符
+			String jdbcUrl = dbInfo.getJdbcUrl();
+			int first = jdbcUrl.lastIndexOf("/") + 1;
+			int last = jdbcUrl.indexOf("?");
+			return jdbcUrl.substring(first, last);
+		}
+	}
+	
+	
+	/**
+	* @Title: getDbType 
+	* @Description: 返回数据库的类型
+	* @param dbInfo
+	* @return  String 
+	* @author mfksn001@163.com
+	* @Date: 2020年5月29日
+	 */
+	public static String getDatebasebType(SysDatabaseEntity dbInfo) {
+
+		if (dbInfo.getJdbcUrl().contains("oracle")) {
+			return "oracle";
+
+		} else if (dbInfo.getJdbcUrl().contains("postgresql")) {
+			return "postgresql";
+
+		} else if (dbInfo.getJdbcUrl().contains("sqlserver")) {
+			return "sqlserver";
+
+		} else if (dbInfo.getJdbcUrl().contains("mysql")) {
+             return "mysql";
+		}
+		return "";
+	}
+
 }

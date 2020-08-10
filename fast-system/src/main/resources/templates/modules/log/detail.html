@@ -1,9 +1,8 @@
-<#include "/common/include.html">
-<@pageTheme mark="${config.optimize()?string('true','false')}">
-<@header title="操作日志详细">
-	<@cssLibs.jsonview_css/>
-</@header>
-<@addorEdit fromId="signupForm">
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="操作日志详细" bodyClass="white-bg" libs=["jsonview"]/>
+<div class="wrapper wrapper-content ibox-content">
+<@form.form id="signupForm" class="form-horizontal">
 	<div class="form-group">
 		<label class="col-sm-2 control-label">操作模块：</label>
 		<div class="form-control-static">
@@ -60,9 +59,9 @@
 			${sysLog.errorMsg}
 		</div>
 	</div>
-</@addorEdit>
+</@form.form>
+</div>
 <@footer>
-<@jsLibs.jsonview_js/>
 <script>
 	$(function() {
 		var operParam = "${sysLog.operParam?js_string}";

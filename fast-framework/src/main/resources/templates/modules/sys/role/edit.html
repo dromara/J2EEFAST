@@ -1,90 +1,101 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="角色修改">
-    <@cssLibs.ztree_css/>
-</@header>
-<@addorEdit fromId="form-role-edit">
-            <input id="roleId" name="roleId" type="hidden" value="${role.roleId?default("")}"/>
-            <div class="form-group">
-                <label class="col-sm-3 control-label "><span style="color: red; ">*</span>角色名称：</label>
-                <div class="col-sm-8">
-                    <input class="form-control" type="text" name="roleName" id="roleName" value="${role.roleName?default("")}">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>权限字符：</label>
-                <div class="col-sm-8">
-                    <input class="form-control" type="text" name="roleKey" id="roleKey" value="${role.roleKey?default("")}" required>
-                </div>
-            </div>
-            <div class="form-group">
-				<label class="col-sm-3 control-label"><@ctx.i18n text = "管理模块"/>：</label>
-				<div class="col-sm-8">
-					<#list modules>
-						<#items as d>
-							<#if d.status =='0' >
-							    <#if lisModule?? && (lisModule?size > 0)>
-                                    <#assign a=0 />
-                                    <#list lisModule as c>
-                                        <#if c == d.moduleCode >
-                                            <#assign a=1 />
-                                        </#if>
-                                    </#list>
-                                    <#if a== 1>
-                                         <label>
-                                            <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" checked required/><@ctx.i18n text = "${d.moduleName}" /></label>
-                                        </label>
-                                    <#else>
-                                         <label>
-                                            <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" required/><@ctx.i18n text = "${d.moduleName}" /></label>
-                                        </label>
-                                    </#if>
-								<#else>
-                                    <label>
-									    <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" required/><@ctx.i18n text = "${d.moduleName}" /></label>
-								    </label>
-							    </#if>
-							</#if>
-						</#items>
-					</#list>
-				</div>
-			</div>
-            <div class="form-group">
-                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>显示顺序：</label>
-                <div class="col-sm-8">
-                    <input class="form-control" type="text" name="roleSort" id="roleSort" value="${role.roleSort?default("")}" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>状态：</label>
-                <div class="col-sm-8">
-                    <label class="toggle-switch switch-solid">
-                        <input type="checkbox" id="status" <#if role.status == "0">checked="true"</#if>">
-                        <span></span>
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-3 control-label">备注：</label>
-                <div class="col-sm-8">
-                    <input id="remark" name="remark" class="form-control" type="text" value="${role.remark?default("")}">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-3 control-label">菜单权限</label>
-                <div class="col-sm-8">
-                    <div class="box box-solid" style="background:#FAFAFA;border-top: 0;">
-                        <div id="menuTrees" class="ztree"></div>
+<@header title="角色修改" bodyClass="white-bg" libs=["zTree"]/>
+<div class="wrapper wrapper-content ibox-content">
+<@form.form id="form-role-edit" class="form-horizontal">
+    <@form.hidden id="id" name="id" value="${role.id?default('')}"/>
+    <div class="form-group">
+        <label class="col-sm-3 control-label "><span style="color: red; ">*</span>角色名称：</label>
+        <div class="col-sm-8">
+            <input class="form-control" type="text" name="roleName" id="roleName" value="${role.roleName?default("")}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span style="color: red; ">*</span>权限字符：</label>
+        <div class="col-sm-8">
+            <input class="form-control" type="text" name="roleKey" id="roleKey" value="${role.roleKey?default("")}" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><@ctx.i18n text = "管理模块"/>：</label>
+        <div class="col-sm-8">
+            <@form.checkbox name="moduleCodes" value="${selectModules}" items=modules itemLabel="moduleName" itemValue="moduleCode" required=true/>
+<#--            <#list modules>-->
+<#--                <#items as d>-->
+<#--                    <#if d.status =='0' >-->
+<#--                        <#if lisModule?? && (lisModule?size > 0)>-->
+<#--                            <#assign a=0 />-->
+<#--                            <#list lisModule as c>-->
+<#--                                <#if c == d.moduleCode >-->
+<#--                                    <#assign a=1 />-->
+<#--                                </#if>-->
+<#--                            </#list>-->
+<#--                            <#if a== 1>-->
+<#--                                 <label>-->
+<#--                                    <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" checked required/><@ctx.i18n text = "${d.moduleName}" /></label>-->
+<#--                                </label>-->
+<#--                            <#else>-->
+<#--                                 <label>-->
+<#--                                    <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" required/><@ctx.i18n text = "${d.moduleName}" /></label>-->
+<#--                                </label>-->
+<#--                            </#if>-->
+<#--                        <#else>-->
+<#--                            <label>-->
+<#--                                <label class="check-box"><input type="checkbox" name="moduleCodes" value="${d.moduleCode}" required/><@ctx.i18n text = "${d.moduleName}" /></label>-->
+<#--                            </label>-->
+<#--                        </#if>-->
+<#--                    </#if>-->
+<#--                </#items>-->
+<#--            </#list>-->
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span style="color: red; ">*</span>显示顺序：</label>
+        <div class="col-sm-8">
+            <@form.input name="roleSort" value="${role.roleSort?default('')}"  required=true/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label"><span style="color: red; ">*</span>状态：</label>
+        <div class="col-sm-8">
+            <@form.switch name="status" value="${role.status}"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">备注：</label>
+        <div class="col-sm-8">
+            <@form.textarea name="remark" value="${role.remark?default('')}"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">菜单权限: </label>
+        <div  class="col-sm-8">
+            <div class="box box-solid" style="background:#FAFAFA;border-top: 1px solid rgb(210, 214, 222);">
+                <div class="box-header">
+                    <div class="box-title">
+                        <label class="check-box">
+                            <input type="checkbox" id="checkall"/> 全部勾选
+                        </label>
+                    </div>
+                    <div class="box-tools pull-right" style="top:8px;">
+                        <a class="btn btn-box-tool" id="expand"
+                           value="dataScopeTree" >展开</a>/
+                        <a class="btn btn-box-tool" id="collapse" value="dataScopeTree" >折叠</a>
                     </div>
                 </div>
+                <div class="box-body">
+                        <div id="menuTrees" class="ztree"></div>
+                </div>
             </div>
-</@addorEdit>
+        </div>
+    </div>
+</@form.form>
+</div>
 <@footer>
-<@jsLibs.ztree_js/>
-<script>
+<script type="text/javascript">
     $(function() {
         var txt = opt.common.getCheckboxValue("moduleCodes");
-        var url = baseURL + "sys/menu/roleModuleMenuTreeData?roleId=" + $("#roleId").val() + "&moduleCodes=" + txt;
+        var url = baseURL + "sys/menu/roleModuleMenuTreeData?id=" + $("#id").val() + "&moduleCodes=" + txt;
         var options = {
             id: "menuTrees",
             url: url,
@@ -102,7 +113,7 @@
                     $("#menuTrees").show();
                 }
 
-                var url = baseURL + "sys/menu/roleModuleMenuTreeData?moduleCodes="+txt+"&roleId="+$("#roleId").val();
+                var url = baseURL + "sys/menu/roleModuleMenuTreeData?moduleCodes="+txt+"&id="+$("#id").val();
                 var options = {
                     id: "menuTrees",
                     url: url,
@@ -112,6 +123,23 @@
                 $.tree.init(options);
             });
         })
+    });
+
+    $('#checkall').on('ifChecked ifUnchecked', function(){
+        if(this.checked){
+            $.tree.checkAllNodes(true);
+        }else{
+            $.tree.checkAllNodes(false);
+        }
+    })
+    /* 树展开事件 */
+    $('#expand').click(function() {
+        $.tree.expand();
+    });
+
+    /* 树折叠事件 */
+    $('#collapse').click(function() {
+        $.tree.collapse();
     });
 
     /*校验表单*/
@@ -127,8 +155,8 @@
                         "roleName" : function() {
                             return opt.common.trim($("#roleName").val());
                         },
-                        "roleId":function () {
-                            return opt.common.trim($("#roleId").val());
+                        "id":function () {
+                            return opt.common.trim($("#id").val());
                         }
                     },
                     dataFilter: function(data, type) {
@@ -145,8 +173,8 @@
                         "roleKey" : function() {
                             return opt.common.trim($("#roleKey").val());
                         },
-                        "roleId":function () {
-                            return opt.common.trim($("#roleId").val());
+                        "id":function () {
+                            return opt.common.trim($("#id").val());
                         }
                     },
                     dataFilter: function(data, type) {
@@ -179,17 +207,9 @@
     /*提交*/
     function submitHandler(index, layero){
         if (opt.validate.form()) {
-            var options = {
-                id:'form-role-edit',
-                del:['moduleCodes']
-            };
-            var data = opt.form.dataUp(options);
+            var data = $('#form-role-edit').serializeArray();
             var menuIds = $.tree.getCheckedNodes();
-            var status = $("input[id='status']").is(':checked') == true ? "0" : "1";
-            var moduleCodes = opt.common.getCheckboxValue("moduleCodes");
-            data.push({"name": "status", "value": status});
             data.push({"name": "menuIds", "value": menuIds});
-            data.push({"name": "moduleCodes", "value": moduleCodes});
             opt.operate.save(baseURL+'sys/role/edit',data);
         }
     }

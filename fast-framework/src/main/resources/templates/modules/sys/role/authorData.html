@@ -1,0 +1,128 @@
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+    <@header title="角色分配数据权限" bodyClass="white-bg" libs=["zTree"]/>
+    <div class="wrapper wrapper-content ibox-content">
+        <@form.form id="form-user-add" class="form-horizontal">
+            <@form.hidden id="id" name="id" value="${role.id?default('')}"/>
+            <h4 class="form-header h4"><i class="fa icon-shield"></i> <@ctx.i18n text = "角色分配数据权限"/></h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "角色名称"/>：</label>
+                        <div class="col-sm-8">
+                            <@form.input name="roleName" value="${role.roleName?default('')}" readonly=true  required=true/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "权限字符"/>：</label>
+                        <div class="col-sm-8">
+                            <@form.input name="roleKey" value="${role.roleKey?default('')}" readonly=true  required=true/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span style="color: red; ">*</span><@ctx.i18n text = "数据范围"/>：</label>
+                        <div class="col-sm-10">
+                            <@form.radio name="dataScope" value="${role.dataScope?default('0')}" helpTip="控制此角色范围分配菜单数据范围" dictType="sys_role_data_scope" required=true/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 class="form-header h4"><i class="fa icon-link"></i> <@ctx.i18n text = "分配数据权限"/></h4>
+            <div id="dataScopeTrees" class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="box box-solid" style="background:#FAFAFA;border-top: 1px solid rgb(210, 214, 222);">
+                                <div class="box-header">
+                                    <div class="box-title">
+                                        <label class="check-box">
+                                            <input type="checkbox" id="checkall"/> 全部勾选
+                                        </label>
+                                    </div>
+                                    <div class="box-tools pull-right" style="top:8px;">
+                                        <a class="btn btn-box-tool" id="expand"
+                                           value="dataScopeTree" >展开</a>/
+                                        <a class="btn btn-box-tool" id="collapse" value="dataScopeTree" >折叠</a>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div id="deptTrees" class="ztree"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </@form.form>
+        <div class="hr-line-dashed"></div>
+        <div class="row" id="_addTab">
+            <div class="col-sm-offset-5 col-sm-10">
+                <button type="button" class="btn btn-sm btn-primary" onclick="opt.form.submit()"><i class="fa fa-check"></i><@ctx.i18n text = "保存"/></button>&nbsp;
+                <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
+            </div>
+        </div>
+    </div>
+    </div>
+<@footer>
+<script type="text/javascript">
+    $(function() {
+        var url = baseURL + "sys/dept/roleDeptTreeData/" + $("#id").val();
+        var options = {
+            id: "deptTrees",
+            url: url,
+            check: { enable: true, nocheckInherit: true, chkboxType: { "Y": "s", "N": "s" } },
+            expandLevel: 1
+        };
+        $.tree.init(options);
+    });
+
+    /**
+     * 利用redio 组件回调事件处理 数据权限数据控制显示还是隐藏
+     * 回传两个参数 name 当前控制名称, data 当前点击对象, event 事件对象
+     **/
+    function redioCallback(name, data, event){
+        if(name == "dataScope"){
+            if ($(data).is(':checked')){
+                if ($(data).val() == '5'){ // 2 自定义数据
+                    $('#dataScopeTrees').show().prev().show();
+                }else{
+                    $('#dataScopeTrees').hide().prev().hide();
+                }
+            }
+        }
+    }
+
+    $('#checkall').on('ifChecked ifUnchecked', function(){
+        if(this.checked){
+            $.tree.checkAllNodes(true);
+        }else{
+            $.tree.checkAllNodes(false);
+        }
+    })
+    /* 树展开事件 */
+    $('#expand').click(function() {
+        $.tree.expand();
+    });
+
+    /* 树折叠事件 */
+    $('#collapse').click(function() {
+        $.tree.collapse();
+    });
+
+    var prefix = baseURL + "sys/role/authData";
+
+    function submitHandler() {
+        var data = $('#form-user-add').serializeArray();
+        var deptIds = $.tree.getCheckedNodes();
+        data.push({"name": "deptIds", "value": deptIds});
+        opt.operate.saveTab(prefix + "/edit", data);
+    }
+</script>
+</@footer>
+</@pageTheme>

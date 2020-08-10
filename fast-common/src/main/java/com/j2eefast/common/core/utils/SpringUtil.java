@@ -1,5 +1,6 @@
 package com.j2eefast.common.core.utils;
 
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -73,5 +74,15 @@ public class SpringUtil implements BeanFactoryPostProcessor{
 	 */
 	public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {
 	    return BEAN_FACTORY.getAliases(name);
+	}
+
+	/**
+	 * 通过SPring AOP 代理获取
+	 * @param invoker
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> T getAopProxy(T invoker){
+		return (T) AopContext.currentProxy();
 	}
 }

@@ -5,16 +5,53 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import javax.validation.constraints.NotBlank;
-import com.baomidou.mybatisplus.annotation.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+#foreach ($column in $columns)##
+#if(!$table.isSuperColumn($column.javaField))####
+#if($column.javaType == 'Date')##
 import com.fasterxml.jackson.annotation.JsonFormat;
+#break
+#end
+#end
+#end
+#foreach ($column in $columns)##
+#if(!$table.isSuperColumn($column.javaField))####
+#if($column.javaField == 'delFlag')##
+import com.baomidou.mybatisplus.annotation.TableLogic;
+#break
+#end
+#end
+#end
 import lombok.Data;
 #if($table.crud)
+#set($Entity="extends BaseEntity")
 import com.j2eefast.common.core.base.entity.BaseEntity;
+#else
+#set($EntityFlag="0")
+#foreach ($column in $columns)##
+#if(!$table.isSuperColumn($column.javaField))####
+#set($EntityFlag="1")#break
+#end
+#end
+#if($EntityFlag == "0")
+#set($Entity="implements Serializable")
+import java.io.Serializable;
+#else
+#set($Entity="extends BaseEntity")
+import com.j2eefast.common.core.base.entity.BaseEntity;
+#end
 #end
 #foreach ($import in $importList)
 import ${import};
+#end
+#foreach ($column in $columns)##
+#if($column.javaType == 'SysCompEntity')##
+import com.j2eefast.framework.sys.entity.SysCompEntity;
+#elseif($column.javaType == 'SysUserEntity')##
+import com.j2eefast.framework.sys.entity.SysUserEntity;
+#elseif($column.javaType == 'SysDeptEntity')##
+import com.j2eefast.framework.sys.entity.SysDeptEntity;
+#end
 #end
 
 /**
@@ -22,114 +59,133 @@ import ${import};
  * @author: ${author}
  * @date ${datetime}
  */
-#if($table.crud)
-#set($Entity="extends BaseEntity")
-#else
-#set($Entity="implements Serializable")
-#end
 @Data
 @TableName("${tableName}")
 public class ${ClassName}Entity ${Entity}{
 
-#foreach ($column in $columns)
-#if($table.crud)
-#if(!$table.isSuperColumn($column.javaField))
+    private static final long serialVersionUID = 1L;#####
+#foreach ($column in $columns)##
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#if($table.crud)#### CRUE
+#if(!$table.isSuperColumn($column.javaField))####
+
+
+    /** $column.columnComment */####
+#if($column.javaField == 'delFlag')##
+
+    @TableLogic(value="0",delval="1")###
+#end
+#if($column.plus)##
+    @TableField(exist = false)
+#if($column.javaType == 'Date')##
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
+#end##
+    private $column.javaType $column.javaField;###
+#else##
+#if($column.pk) #* 是表主键*#
+#if($column.increment)#### #* 是主键*#
+	@TableId(type = IdType.AUTO)###
+
+    private $column.javaType $column.javaField;###
+#else
+    @TableId(value = "$column.columnName",type = IdType.ASSIGN_ID)
+    private $column.javaType $column.javaField;###
+#end
+#else
+#if($column.queryType == "BETWEEN")
+    @TableField(exist = false)  
+    private $column.javaType begin$AttrName;###  //between 查询用
+    @TableField(exist = false)
+    private $column.javaType end$AttrName;###   //between 查询用
+#end 
+#if($column.javaType == 'Date')####
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")####
+#end
+#if($column.required)## #*是否未必填项*#
+#if($column.javaType == 'String')###
+
+    @NotBlank(message = "参数值不能为空")###
+#else##
+
+    @NotNull(message = "参数值不能为空")###
+#end
+#end###
+
+    private $column.javaType $column.javaField;####
+#if($column.htmlType == "comp")####
+
+    @TableField(exist=false)
+    private String compName;####
+#end##
+#if($column.htmlType == "dept")####
+
+    @TableField(exist=false)
+    private String deptName;####
+#end##
+#end
+#end
+#end
+#else  ### NO -CRUE
+#if(!$table.isSuperColumn($column.javaField))####
+
+
     /** $column.columnComment */
+#if($column.javaField == 'delFlag')##
+    @TableLogic(value="0",delval="1")###
+
+#end##
 #if($column.plus)
     @TableField(exist = false)
 #if($column.javaType == 'Date')
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
+	#if($column.queryType == "BETWEEN")
+	    @TableField(exist = false)  
+	    private $column.javaType begin$AttrName;
+	    @TableField(exist = false)
+	    private $column.javaType end$AttrName;
+	#end###
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")####
 #end
     private $column.javaType $column.javaField;
 #else
-#if($column.pk) #* 是表主键*#
-#if($column.increment) #* 是主键*#
+#if($column.pk)####* 是表主键*#
+#if($column.increment)####* 是主键自增型*#
 	@TableId(type = IdType.AUTO)
-    private $column.javaType $column.javaField;
+    private $column.javaType $column.javaField;####
 #else
     @TableId(value = "$column.columnName",type = IdType.ASSIGN_ID)
-    private $column.javaType $column.javaField;
+    private $column.javaType $column.javaField;#####
 #end
-#else
+#else### 普通不是主键
 #if($column.javaType == 'Date')
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
 #end
-#if($column.required)#*是否未必填项*#
-#if($column.javaType == 'String')
-    @NotBlank(message = "参数值不能为空")
-#else
-    @NotNull(message = "参数值不能为空")
+#if($column.required)###*是否未必填项*#
+#if($column.javaType == 'String')#####
+    @NotBlank(message = "参数值不能为空")####
+
+#else##
+    @NotNull(message = "参数值不能为空")#####
+
 #end
 #end
-#if($column.javaField == 'delFlag')
-    @TableLogic
-#end
-    private $column.javaType $column.javaField;
-#end
-#end
-#end
-#else
-    /** $column.columnComment */
-#if($column.javaField == 'delFlag')
-    @TableLogic
-#end
-#if($column.plus)
-    @TableField(exist = false)
-#if($column.javaType == 'Date')
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
-#end
-    private $column.javaType $column.javaField;
-#else
-#if($column.pk) #* 是表主键*#
-#if($column.increment) #* 是主键自增型*#
-	@TableId(type = IdType.AUTO)
-    private $column.javaType $column.javaField;
-#else
-    @TableId(value = "$column.columnName",type = IdType.ASSIGN_ID)
-    private $column.javaType $column.javaField;
-#end
-#else
-#if($column.javaType == 'Date')
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
-#end
-#if($column.required)#*是否未必填项*#
-#if($column.javaType == 'String')
-    @NotBlank(message = "参数值不能为空")
-#else
-    @NotNull(message = "参数值不能为空")
+    private $column.javaType $column.javaField;####
+#if($column.htmlType == "comp")##
+
+    @TableField(exist=false)
+    private String compName;###
+####
+#end####
+#if($column.htmlType == "dept")##
+
+    @TableField(exist=false)
+    private String deptName;####
+####
+#end##
 #end
 #end
-    private $column.javaType $column.javaField;
 #end
 #end
 #end
 
-#end
-#*
-#foreach ($column in $columns)
-#if($table.crud)
-#if(!$table.isSuperColumn($column.javaField))
-#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-    public void set${AttrName}($column.javaType $column.javaField)
-    {
-        this.$column.javaField = $column.javaField;
-    }
-    public $column.javaType get${AttrName}()
-    {
-        return $column.javaField;
-    }
-#end
-#else
-#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-    public void set${AttrName}($column.javaType $column.javaField)
-    {
-        this.$column.javaField = $column.javaField;
-    }
-    public $column.javaType get${AttrName}()
-    {
-        return $column.javaField;
-    }
-#end
-#end
-*#
 }

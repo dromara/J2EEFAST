@@ -1,8 +1,12 @@
 package ${packageName}.mapper;
 
 import ${packageName}.entity.${ClassName}Entity;
+import java.io.Serializable;
+import java.util.List;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
+import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 /**
  *
  * ${tableName}DAO接口
@@ -10,13 +14,21 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @date ${datetime}
  */
 public interface ${ClassName}Mapper extends BaseMapper<${ClassName}Entity> {
-    #*
+#set($className=$ClassName.substring(0,1).toLowerCase() + ${ClassName.substring(1)})
+
 	/**
-     * 批量删除${functionName}
-     * 
-     * @param ids 需要删除的数据ID
-     * @return 结果
+     * 自定义分页查询
+     * @param  page 
+     * @param  ${className}Entity 实体类
      */
-    int delete${ClassName}ByIds(${pkColumn.javaType}[] ids);
-    *#
+     Page<${ClassName}Entity> findPage(IPage<${ClassName}Entity> page,
+                                       @Param("${className}") ${ClassName}Entity ${className}Entity,
+                                       @Param("sql_filter") String sql_filter);
+
+     ${ClassName}Entity find${ClassName}ById(Serializable id);
+
+
+     List<${ClassName}Entity> findList(${ClassName}Entity ${className}Entity);
+
+     /**删除相关方法  使用mybatis-plus集成的 **/
 }

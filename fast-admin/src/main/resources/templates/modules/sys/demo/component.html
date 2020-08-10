@@ -1,0 +1,478 @@
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="前端组件使用说明" bodyClass="white-bg" libs=["table","prism","bootstrapSelect","ueditor","fileupload","selectPage"]/>
+<div class="wrapper wrapper-content ibox-content">
+    <@form.tip class="warning"><strong>重要提示:</strong>J2eeFAST平台 前端模板引擎组件写法类似 HTML 本身控件写法,属性值方式.</@form.tip>
+    <@form.code>
+        <#noparse>
+        //
+        //页面提示组件标签:<@form.tip>&lt;/@form.tip&gt; 例如上面展示效果
+        //参数: 1. class="info" 不是必输 <#-- 默认 info 蓝色 warning 警告黄色 success 成功绿色 danger 危险红色 -->
+        //     2. icon=""      不是必输 <#-- 提示小图标 默认 fa fa-info -->
+        //栗子 🌰
+        <@form.tip class="warning"><strong>重要提示:</strong>如果选择发布公告,等级是<u>严重</u>才会在登陆页面Top提示,等级是<u>紧急</u>只在登陆之后Top提示,等级是<u>普通</u>则在Top提醒栏提示!&lt;/@form.tip&gt;
+        </#noparse>
+    </@form.code>
+    <@form.form id="form-user-add" class="form-horizontal" style="margin-top: 40px;">
+        <h4 class="form-header h4">常用组件信息</h4>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span style="color: red; ">*</span>输入框组件：</label>
+                    <div class="col-sm-10">
+                        <@form.input name="username" placeholder="请输入登录账号"  butClass="fa fa-envelope-open" required=true helpTip="登录账号数字加字母组合,至少3位"/>
+                        <#-- form.code 是为了演示说明 可以删除-->
+                        <@form.code>
+                         <#noparse>
+                             //输入框组件标签:<@form.input/>
+                             //参数: 1. name 控件name 必输
+                                    2. id 控件id 不是必输 如果不输则与name名称一样
+                                    3. value 控件值 不是必输 默认""
+                                    4. type 控件类型 不是必输 默认 text
+                                    5. dataFormat 控件格式化 不是必输 暂时预留 格式化后期处理
+                                    6. required 控件在from 不是必输 默认false 表单中是否必输 true为表单中必输
+                                    7. class 输入框控件样式 不是必输 默认form-control
+                                    8. placeholder 控件输入框提示内容 不是必输 默认""
+                                    9. butClass 控件后面追加图标  不是必输 默认""
+                                    10.helpTip 帮助提示 不是必输 默认""
+                                    11.readonly 控件是否可以编辑 不是必输 默认""
+                                    12.maxlength 控件输入最大长度 不是必输 默认 ""
+                             //栗子 🌰
+                             <@form.input name="username" butClass="fa fa-envelope-open" placeholder="请输入登录账号" required=true
+                             helpTip="登录账号数字加字母组合,至少3位"/>
+
+                             //表单隐藏域标签:<@form.hidden/>
+                             //参数: 1. name 控件name 必输
+                                    2. id 控件id 不是必输 如果不输则与name名称一样
+                                    3. value 控件值 不是必输 默认""
+                                    4. type 控件类型 不是必输 默认 hidden
+                                    5. refresh 隐藏域在from 表单中能否被重置按钮清空 不是必输 默认 true
+                             //栗子 🌰
+                             <@form.hidden name="id"/>
+                         </#noparse>
+                        </@form.code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span style="color: red; ">*</span>多行文本：</label>
+                    <div class="col-sm-10">
+                        <@form.textarea name="text" rows="6"/>
+                        <@form.code>
+                        <#noparse>
+                            //多行文本组件标签: <@form.textarea/>
+                            //参数: 1. name 控件name 必输
+                                   2. id 控件id 不是必输 如果不输则与name名称一样
+                                   3. class 控件样式 不是必输 默认 "form-control"
+                                   4. value 控制值 不是必输 默认 ""
+                                   5. required 控件在from 不是必输 默认 false 表单中是否必输 true为表单中必输
+                                   6. readOnly 控件是否可以修改 不是必输 默认 false
+                                   7. rows 控件多行 不是必输 默认 5
+                            //栗子 🌰
+                            <@form.textarea name="text" rows="6"/>
+                        </#noparse>
+                        </@form.code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span style="color: red; ">*</span>图片剪切：</label>
+                    <div class="col-sm-10">
+                        <@form.imageclip name="imgCp"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"><span style="color: red; ">*</span>下拉单选：</label>
+                    <div class="col-sm-8">
+                        <@form.select name="status" dictType="sys_normal_disable" blankValue="" blankLabel="所有"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"><span style="color: red; ">*</span>下拉多选：</label>
+                    <div class="col-sm-8">
+                        <@form.select name="businessTypes" multiple=true  dictType="sys_oper_type" required=true/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <@form.code>
+                            <#noparse>
+                                //下拉框组件标签: <@form.select/>
+                                //参数: 1. name 控件name 必输
+                                       2. id 控件id 不是必输 如果不输则与name名称一样
+                                       3. class 控件样式 不是必输 默认 "form-control"
+                                       4. value 控制值 不是必输 默认 ""
+                                       5. required 控件在from 不是必输 默认 false 表单中是否必输 true为表单中必输
+                                       6. readOnly 控件是否可以修改 不是必输 默认 false
+                                       7. butClass 控件后面追加图标  不是必输 默认""
+                                       8. helpTip 帮助提示 不是必输 默认""
+                                       9. dictType 字典类型，从数据从字典里获取 不是必输 默认""
+                                       10.items 列表数据，可接受对象集合后台传入 不是必输
+                                       11.itemLabel 指定列表数据中的什么属性名作为option的标签名 不是必输
+                                       12.itemValue 指定列表数据中的什么属性名作为option的value值 不是必输
+                                       13.status 检测状态 不是必输
+                                       14.multiple 是否多选 不是必输 默认 "false" 单选
+                                       15.blankValue 是否默认有个空白选择项目 不是必输 默认"false"
+                                       16.blankLabel 空白选择默认值 不是必输 默认""
+                                       17.placeholder 默认输入框提示 不是必输 默认 "请输入"
+                                //此组件页面会有回调事件:
+                                //回调方法参数: id 回调控件的id,用于区分控件名称,若你的页面有多个下拉框组件
+                                              event 回调控件的事件 change
+                                              data 回调控件的数据
+                                selectCallback(id,event,data);
+                                * 如果你需要此回调页面添加此函数 不需要则忽略
+
+                                //从字典获取栗子 🌰:
+                                <@form.select name="status" dictType="sys_normal_disable" blankValue="" blankLabel="所有"/>
+                                //从后台传入值栗子 🌰:
+                                <@form.select name="roleIdList" multiple = true value="${selectRoles}"  items=roles itemLabel="roleName" itemValue="id"
+                                required=true/>
+                            </#noparse>
+                        </@form.code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span style="color: red; ">*</span>异步多级联动：</label>
+                    <div class="col-sm-10">
+                        <@form.selectLinkage name="cidy"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"><span style="color: red; ">*</span>单选框：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <@form.radio name="type" dictType="sys_menu_type"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"><span style="color: red; ">*</span>多选框：</label>
+                    <div class="col-sm-8">
+                        <@form.checkbox name="postType" dictType="sys_post_type" required=true/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <@form.code>
+                            <#noparse>
+                                //单选按钮组件标签: <@form.radio/>
+                                //参数: 1. name 控件name 必输
+                                       2. id 控件id 不是必输 如果不输则与name名称一样
+                                       3. class 控件样式 不是必输 默认 "radio-box"
+                                       4. value 控制值 不是必输 默认 ""
+                                       5. required 控件在from 不是必输 默认 false
+                                 表单中是否必输 true为表单中必输
+                                       6. readOnly 控件是否可以修改 不是必输 默认 false
+                                       7. helpTip  帮助提示 不是必输 默认""
+                                       8. dictType 字典类型，从字典里获取
+                                //控件回调事件:
+                                //回传参数 id 控件名称, data 回传对象, event 回传事件
+                                redioCallback(id,data,event)
+                                * 如果你需要此回调页面添加此函数 不需要则忽略
+                                //栗子 🌰
+                                <@form.radio name="type" dictType="sys_menu_type"/>
+
+                                //多选按钮组件标签: <@form.checkbox/>
+                                //参数: 1. name 控件name 必输
+                                       2. id 控件id 不是必输 如果不输则与name名称一样
+                                       3. class 控件样式 不是必输 默认 "radio-box"
+                                       4. value 控制值 不是必输 默认 ""
+                                       5. required 控件在from 不是必输 默认 false
+                                表单中是否必输 true为表单中必输
+                                       6. status 检测状态 不是必输 默认 status
+                                       7. dictType 字典类型，从字典里获取  不是必输 默认""
+                                       8. helpTip  帮助提示 不是必输 默认""
+                                       9.items 列表数据，可接受对象集合后台传入 不是必输
+                                       10.itemLabel 指定列表数据中的什么属性名作为option
+                                的标签名 不是必输
+                                       11.itemValue 指定列表数据中的什么属性名作为option
+                                的value值 不是必输
+                                //栗子 🌰
+                                <@form.checkbox name="postType" dictType="sys_post_type"
+                                required=true/>
+                            </#noparse>
+                        </@form.code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">图标选择控件：</label>
+                    <div class="col-sm-8">
+                        <@form.iconselect name="icon" placeholder="选择图标"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Switch状态控件：</label>
+                    <div class="col-sm-8">
+                        <@form.switch name="status" value="0"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <@form.code>
+                            <#noparse>
+                                //图标选择组件标签: <@form.iconselect/>
+                                //参数:  1. name 控件name 必输
+                                        2. id 控件id 不是必输 如果不输则与name名称一样
+                                        3. class 控件样式 不是必输 默认 "radio-box"
+                                        4. value 控制值 不是必输 默认 ""
+                                        5. required 控件在from 不是必输 默认 false
+                                表单中是否必输 true为表单中必输
+                                        6. readOnly 控件是否可以修改 不是必输 默认 false
+                                        7. helpTip  帮助提示 不是必输 默认""
+                                        8. width 弹出窗口宽 不是必输
+                                        9. height 弹出窗口高 不是必输
+                                        10.isClear 弹出窗体是否有清除按钮 不是必输
+                                        11.boxTitle 弹出窗体title 不是必输
+                                //控件回调事件:
+                                //回传参数 id 控件名称, data 回传对象, event 回传事件
+                                iconCallback(id,event,index, layero, icon)
+                                * 如果你需要此回调页面添加此函数 不需要则忽略
+                                //栗子 🌰
+                                <@form.iconselect name="icon" placeholder="选择图标"/>
+
+                                //switch开关组件标签: <@form.switch/>
+                                //参数:  1. name 控件name 必输
+                                        2. id 控件id 不是必输 如果不输则与name名称一样
+                                        3. value 控制值 不是必输 默认 ""
+                                //栗子 🌰
+                                <@form.switch name="status" value="0"/>
+                            </#noparse>
+                        </@form.code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span style="color: red; ">*</span>选择树组件：</label>
+                    <div class="col-sm-10">
+                        <@form.treeselect name="compId" boxTitle="请选择归属机构" url="sys/comp/treeData"
+                        expandLevel=true
+                        placeholder="请选择上级机构"/>
+                        <@form.code>
+                            <#noparse>
+                                //树选择组件标签:<@form.treeselect/>
+                                //参数: 1. name 控件name 必输
+                                       2. id 控件id 不是必输 如果不输则与name名称一样
+                                       3. value 控件值 不是必输 默认""
+                                       4. boxTitle 弹出窗体标题 默认""
+                                       5. width 弹出窗口宽 不是必输 默认"380"
+                                       6. height 弹出窗口高 不是必输 默认""
+                                       7. labelValue 页面显示值 不是必输 默认""
+                                       8. checked 树是否多选 不是必输 默认"false"
+                                       9. radioType 当checked=false 单选时 控制同级单选互斥还是整个树互斥 all 整个树互斥 level, checked=true 多选此值无效
+                                       10.required 控件在from 不是必输 默认false 表单中是否必输 true为表单中必输
+                                       11.readonly 控件是否可以编辑 不是必输 默认""
+                                       12.correlationId 控件关联ID 不是必输
+                                       13.correlationValue 控件关联值 不是必输
+                                       14.expandLevel 是否展开树 默认 false
+                                       15.isParentIds 单选是否需要获取树的父节点集合 false
+                                       16.parenName 单选父节点集合Name 默认 "parentIds"
+                                       17.parenIdsValue 所有父节点集合默认值
+                                       18.isSelectParent 是否只能选中叶子节点 false
+                                       19.isInput 是否允许手动label框输入 默认 "false"
+                                       20.isClear  弹出是否出现清除按钮 默认 "true"
+                                       21.placeholder 输入提示 默认 请输入值
+                                       22.helpTip 帮助提示 默认 ""
+                                //回调函数
+                                //treeCallback(id, event, index, layero, nodes);
+
+                                //栗子 🌰
+                                <@form.treeselect name="compId" boxTitle="请选择归属机构" url="sys/comp/treeData"
+                                expandLevel=true placeholder="请选择上级机构"/>
+
+                                //关联
+                                <@form.treeselect  name="deptId" boxTitle="请选择归属部门" url="sys/dept/selectZtree" value="${user.deptId?default('')}"
+                                labelValue="${user.deptName?default('')}" correlationId="compId" isSelectParent=true  placeholder="请选择归属部门"/>
+                            </#noparse>
+                        </@form.code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span style="color: red; ">*</span>百度富文本：</label>
+                    <div class="col-sm-10">
+                        <@form.ueditor name="noticeContent"/>
+                        <@form.code>
+                            <#noparse>
+                                //libs["ueditor"]
+                                //百度富文本组件标签:<@form.ueditor/>
+                                //参数: 1. name 控件name 必输
+                                       2. id 控件id 不是必输 如果不输则与name名称一样
+                                       3. value 控件值 不是必输 默认""
+                                       4. readonly 控件是否可以编辑 不是必输 默认"false"
+                                       5. maxlength 最大输入长度默认不限 不是必输
+                                       6. height 控件高度 不是必输 默认"300"
+                                       7. type = "html" 获取数据类型 html (整个html的内容), content (内容), txt(纯文本), plaintxt (带格式的纯文本)
+                                //回调函数
+                                //webuploaderRefresh(html);
+
+                                //栗子 🌰
+                                <@form.ueditor name="noticeContent"/>
+
+                            </#noparse>
+                        </@form.code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span style="color: red; ">*</span>图片上传：</label>
+                    <div class="col-sm-10">
+                        <@form.fileupload name="uploadImageFile1" uploadType="image" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span style="color: red; ">*</span>文件上传：</label>
+                    <div class="col-sm-10">
+                        <@form.fileupload name="uploadFile" bizType="temp_file" uploadType="all"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </@form.form>
+    <div class="hr-line-dashed"></div>
+    </div>
+<@footer>
+<script type="text/javascript">
+
+    /**
+     * 下拉选择框 回调函数案例
+     * @param id
+     * @param event
+     * @param data
+     */
+    function selectCallback(id,event,data){
+        if(id == "status"){
+            console.log(data);
+            opt.modal.alertInfo("下拉单选回调: 控件名称:"+id + " 选中:"+data[0].text);
+        }
+        if(id == "businessTypes"){
+            console.log(data);
+            var txt = "";
+            for(var i=0; i<data.length; i++){
+                txt += data[i].text+"/";
+            }
+            if(txt.length > 0){
+                txt = txt.substr(0,txt.length-1);
+            }
+            opt.modal.alertInfo("下拉多选回调: 控件名称:"+id + " 选中:"+txt);
+        }
+    }
+
+    /**
+     * redio 单选回调
+     * @param id
+     * @param data
+     * @param event
+     */
+    function  redioCallback(id,data,event){
+        if(id == "type"){
+           /* if ($(data).is(':checked')){
+                var menuType = $(event.target).val();
+                opt.modal.alertInfo("redio 单选回调: 控件名称:" + id + " 选中:" + menuType);
+            } */
+        }
+    }
+
+
+
+    /**
+     *  id 为组件id
+     *  event 为组件点击按钮名称 ok 确定 clear 清除 cancel 取消
+     *  index 弹出窗口index
+     *  layero
+     *  nodes 确认事件传的参数
+     **/
+    function treeCallback(id, event, index, layero, nodes) {
+        if(id == "compId"){
+            if(event == "ok"){
+               opt.modal.alertInfo("弹出树 点击确定 数据:" +nodes.id + " -->" + nodes.name);
+            }
+
+            if(event == "clear"){
+                opt.modal.alertInfo("弹出树 点击清除");
+            }
+
+            if(event == "cancel"){
+                opt.modal.alertInfo("弹出树 点击取消");
+            }
+        }
+    }
+
+    /**
+     * 多级联动控件回调事件
+     * @param name 主控件名称 指<#noparse><@form.selectLinkage name="cidy"/></#noparse>中的name
+     * @param id 点击事件id
+     * @param event 事件名称 load 数据加载, select 选择, clear 清除
+     * @param data 返回事件数据
+     */
+    function selectLinkageCallback(name,id,event,data){
+        console.log("name:" + name + "  id:" + id + "  event:" + event + "  data:" +data);
+        if(name == "cidy"){
+            if(event == "clear"){
+                opt.modal.alertInfo("多级联动 点击清除");
+            }
+            if(event == "select"){
+                opt.modal.alertInfo("多级联动 选择:" + data.name);
+            }
+        }
+    }
+</script>
+</@footer>
+</@pageTheme>

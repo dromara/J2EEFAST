@@ -18,16 +18,16 @@ import java.util.Date;
 public class SysJobEntity extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * 任务调度参数key
-	 */
-	public static final String JOB_PARAM_KEY = "JOB_PARAM_KEY";// JOB_PARAM_KEY
+//	/**
+//	 * 任务调度参数key
+//	 */
+//	public static final String JOB_PARAM_KEY = "JOB_PARAM_KEY";// JOB_PARAM_KEY
 
 	/**
 	 * 任务id
 	 */
 	@TableId(type = IdType.ASSIGN_ID)
-	private Long jobId;
+	private Long id;
 
 	@NotBlank(message = "名称不能为空")
 	private String jobName;
@@ -36,28 +36,20 @@ public class SysJobEntity extends BaseEntity {
 	@NotBlank(message = "任务分组不能为空")
 	private  String jobGroup;
 
-	/**
-	 * spring bean名称
-	 */
-	@NotBlank(message = "bean名称不能为空")
-	private String beanName;
-
-	/**
-	 * 方法名
-	 */
-	@NotBlank(message = "方法名称不能为空")
-	private String methodName;
-
-	/**
-	 * 参数
-	 */
-	private String params;
+	/** 调用目标字符串 */
+	private String invokeTarget;
 
 	/**
 	 * cron表达式
 	 */
 	@NotBlank(message = "cron表达式不能为空")
 	private String cronExpression;
+
+	/** cron计划策略 */
+	private String misfirePolicy;
+
+	/** 是否并发执行（0允许 1禁止） */
+	private String concurrent;
 
 	/**
 	 * 下次运行的时间
@@ -77,6 +69,38 @@ public class SysJobEntity extends BaseEntity {
 	 */
 	private String status;
 
+	public String getInvokeTarget() {
+		return invokeTarget;
+	}
+
+	public void setInvokeTarget(String invokeTarget) {
+		this.invokeTarget = invokeTarget;
+	}
+
+	public String getConcurrent() {
+		return concurrent;
+	}
+
+	public void setConcurrent(String concurrent) {
+		this.concurrent = concurrent;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getMisfirePolicy() {
+		return misfirePolicy;
+	}
+
+	public void setMisfirePolicy(String misfirePolicy) {
+		this.misfirePolicy = misfirePolicy;
+	}
+
 	public String getDelFlag() {
 		return delFlag;
 	}
@@ -85,14 +109,6 @@ public class SysJobEntity extends BaseEntity {
 		this.delFlag = delFlag;
 	}
 
-	/**
-	 * 设置：任务id
-	 * 
-	 * @param jobId 任务id
-	 */
-	public void setJobId(Long jobId) {
-		this.jobId = jobId;
-	}
 
 	public String getJobGroup() {
 		return jobGroup;
@@ -100,34 +116,6 @@ public class SysJobEntity extends BaseEntity {
 
 	public void setJobGroup(String jobGroup) {
 		this.jobGroup = jobGroup;
-	}
-
-	public Long getJobId() {
-		return jobId;
-	}
-
-	public String getBeanName() {
-		return beanName;
-	}
-
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
-
-	public String getMethodName() {
-		return methodName;
-	}
-
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
-	}
-
-	public String getParams() {
-		return params;
-	}
-
-	public void setParams(String params) {
-		this.params = params;
 	}
 
 	public String getJobName() {
@@ -171,4 +159,5 @@ public class SysJobEntity extends BaseEntity {
 	public void setNextDate(Date nextDate) {
 		this.nextDate = nextDate;
 	}
+
 }

@@ -66,20 +66,23 @@ public class BaseInitialze  implements ApplicationRunner {
                 }
             }
         }
-        
+
+        //清除
+		scheduler.clear();
+
         /**
          * 检测定时任务
          */
         List<SysJobEntity> sysJobList =  sysJobService.list();
         if(ToolUtil.isNotEmpty(sysJobList)) {
         	for(SysJobEntity sysJob: sysJobList) {
-        		CronTrigger cronTrigger = ScheduleUtils.getCronTrigger(scheduler, sysJob.getJobId());
-    			// 如果不存在，则创建
-    			if(cronTrigger == null) {
+//        		CronTrigger cronTrigger = ScheduleUtils.getCronTrigger(scheduler, sysJob.getJobId());
+//    			// 如果不存在，则创建
+//    			if(cronTrigger == null) {
     				ScheduleUtils.createScheduleJob(scheduler, sysJob);
-    			}else{
-    				ScheduleUtils.updateScheduleJob(scheduler, sysJob);
-    			}
+//    			}else{
+//    				ScheduleUtils.updateScheduleJob(scheduler, sysJob);
+//    			}
         	}
         }
         

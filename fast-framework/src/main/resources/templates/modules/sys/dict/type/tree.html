@@ -9,7 +9,7 @@
 </@header>
 <body class="hold-transition box box-main">
 	<input id="columnId" type="hidden" value="${columnId}"/>
-	<input id="treeId"   type="hidden" value="<#if dictHtml??>${dictHtml.dictId}</#if>"/>
+	<input id="treeId"   type="hidden" value="<#if dictHtml??>${dictHtml.id}</#if>"/>
 	<input id="dictType" type="hidden" value="<#if dictHtml??>${dictHtml.dictType}</#if>"/>
 	<div class="wrapper"><div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
 		<label id="btnShow" title="显示搜索" style="display:none;">︾</label>
@@ -32,13 +32,19 @@
 			var url = baseURL + "sys/dict/treeData";
 			var options = {
 		        url: url,
-		        onClick : zOnClick
+		        onClick : zOnClick,
+				onCheck : onCheck
 		    };
 			$.tree.init(options);
 		});
 		
 		function zOnClick(event, treeId, treeNode) {
-		    $("#dictType").val(treeNode.title);
+		    $("#dictType").val(treeNode.name);
+		}
+
+
+		function onCheck(event, treeId, treeNode) {
+			$("#dictType").val(treeNode.name);
 		}
 	</script>
 </@footer>

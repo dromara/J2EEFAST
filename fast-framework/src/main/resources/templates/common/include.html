@@ -52,8 +52,9 @@
 <#--  layui-->
 <link rel="stylesheet" href="${ctxStatic}/static/plugins/layui/css/layui.css?V=${config.getDvVersion()}"/>
 <#nested>
-<link rel="stylesheet" href="${ctxStatic}/static/css/style.min.css?V=${config.getDvVersion()}">
-<link rel="stylesheet" href="${ctxStatic}/static/js/fast-ui.min.css?V=${config.getDvVersion()}"/>
+<link rel="stylesheet" href="${ctxStatic}/static/css/style.css?V=${config.getDvVersion()}">
+<#--<link rel="stylesheet" href="${ctxStatic}/static/js/fast-ui.min.css?V=${config.getDvVersion()}"/>-->
+<link rel="stylesheet" href="${ctxStatic}/static/js/fast-ui.css?V=${config.getDvVersion()}"/>
 <link rel="shortcut icon" href="${ctxStatic}/static/img/favicon.ico">
 <#-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <#-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -71,13 +72,13 @@
 </#macro>
 
 <#--需要表格页面 如果fromId 为"" 则不要搜索框-->
-<#macro search fromId>
+<#macro search fromId class="form-inline">
 <body class="gray-bg sidebar-mini ${config.getKey('SYS_INDEX_SKINNAME','skin-blue')}">
 <div class="container-div animated fadeInRight" id="_app">
 <div class="row">
 		<#if fromId!="">
             <div class="col-sm-12 search-collapse">
-                <form id="${fromId}">
+                <form id="${fromId}" class="${class}">
                     <#nested>
                 </form>
             </div>
@@ -131,7 +132,8 @@
 <#--全局遮罩-->
 <script src="${ctxStatic}/static/plugins/blockUI/jquery.blockUI.js?V=${config.getDvVersion()}"></script>
 <#--bootstrap-table 表格插件-->
-<script src="${ctxStatic}/static/plugins/bootstrap-table/bootstrap-table.js?V=${config.getDvVersion()}"></script>
+<#--<script src="${ctxStatic}/static/plugins/bootstrap-table/bootstrap-table.js?V=${config.getDvVersion()}"></script>-->
+<script src="${ctxStatic}/static/plugins/bootstrap-table/bootstrap-table.min.js?V=${config.getDvVersion()}"></script>
 <script src="${ctxStatic}/static/plugins/bootstrap-table/locale/bootstrap-table-i18n.js?V=${config.getDvVersion()}"></script>
 <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js?V=${config.getDvVersion()}"></script>
 <script src="${ctxStatic}/static/plugins/bootstrap-table/extensions/toolbar/bootstrap-table-toolbar.min.js?V=${config.getDvVersion()}"></script>
@@ -156,5 +158,6 @@
 </html>
 </#macro>
  
-<#import "jslibs.html" as jsLibs>
-<#import "csslibs.html" as cssLibs>
+<#import "jslibs1.html" as jsLibs>
+<#import "csslibs1.html" as cssLibs>
+<#import "/common/component/form.html" as form>

@@ -28,7 +28,7 @@ public class SysPostEntity extends BaseEntity {
 
     /** 岗位ID */
     @TableId(type = IdType.ASSIGN_ID)
-    private Long postId;
+    private Long id;
 
     /** 岗位编码 */
 

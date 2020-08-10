@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.j2eefast.common.core.page.Query;
 import com.j2eefast.common.core.utils.PageUtil;
 import com.j2eefast.common.core.utils.ToolUtil;
+import com.j2eefast.framework.annotation.DataFilter;
 import com.j2eefast.framework.log.entity.SysOperLogEntity;
 import com.j2eefast.framework.log.mapper.SysOperLogMapper;
+import com.j2eefast.framework.utils.Constant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ public class SysOperLogSerice extends ServiceImpl<SysOperLogMapper, SysOperLogEn
 	/**
 	 * 页面展示查询翻页
 	 */
+	@DataFilter(deptAlias="d")
 	public PageUtil findPage(Map<String, Object> params) {
 		String title = (String) params.get("title");
 		String pabusinessTypes = (String)params.get("businessTypes");
@@ -33,15 +36,9 @@ public class SysOperLogSerice extends ServiceImpl<SysOperLogMapper, SysOperLogEn
 		String operName = (String) params.get("operName");
 		String beginTime = (String) params.get("beginTime");
 		String endTime = (String) params.get("endTime");
-		Page<SysOperLogEntity> page = this.baseMapper.selectPage(new Query<SysOperLogEntity>(params).getPage(),
-				new QueryWrapper<SysOperLogEntity>()
-						.like(ToolUtil.isNotEmpty(title), "title", title)
-						.in(ToolUtil.isNotEmpty(pabusinessTypes),"business_type", ToolUtil.isNotEmpty(pabusinessTypes)? pabusinessTypes.split(","):null)
-						.eq(ToolUtil.isNotEmpty(status), "status", status)
-						.like(ToolUtil.isNotEmpty(operName), "oper_name", operName)
-						.apply(ToolUtil.isNotEmpty(beginTime)," date_format(oper_time,'%y%m%d') >= date_format('"+beginTime+"','%y%m%d')")
-						.apply(ToolUtil.isNotEmpty(endTime)," date_format(oper_time,'%y%m%d') <= date_format('"+endTime+"','%y%m%d')")
-				);
+		String deptId = (String) params.get("deptId");
+		Page<SysOperLogEntity> page = this.baseMapper.findPage(new Query<SysOperLogEntity>(params).getPage(),
+				title,operName,status,beginTime,endTime,pabusinessTypes,deptId,(String) params.get(Constant.SQL_FILTER));
 		return new PageUtil(page);
 	}
 

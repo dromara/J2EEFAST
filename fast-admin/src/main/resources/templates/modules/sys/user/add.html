@@ -1,16 +1,15 @@
-<#include "/common/include.html"/>
+<#include "/common/defaultEngine.html"/>
 <@pageTheme mark="${config.optimize()?string('true', 'false')}">
-<@header title="新增用户"/>
-<@addorEdit fromId="form-user-add">
-    <input type="hidden" id="compId" name="compId"/>
-    <input type="hidden" id="deptId" name="deptIdList"/>
+<@header title="新增用户" bodyClass="white-bg" libs=["bootstrapSelect"]/>
+ <div class="wrapper wrapper-content ibox-content">
+    <@form.form id="form-user-add" class="form-horizontal">
     <h4 class="form-header h4">基本信息</h4>
     <div class="row">
         <div class="col-sm-6">
             <div class="form-group">
                 <label class="col-sm-4 control-label"><span style="color: red; ">*</span>登录账号：</label>
                 <div class="col-sm-8">
-                    <input id="username" name="username" placeholder="请输入登录账号" class="form-control" type="text" required>
+                    <@form.input name="username" placeholder="请输入登录账号" required=true helpTip="登录账号数字加字母组合,至少3位"/>
                 </div>
             </div>
         </div>
@@ -18,10 +17,8 @@
             <div class="form-group">
                 <label class="col-sm-4 control-label"><span style="color: red; ">*</span>归属公司：</label>
                 <div class="col-sm-8">
-                    <div class="input-group">
-                        <input name="compName"  id="compName" type="text" placeholder="请选择归属公司" onclick="selectCompTree()" class="form-control" required>
-                        <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
-                    </div>
+                    <@form.treeselect name="compId" boxTitle="选择归属公司" url="sys/comp/treeData?type=0" expandLevel=true required=true
+                    placeholder="请选择归属公司"/>
                 </div>
             </div>
         </div>
@@ -37,12 +34,10 @@
         </div>
         <div class="col-sm-6">
             <div class="form-group">
-                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>管理地区：</label>
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>归属部门：</label>
                 <div class="col-sm-8">
-                    <div class="input-group">
-                        <input name="deptName"  id="deptName"  type="text"  onclick="selectDeptTree()"  placeholder="请选择管理地区" class="form-control" required>
-                        <span class="input-group-addon"><i class="fa fa-fw fa-search"></i></span>
-                    </div>
+                    <@form.treeselect  name="deptId" boxTitle="请选择归属部门" url="sys/dept/selectZtree" required=true
+                    correlationId="compId" isSelectParent=true  placeholder="请选择归属部门"/>
                 </div>
             </div>
         </div>
@@ -53,11 +48,10 @@
                 <label class="col-sm-4 control-label"><span style="color: red; ">*</span>登录密码：</label>
                 <div class="col-sm-8">
                     <div class="input-group">
-                        <input name="password"  id="password"  placeholder="请输入登录密码" class="form-control" type="password" value="${config.getKey('SYS_USER_INITPASSWORD')}" required>
+                       <@form.input name="password" placeholder="请输入登录密码" required=true type="password" value="${config.getKey('SYS_USER_INITPASSWORD')}"/>
                        <span class="input-group-addon" title="<@ctx.i18n text = "登录密码,鼠标按下显示密码"/>"
                               data-toggle="tooltip"
-                              data-placement="bottom"
-     data-custom-class="tooltip-warning"
+                              data-placement="bottom" data-custom-class="tooltip-warning"
                     onmousedown="$('#password').attr('type','text')"
                     onmouseup="$('#password').attr('type','password')"><i class="fa fa-fw fa-key"></i></span>
                     </div>
@@ -68,11 +62,7 @@
             <div class="form-group">
                 <label class="col-sm-4 control-label"><span style="color: red; ">*</span>所属角色：</label>
                 <div class="col-sm-8">
-                    <select id="_role" class="form-control select2-multiple" multiple required>
-                        <#list roles  as role>
-                            <option  value="${role.roleId}">${role.roleName}</option>
-                        </#list>
-                    </select>
+                    <@form.select name="roleIdList" multiple = true  items=roles itemLabel="roleName" itemValue="id" required=true/>
                 </div>
             </div>
         </div>
@@ -82,18 +72,17 @@
             <div class="form-group">
                 <label class="col-sm-4 control-label"><span style="color: red; ">*</span>手机号码：</label>
                 <div class="col-sm-8">
-                    <div class="input-group">
-                        <input id="mobile" name="mobile" v-model="user.mobile" placeholder="请输入手机号码" class="form-control" type="text" maxlength="11" required>
-                        <span class="input-group-addon"><i class="fa fa-fw fa-mobile"></i></span>
-                    </div>
+<#--                    <div class="input-group">-->
+                        <@form.input name="mobile"  maxlength="11" butClass="fa fa-fw fa-mobile"  placeholder="请输入手机号码" required=true/>
+<#--                    </div>-->
                 </div>
             </div>
         </div>
         <div class="col-sm-6">
             <div class="form-group">
-                <label class="col-sm-4 control-label">卡号：</label>
+                <label class="col-sm-4 control-label"><span style="color: red; ">*</span>所在岗位：</label>
                 <div class="col-sm-8">
-                    <input name="cardId" id="cardId" v-model="user.cardId" placeholder="请输入卡号" class="form-control" type="text" maxlength="30">
+                    <@form.select name="postCodes" multiple = true  items=posts itemLabel="postName" itemValue="postCode" required=true/>
                 </div>
             </div>
         </div>
@@ -103,10 +92,7 @@
             <div class="form-group">
                 <label class="col-sm-4 control-label">邮箱：</label>
                 <div class="col-sm-8">
-                    <div class="input-group">
-                        <input id="email" name="email" class="form-control email" type="text" maxlength="50" placeholder="请输入邮箱">
-                        <span class="input-group-addon"><i class="fa fa-fw fa-envelope"></i></span>
-                    </div>
+                    <@form.input name="email" class="form-control email" butClass="fa fa-fw fa-envelope" maxlength="50" placeholder="请输入邮箱" />
                 </div>
             </div>
         </div>
@@ -114,15 +100,12 @@
             <div class="form-group">
                 <label class="col-sm-4 control-label">用户状态：</label>
                 <div class="col-sm-8">
-                    <label class="toggle-switch switch-solid">
-                        <input type="checkbox" id="status" checked>
-                        <span></span>
-                    </label>
+                    <@form.switch name="status" value="0"/>
                 </div>
             </div>
         </div>
     </div>
-</@addorEdit>
+    </@form.form>
     <div class="hr-line-dashed"></div>
     <div class="row" id="_addTab">
         <div class="col-sm-offset-5 col-sm-10">
@@ -130,132 +113,121 @@
             <button type="button" class="btn btn-sm btn-danger" onclick="opt.modal.closeTab()"><i class="fa fa-reply-all"></i><@ctx.i18n text = "关闭"/></button>
         </div>
     </div>
+</div>
 <@footer>
-	<script>
-	    var prefix = baseURL + "sys/user";
+<script type="text/javascript">
+    var prefix = baseURL + "sys/user";
 
-        $("#form-user-add").validate({
-            onkeyup: false,
-            rules:{
-                username:{
-                    minlength: 3,
-                    maxlength: 10,
-                    isUserName: opt.common.trim($("#username").val()),
-                    remote: {
-                        url: prefix + "/checkUserNameUnique",
-                        type: "POST",
-                        dataType: "html", 
-                        data: {
-                            "username": function() {
-                                return opt.common.trim($("#username").val());
-                            }
-                        },
-                        dataFilter: function(data, type) {
-                            return opt.validate.unique(data);
+    $("#form-user-add").validate({
+        onkeyup: false,
+        rules:{
+            username:{
+                minlength: 3,
+                maxlength: 10,
+                isUserName: opt.common.trim($("#username").val()),
+                remote: {
+                    url: prefix + "/checkUserNameUnique",
+                    type: "POST",
+                    dataType: "html",
+                    data: {
+                        "username": function() {
+                            return opt.common.trim($("#username").val());
                         }
-                    }
-                },
-                password:{
-                    minlength: 5,
-                    maxlength: 20
-                },
-                _role:{
-                    minlength: 1
-                },
-                mobile:{
-                    isMobile: opt.common.trim($("#mobile").val()),
-                    remote: {
-                        url: prefix + "/checkMobileUnique",
-                        type: "POST",
-                        dataType: "html",
-                        data: {
-                            "mobile": function() {
-                                return opt.common.trim($("#mobile").val());
-                            }
-                        },
-                        dataFilter: function(data, type) {
-                            return opt.validate.unique(data);
-                        }
+                    },
+                    dataFilter: function(data, type) {
+                        return opt.validate.unique(data);
                     }
                 }
             },
-            messages: {
-                "username": {
-                    remote:"<@ctx.i18n text = "sys.msg.user.already"/>"
-                },
-                "mobile":{
-                    remote:"<@ctx.i18n text = "sys.msg.mobile.already"/>"
-                }
+            password:{
+                minlength: 5,
+                maxlength: 20
             },
-            focusCleanup: true
-        });
-
-        function submitHandler() {
-	        if (opt.validate.form()) {
-                var options = {
-                    id:'form-user-add',
-                    delete:['compName','deptName'], /*需要删除提交表单数据*/
-                    conversion:[ /*需要转数据*/
-                        {
-                            name:'deptIdList',
-                            value:'arr'
+            _role:{
+                minlength: 1
+            },
+            _posts:{
+                minlength: 1
+            },
+            mobile:{
+                isMobile: opt.common.trim($("#mobile").val()),
+                remote: {
+                    url: prefix + "/checkMobileUnique",
+                    type: "POST",
+                    dataType: "html",
+                    data: {
+                        "mobile": function() {
+                            return opt.common.trim($("#mobile").val());
                         }
-                    ]
-                };
-                var data = opt.form.dataUp(options);
-                var postIds = opt.form.selectSelects("_role");
-                var status = $("input[id='status']").is(':checked') == true ? 0 :1;
-                data.push({"name": "status", "value": status});
-                data.push({"name": "roleIdList", "value": postIds});
-                opt.operate.saveTab(prefix + "/add", data);
-	        }
-	    }
-         
-        /*用户管理-新增-选择公司树*/
-        function selectCompTree() {
-        	var treeId = $("#compId").val();
-        	var compId = opt.common.isEmpty(treeId) ? "1" : $("#compId").val();
-        	var url = baseURL + "sys/comp/selectCompTree/" + compId;
-			var options = {
-				title: '选择公司',
-				width: "380",
-				url: url,
-				callBack: doSubmit
-			};
-			opt.modal.openOptions(options);
-		}
-		
-		function doSubmit(index, layero){
-            var _v = $.tree.callBackTree(layero,index);
-            $("#compId").val(_v.id);
-            $("#compName").val(_v.name);
-            layer.close(index);
-		}
+                    },
+                    dataFilter: function(data, type) {
+                        return opt.validate.unique(data);
+                    }
+                }
+            }
+        },
+        messages: {
+            "username": {
+                remote:"<@ctx.i18n text = "sys.msg.user.already"/>"
+            },
+            "mobile":{
+                remote:"<@ctx.i18n text = "sys.msg.mobile.already"/>"
+            }
+        },
+        focusCleanup: true
+    });
 
-        /*获取公司对应地区*/
-        function selectDeptTree(){
-            var options = {
-                title:"<@ctx.i18n text = "sys.select.dept"/>",
-                width: "380",
-                url: baseURL+'sys/dept/selectDeptTree',
-                obj:{"compId":$("#compId").val(),"list":$("#deptId").val()},
-                callBack: DeptDoSubmit
-            };
-            opt.modal.openOptions(options);
+    function submitHandler() {
+        if (opt.validate.form()) {
+            // var options = {
+            //     id:'form-user-add',
+            //     delete:['compName','deptName'], /*需要删除提交表单数据*/
+            //     conversion:[ /*需要转数据*/
+            //         {
+            //             name:'deptIdList',
+            //             value:'arr'
+            //         }
+            //     ]
+            // };
+            // var data = opt.form.dataUp(options);
+            // var postIds = opt.form.selectSelects("_role");
+            // var status = $("input[id='status']").is(':checked') == true ? 0 :1;
+            // // data.push({"name": "status", "value": status});
+            // data.push({"name": "roleIdList", "value": postIds});
+            opt.operate.saveTab(prefix + "/add", $('#form-user-add').serialize());
         }
-        function DeptDoSubmit(index, layero){
-            var _v = $.tree.callBackTree(layero,index);
-            $("#deptId").val(_v.id);
-            $("#deptName").val(_v.name);
-            layer.close(index);
-        }
+    }
+    //
+    //  $(function() {
+    // $("#__roleIdListslt").select2({
+    //     placeholder:"请选择值",
+    //     allowClear: true
+    // });
+    // //     $("#_role").on("change",function(e){
+    //         // e 的话就是一个对象 然后需要什么就 “e.参数” 形式 进行获取
+    //         console.log(opt.form.selectSelects("_role"));
+    //     })
+    //
+    //
+    //     $('#_posts').select2({
+    //         placeholder:"请选择所在岗位",
+    //         allowClear: true
+    //     });
+    //})
 
-		$(function() {
-            $('#_role').select2({
-                placeholder:"请选择角色",
-                allowClear: true
-            });
-        })
-    </script>
+    /**
+     * select 回调事件
+     * @param id 那个select控件发出的事件
+     * @param event change 当控件改变时
+     * @param data 选中数据对象
+     */
+    function selectCallback(id, event, data){
+        if(id === "roleIdList"){
+            console.log("roleIdList:" + data);
+        }else if(id === "postCodes"){
+            console.log("postCodes:" + data);
+        }
+    }
+</script>
 </@footer>
 </@pageTheme>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.j2eefast.framework.sys.mapper.SysFileUploadMapper">
+
+
+    
+    <resultMap type="SysFileUploadEntity" id="SysFileUploadResult">
+  <result property="id"    column="id"    />
+   <result property="fileId"    column="file_id"    />
+   <result property="fileName"    column="file_name"    />
+   <result property="fileType"    column="file_type"    />
+   <result property="bizid"    column="bizid"    />
+   <result property="bizType"    column="biz_type"    />
+   <result property="remark"    column="remark"    />
+   <result property="delFlag"    column="del_flag"    />
+   <result property="createBy"    column="create_by"    />
+   <result property="createTime"    column="create_time"    />
+   <result property="updateTime"    column="update_time"    />
+   <result property="updateBy"    column="update_by"    />
+     </resultMap>
+    
+    <!--  实体栏位  --> 
+    <sql id="sysFileUploadColumns">
+         a.id as "id" ,
+         a.file_id as "fileId" ,
+         a.file_name as "fileName" ,
+         a.file_type as "fileType" ,
+         a.bizid as "bizid" ,
+         a.biz_type as "bizType" ,
+         a.remark as "remark" ,
+         a.del_flag as "delFlag" ,
+         a.create_by as "createBy" ,
+         a.create_time as "createTime" ,
+         a.update_time as "updateTime" ,
+         a.update_by as "updateBy" 
+     </sql>
+    
+     <!-- 外联表  --> 
+	<sql id="sysFileUploadJoins">
+    </sql>
+    
+    
+    <!--  根据主键获取实体   -->
+     <select id="selectSysFileUploadById"  resultType="com.j2eefast.framework.sys.entity.SysFileUploadEntity" >
+          SELECT 
+			<include refid="sysFileUploadColumns"/>
+		FROM  sys_file_upload a
+		<include refid="sysFileUploadJoins"/>
+		WHERE a.id = #{id}
+    </select>
+    
+     <!--  根据获取实体List   -->
+     <select id="selectListSysFileUpload" resultType="com.j2eefast.framework.sys.entity.SysFileUploadEntity">
+		SELECT 
+			<include refid="sysFileUploadColumns"/>
+		FROM sys_file_upload a
+        <include refid="sysFileUploadJoins"/>
+		<where>
+             <if test="fileId != null "> and a.file_id = #{fileId} </if>
+   
+            <if test="fileName != null  and fileName != ''">
+                     and a.file_name LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{fileName}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{fileName}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{fileName},'%')</if>
+			</if>
+			
+              <if test="fileType != null  and fileType != ''"> and a.file_type = #{fileType} </if>
+              <if test="bizid != null "> and a.bizid = #{bizid} </if>
+              <if test="bizType != null  and bizType != ''"> and a.biz_type = #{bizType} </if>
+                        <if test = "sql_filter !=null and sql_filter!=''">
+                   and ${sql_filter}
+               </if>    
+		</where>
+	 </select>
+	 
+	 
+	 
+	  <!--  根据获取实体 page   -->
+     <select id="findPage" resultType="com.j2eefast.framework.sys.entity.SysFileUploadEntity">
+		SELECT 
+			<include refid="sysFileUploadColumns"/>
+		FROM sys_file_upload a
+		<include refid="sysFileUploadJoins"/>
+		<where>
+        
+              <if test="sysFileUpload.fileId != null "> and a.file_id = #{sysFileUpload.fileId} </if>
+               <if test="sysFileUpload.fileName != null  and sysFileUpload.fileName != ''">
+                     and a.file_name LIKE
+                     <if test="_databaseId == 'oracle'"> '%'||#{sysFileUpload.fileName}||'%'</if>
+                     <if test="_databaseId == 'mssql'">'%'+#{sysFileUpload.fileName}+'%'</if>
+                     <if test="_databaseId == 'mysql'">concat('%',#{sysFileUpload.fileName},'%')</if>
+			</if>
+               <if test="sysFileUpload.fileType != null  and sysFileUpload.fileType != ''"> and a.file_type = #{sysFileUpload.fileType} </if>
+               <if test="sysFileUpload.bizid != null "> and a.bizid = #{sysFileUpload.bizid} </if>
+               <if test="sysFileUpload.bizType != null  and sysFileUpload.bizType != ''"> and a.biz_type = #{sysFileUpload.bizType} </if>
+                      <if test = "sql_filter !=null and sql_filter!=''">
+               and ${sql_filter}
+             </if>  
+		</where>
+	 </select>
+</mapper>

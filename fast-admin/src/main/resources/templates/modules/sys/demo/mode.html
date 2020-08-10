@@ -1,0 +1,10 @@
+<#include "/common/defaultEngine.html"/>
+<@pageTheme mark="${config.optimize()?string('true', 'false')}">
+<@header title="前端模板使用说明" bodyClass="white-bg" libs=["prism"]/>
+<pre class="line-numbers">
+    <code  class="language-html">
+         ${mode?html}
+    </code>
+</pre>
+<@footer/>
+</@pageTheme>

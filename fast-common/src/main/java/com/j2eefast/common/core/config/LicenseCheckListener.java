@@ -66,56 +66,23 @@ public class LicenseCheckListener implements ApplicationListener<ContextRefreshe
             try{
                 ToolUtil.getFastServerInfos();
 
-                LOG.info("///////////////////////////////////////////");
-                LOG.info("------>>>>>>FASTOS 机器码:["+ HexUtil.encodeHexStr(SM4.encryptData_ECB(HexUtil.decodeHex
-                        (ConfigConstant.FAST_OS_SN),ConfigConstant.FAST_KEY))+"] 校验码:["+ HexUtil.encodeHexStr(SM4.encryptData_ECB(HexUtil.decodeHex
-                        (ConfigConstant.FAST_OS_SN),ConfigConstant.FAST_VERIFY_KEY)).substring(0,6)+"]<<<<<-----------");
-                LOG.info("IP:{}",StrUtil.cleanBlank(ConfigConstant.FAST_IPS.toString()));
-                LOG.info("///////////////////////////////////////////");
-
                 //安装
                 LOG.info("++++++++ 开始安装证书 ++++++++");
 
                 LicenseVerifyParam param = this.getVerifyParam();
 
                 LicenseVerify licenseVerify = new LicenseVerify();
+
                 //安装证书
                 licenseVerify.install(param);
                 //验证证书唯一码是否有效
-
                 LOG.info("++++++++ 证书安装结束 ++++++++");
 
             }catch (Exception e){
-                LOG.error("获取机器码异常:",e);
+                LOG.error("安装证书异常:",e);
                 ((ConfigurableApplicationContext) applicationContext).close();
             }
         }
-
-
-//        /**
-//         * <p>获取当前服务器需要额外校验的License参数</p>
-//         */
-//        private void getFastServerInfos() throws Exception {
-//
-//            if(ToolUtil.isEmpty(ConfigConstant.FAST_OS_SN)){
-//                //操作系统类型
-//                String osName = System.getProperty("os.name").toLowerCase();
-//                AbstractServerInfos abstractServerInfos = null;
-//
-//                //根据不同操作系统类型选择不同的数据获取方法
-//                if (osName.startsWith("windows")) {
-//                    abstractServerInfos = new WindowsServerInfos();
-//                } else if (osName.startsWith("linux")) {
-//                    abstractServerInfos = new LinuxServerInfos();
-//                } else if(osName.startsWith("mac")){
-//                    abstractServerInfos = new MacServerInfos();
-//                }
-//                else{//其他服务器类型
-//                    abstractServerInfos = new LinuxServerInfos();
-//                }
-//                abstractServerInfos.getServerInfos();
-//            }
-//        }
 
         public  LicenseVerifyParam getVerifyParam(){
             LicenseVerifyParam param = new LicenseVerifyParam();

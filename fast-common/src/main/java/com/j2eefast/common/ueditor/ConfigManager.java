@@ -170,8 +170,6 @@ public final class ConfigManager {
 		}
 //
 		this.parentPath = file.getParent();
-		System.err.println(this.parentPath);
-		System.err.println(this.getConfigPath());
 		String configContent = this.readFile( this.getConfigPath() );
 
 		try{

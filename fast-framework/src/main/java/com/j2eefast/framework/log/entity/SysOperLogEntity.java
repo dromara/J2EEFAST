@@ -25,7 +25,7 @@ public class SysOperLogEntity implements Serializable {
 	 * 主键ID
 	 */
 	@TableId(type = IdType.ASSIGN_ID)
-	private Long operId;
+	private Long id;
 
 	/** 操作模块 */
 	private String title;
@@ -49,8 +49,18 @@ public class SysOperLogEntity implements Serializable {
 	/** 操作人员 */
 	private String operName;
 
-	/** 部门名称 */
+	/** 公司名称 */
 	private String compName;
+
+	/**
+	 * 公司ID
+	 */
+	private Long compId;
+
+	/**
+	 * 机构部门ID
+	 */
+	private Long deptId;
 
 	/** 请求url */
 	private String operUrl;
