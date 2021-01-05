@@ -12,6 +12,7 @@ import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import com.j2eefast.common.core.exception.RxcException;
 import com.j2eefast.common.core.utils.ToolUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -21,6 +22,7 @@ import com.j2eefast.common.core.utils.ToolUtil;
  * @version V1.0
  *
  */
+@Slf4j
 public class UserUtils {
 
 
@@ -76,8 +78,15 @@ public class UserUtils {
 	 */
 	public static void clearCachedAuthorizationInfo() {
 		RealmSecurityManager rsm = (RealmSecurityManager) SecurityUtils.getSecurityManager();
-		UserRealm realm = (UserRealm) rsm.getRealms().iterator().next();
-		realm.clearCachedAuthorizationInfo();
+		Object realm = rsm.getRealms().iterator().next();
+		try {
+			if (null != realm && null != realm.getClass().getMethod("clearCachedAuthorizationInfo")) {
+				Method method = realm.getClass().getMethod("clearCachedAuthorizationInfo");
+				method.invoke(realm , null);
+			}
+		}catch (Exception e){
+			log.error(e.getMessage(),e);
+		}
 	}
 
 	/**
